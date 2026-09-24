@@ -1,0 +1,27 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
+const root = path.resolve(__dirname, '..');
+const html = fs.readFileSync(path.join(root, 'static/index.html'), 'utf8');
+const code = fs.readFileSync(path.join(root, 'static/app.js'), 'utf8');
+const ids = new Set([...html.matchAll(/id="([^"]+)"/g)].map(m => m[1]));
+const elements = new Map();
+const el = id => {
+  assert(ids.has(id), `missing DOM element: ${id}`);
+  if (!elements.has(id)) elements.set(id, {textContent:'', hidden:false, disabled:false});
+  return elements.get(id);
+};
+const ctx = vm.createContext({document:{getElementById:el}, Date, Number, Object, Array, JSON});
+const run = text => vm.runInContext(text, ctx);
+run(code.slice(0, code.lastIndexOf('\nrenderCards();')));
+run('serverStatus={armed:true,chassis:{ros_ready:false,error:"底盘连接失败"}};updateChassisBadge()');
+assert(el('chassisBadge').textContent.includes('离线'));
+assert(!el('chassisError').hidden);
+assert.equal(el('chassisError').textContent, '底盘连接失败');
+assert.equal(run('serverStatus.armed'), true);
+run('serverStatus.chassis={ros_ready:true};chassisRemoteEnabled=false;updateChassisBadge()');
+assert(el('chassisError').hidden);
+assert.equal(el('chassisError').textContent, '');
+assert.equal(el('chassisBadge').textContent, '遥控未启用');
+run('chassisRemoteEnabled=true;updateChassisBadge()');
+assert.equal(el('chassisBadge').textContent, '遥控已启用');
+console.log('PASS: chassis offline error, recovery clears it, upper-body unlock unchanged');

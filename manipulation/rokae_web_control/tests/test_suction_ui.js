@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.resolve(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'static/index.html'),'utf8');
+assert(html.includes('id="suctionOpenButton"'));assert(html.includes('id="suctionCloseButton"'));
+const elements=new Map(),el=id=>{if(!elements.has(id))elements.set(id,{disabled:false,textContent:'',classList:{add(){},remove(){}}});return elements.get(id)};
+const context=vm.createContext({document:{getElementById:el,querySelectorAll:()=>[]},setTimeout:()=>1,clearTimeout:()=>{},Date,Number,Boolean,Object,Array,JSON});
+const source=fs.readFileSync(path.join(root,'static/app.js'),'utf8');vm.runInContext(source.slice(0,source.lastIndexOf('\nrenderCards();')),context);
+const run=s=>vm.runInContext(s,context);
+run('serverStatus={armed:false,suction:{available:true}};updateSuctionControls()');assert(el('suctionOpenButton').disabled);
+run('serverStatus.armed=true;updateSuctionControls()');assert(!el('suctionOpenButton').disabled);
+run('placementExecution.active=true;updateSuctionControls()');assert(el('suctionCloseButton').disabled);
+run('placementExecution.active=false;toast=()=>{}');
+const requests=[];let release;
+context.fetch=async(url,opts)=>{requests.push({url,body:JSON.parse(opts.body)});await new Promise(r=>release=r);return {ok:true,json:async()=>({ok:true,data:{available:true,commanded_open:true,confirmed:true}})}};
+(async()=>{
+ const pending=run('setSuction(true)');assert(el('suctionOpenButton').disabled);assert(el('suctionCloseButton').disabled);
+ await run('setSuction(false)');assert.equal(requests.length,1);assert.deepEqual(requests[0],{url:'/api/suction/set',body:{open:true}});
+ release();await pending;assert(el('suctionStatus').textContent.includes('打开指令已确认'));
+ context.fetch=async()=>{throw new Error('offline')};await run('setSuction(false)');assert(el('suctionStatus').textContent.includes('状态未确认'));
+ console.log('PASS: suction controls, locked/busy guards, no duplicate send, unknown state after failure');
+})().catch(e=>{console.error(e);process.exitCode=1});

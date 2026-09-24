@@ -7,6 +7,27 @@ venv/
 .pytest_cache/
 .env
 
+# Perception runtime
+Perception/logs/
+Perception/*.log
+
+# ROKAE build output and deployment-only state
+/.build/
+/pose/**/config.json
+/manipulation/**/config.json
+/pose/**/calibration/*.json
+/manipulation/**/calibration/*.json
+/pose/**/memory_points/
+/manipulation/**/memory_points/
+/pose/**/logs/
+/manipulation/**/logs/
+/pose/**/.run/
+/manipulation/**/.run/
+/manipulation/**/data/
+/manipulation/**/data_right_wrist_rgb/
+/manipulation/**/left_wrist_rgb/
+/pose/**/.backup*/
+/manipulation/**/.backup*/
 # perception runtime
 perception/logs/
 perception/*.log

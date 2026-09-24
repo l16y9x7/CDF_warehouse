@@ -1,0 +1,6 @@
+{
+  "plane_offset_mm": 130.0,
+  "elbow_radius_mm": 65.0,
+  "margin_mm": 10.0,
+  "front_plane_x_mm": 220.0
+}
