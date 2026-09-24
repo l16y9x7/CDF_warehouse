@@ -1,0 +1,12 @@
+# Minimal deps for app.py (locate + recognize SKU barcode).
+# Does NOT include torch/transformers/python-docx used by other perception modules.
+
+fastapi
+uvicorn
+numpy
+opencv-python-headless
+Pillow
+requests
+
+# Optional: only required when SAM3_URL points to infer backend with RLE masks.
+# pycocotools
