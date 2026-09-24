@@ -1,0 +1,2 @@
+# 外部平台最终结果回调地址。任务请求体不再携带 callback_url。
+callback_url: http://127.0.0.1:8091/callbacks/agent

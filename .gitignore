@@ -4,6 +4,8 @@ __pycache__/
 *.pyo
 .venv/
 venv/
+.pytest_cache/
+.env
 
 # Perception runtime
 Perception/logs/
@@ -26,3 +28,19 @@ Perception/*.log
 /manipulation/**/left_wrist_rgb/
 /pose/**/.backup*/
 /manipulation/**/.backup*/
+# perception runtime
+perception/logs/
+perception/*.log
+
+# imported modules runtime
+gateway/runtime/
+gateway/*.log
+gateway/*.pid
+navigation/runtime/
+navigation/*.log
+navigation/*.pid
+camera/runtime/
+camera/*.log
+camera/*.pid
+camera/backups/
+camera/Log/

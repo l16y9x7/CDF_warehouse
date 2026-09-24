@@ -1,0 +1,16 @@
+products:
+  - sku_id: "3282779003131"
+    name: 雅漾舒护活泉水
+    description: 温和舒缓喷雾，适合日常补水护理
+    category: 护肤喷雾
+    image_url: /orders/assets/bottle.svg
+  - sku_id: "887167608641"
+    name: 修护精华礼盒
+    description: 精致盒装护理组合，适合作为礼赠
+    category: 护肤礼盒
+    image_url: /orders/assets/box.svg
+  - sku_id: "7173342765403"
+    name: 清润洁面乳
+    description: 柔和清洁肌肤，保持清爽水润
+    category: 洁面护理
+    image_url: /orders/assets/tube.svg

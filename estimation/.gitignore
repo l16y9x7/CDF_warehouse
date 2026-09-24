@@ -1,0 +1,31 @@
+cat > .gitignore <<'EOF'
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environments and local tools
+.venv/
+venv/
+env/
+.tools/
+
+# Runtime data and generated results
+requests/
+backups/
+*.log
+*.tmp
+*.cache
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# OS/editor files
+.DS_Store
+.vscode/
+.idea/
+EOF

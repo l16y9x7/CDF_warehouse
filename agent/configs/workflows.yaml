@@ -1,0 +1,25 @@
+# workflows.hand 仅用于没有 sku_id 的收尾推筐。
+# 单件拣选与复核的工作手按下方 skus 映射。
+# barcode_mismatch：扫码失败（未识别到 / 与预期不一致）时 STOP 停止等待确认，CONTINUE 只报错并继续入筐。
+workflows:
+  sorting:
+    hand: RIGHT
+    barcode_mismatch: CONTINUE
+  review:
+    hand: RIGHT
+
+# sku_id -> 估姿类别、工作手和商品名称。
+# name 只作为识别辅助和调试候选，不参与条码或任务校验。
+skus:
+  "3282779003131":
+    name: "Avene 雅漾 雅漾舒泉调理喷雾 300ml"
+    sku_typ: bottle
+    hand: RIGHT
+  "887167608641":
+    name: "Estee Lauder 雅诗兰黛 雅诗兰黛特润修护肌活精华眼霜双支装 15ml*2"
+    sku_typ: box
+    hand: LEFT
+  "7173342765403":
+    name: "Origins 悦木之源 ORIGINS一举两得泡沫洁面慕斯 30ml"
+    sku_typ: tube
+    hand: RIGHT

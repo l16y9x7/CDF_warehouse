@@ -1,0 +1,20 @@
+[Unit]
+Description=ROKAE ROS RGB to existing Owner HTTP
+After=network-online.target vision-rokae-preview-head-rgbd.service vision-rokae-preview-left-color.service vision-rokae-preview-right-rgbd.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=admin
+WorkingDirectory=/home/admin/vision
+EnvironmentFile=/home/admin/vision/config/ros/ros.env
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONNOUSERSITE=1
+ExecStart=/bin/bash -c 'source /home/admin/vision/config/ros/setup.bash && exec /home/admin/miniconda3/envs/nav/bin/python -m vision.rokae_runtime --config /home/admin/vision/config/vision.json'
+Restart=always
+RestartSec=2
+KillSignal=SIGINT
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,56 @@
+{
+  "_comment": "Current /infer request schema per ROBOT_API_PICK_POSE_INTERFACE.md / ROBOT_API_HANDOFF.md. Keys starting with `_` are documentation only and must be removed (or ignored) before sending; never send literal `<...>` placeholders.",
+  "_example_sku": "This file uses an Avene-shaped request. Change sku_id (and side for estee/origins) to match the job.",
+  "_notes": {
+    "target_type": "Required. `sku` = locate a product. `basket` is reserved and currently rejected with an unsupported error.",
+    "sku_id": "Required. One of `Avene`, `estee`, `origins`. The service selects the recognition + geometry strategy from this value.",
+    "side": "Conditional. For estee/origins use `LEFT` or `RIGHT` to pick the image-left/right box of the selected pair. Avene may send it but the direct flow records `side_applied=false`.",
+    "rgb_base64": "Required. Base64 of the JPG/PNG file BYTES (not pixel arrays). Keep RGB, depth, K and T from the same capture.",
+    "depth_npy_base64": "Required. Base64 of the full 2-D float32 aligned-depth .npy file bytes; values already in mm.",
+    "depth_unit": "Required. Must be exactly `mm`; the service never rescales depth internally.",
+    "K": "Required 3x3 pinhole intrinsics matching the current RGB resolution and projection model. `fx`/`fy` must be > 0.",
+    "T_chassis_camera": "Required 4x4 row-major transform, p_chassis = R @ p_camera + t, for THIS frame. Rotation orthonormal, det ~= 1, last row [0,0,0,1].",
+    "T_unit": "Required. Unit of the translation column only: `m` or `mm`. Here `m`.",
+    "camera_frame": "Required. Fixed `head_camera_color_optical_frame`.",
+    "base_frame": "Required. Fixed `chassis_link`.",
+    "front_rule": "Conditional (chassis frame). front_axis_chassis + front_origin_chassis + front_band_mm. Used for Avene front-row selection and for box-first product front/back filtering plus front-panel fit.",
+    "front_rule.front_axis_chassis": "Unit-ish direction of the chassis 'front' axis. Must be confirmed on site; in the 125311198 fixture [1,0,0] matched the measured front-panel normal while [0,1,0] was rejected by the normal prior.",
+    "front_rule.front_origin_chassis": "Chassis-space origin of the front band. Site-specific; the zeros here are a placeholder.",
+    "front_rule.front_band_mm": "Half-width of the kept band: keep |dot(p_chassis - origin, axis)| <= band. 100000 is a link-test band that filters almost nothing; it is NOT a validated production parameter."
+  },
+  "_real_intrinsics_frame_120045958": "The K and T below are the verified values of historical frame 120045958. They are valid numbers but belong to that frame only; real runs must substitute the current frame's K and T.",
+  "_optional_overrides": {
+    "class_name": "Legacy compatibility field; if sent it must equal sku_id.",
+    "sam3_prompt": "Override the product-stage SAM3 prompt; default comes from the SKU class config.",
+    "sam3_threshold": "Override the product-stage score threshold (0-1).",
+    "box_selection": "estee/origins only: {enabled, target_box, box_prompt, box_threshold, target_threshold, inference_mode, min_inside_ratio, crop_padding_px}. Omit for class defaults; `inference_mode` is `full_image_filter` (default) or `crop_box`.",
+    "z_ref_mm": "Avene only: chassis Z plane for the reference point. Default 1200, a test plane, not a grasp height.",
+    "body_radius_mm": "Avene only: fitted cylinder radius. Default 28.5; valid for the straight body only, not cap/shoulder.",
+    "fit_mode": "Avene only: `cylinder_3d` (default) or `prior_2d`."
+  },
+  "target_type": "sku",
+  "sku_id": "Avene",
+  "side": "LEFT",
+  "rgb_base64": "<BASE64_OF_RGB_JPG_OR_PNG_FILE_BYTES>",
+  "depth_npy_base64": "<BASE64_OF_ALIGNED_FLOAT32_DEPTH_NPY_BYTES>",
+  "depth_unit": "mm",
+  "K": [
+    [612.772339587192, 0.0, 641.544745101529],
+    [0.0, 611.998287842651, 358.604256964916],
+    [0.0, 0.0, 1.0]
+  ],
+  "T_chassis_camera": [
+    [-0.047653753369, -0.428149456867, 0.902450642625, 0.113767949307],
+    [-0.998816369947, 0.011610119563, -0.04723414285, 0.018099569521],
+    [0.009745712746, -0.903633359117, -0.428195952077, 1.45137337738],
+    [0.0, 0.0, 0.0, 1.0]
+  ],
+  "T_unit": "m",
+  "camera_frame": "head_camera_color_optical_frame",
+  "base_frame": "chassis_link",
+  "front_rule": {
+    "front_axis_chassis": [1.0, 0.0, 0.0],
+    "front_origin_chassis": [0.0, 0.0, 0.0],
+    "front_band_mm": 100000.0
+  }
+}

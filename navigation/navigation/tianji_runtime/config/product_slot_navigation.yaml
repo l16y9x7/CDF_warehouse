@@ -1,0 +1,136 @@
+# 7-point map: H1_F=H1/H12, H1_B=H2/H23, H2_F and H2_B both H3.
+# Agent target_id -> retail_stations.yaml station_id.
+# 商品货位格式：H<1|2>_<F|B>_L<1..5>_C<两位列号>。
+# levels 必须与商品摆放表中“该货架面 + 该层”的总列数一致。
+# 下列数据依据当前商品摆放表填写；摆放表变化时必须同步修改。
+#
+# 两点制：每面 station_ids 为 [左/一号侧, 右/二号侧]；
+# point_1_slots 列出归入第一个点的全部货位；同层未列出的列归第二个点。
+# 全局点号：1/2=H1正面，3/4=H1背面，5/6=H2正面，7/8=H2背面。
+
+# 业务点 station_id 已与 Agent target_id 同名，无需再做别名映射。
+# 旧名兼容（可选）：delivery_desk / restock_desk / judge_zone_1
+aliases:
+  delivery_desk: delivery_place
+  restock_desk: replenishment_pickup
+  judge_zone_1: task_boundary
+
+faces:
+  # 1/2 号点
+  H1_F:
+    levels:
+      L1: 7
+      L2: 13
+      L3: 7
+      L4: 5
+      L5: 5
+    station_ids:
+      - H1_INSPECT
+      - H12_INSPECT
+    point_1_slots:
+      - H1_F_L1_C01
+      - H1_F_L1_C02
+      - H1_F_L1_C03
+      - H1_F_L2_C01
+      - H1_F_L2_C02
+      - H1_F_L2_C03
+      - H1_F_L2_C04
+      - H1_F_L2_C05
+      - H1_F_L2_C06
+      - H1_F_L3_C01
+      - H1_F_L3_C02
+      - H1_F_L3_C03
+      - H1_F_L3_C04
+      - H1_F_L3_C05
+      - H1_F_L4_C01
+      - H1_F_L4_C02
+      - H1_F_L4_C03
+      - H1_F_L5_C01
+      - H1_F_L5_C02
+      - H1_F_L5_C03
+
+  # 3/4 号点
+  H1_B:
+    levels:
+      L1: 7
+      L2: 7
+      L3: 6
+      L4: 6
+      L5: 6
+    station_ids:
+      - H2_INSPECT
+      - H23_INSPECT
+    point_1_slots:
+      - H1_B_L1_C01
+      - H1_B_L1_C02
+      - H1_B_L1_C03
+      - H1_B_L2_C01
+      - H1_B_L2_C02
+      - H1_B_L2_C03
+      - H1_B_L3_C01
+      - H1_B_L3_C02
+      - H1_B_L4_C01
+      - H1_B_L4_C02
+      - H1_B_L5_C01
+
+  # 5/6 号点
+  H2_F:
+    levels:
+      L1: 6
+      L2: 5
+      L3: 6
+      L4: 8
+      L5: 7
+    station_ids:
+      - H3_INSPECT
+      - H3_INSPECT
+    point_1_slots:
+      - H2_F_L1_C01
+      - H2_F_L1_C02
+      - H2_F_L1_C03
+      - H2_F_L2_C01
+      - H2_F_L2_C02
+      - H2_F_L3_C01
+      - H2_F_L3_C02
+      - H2_F_L3_C03
+      - H2_F_L3_C04
+      - H2_F_L4_C01
+      - H2_F_L4_C02
+      - H2_F_L4_C03
+      - H2_F_L4_C04
+      - H2_F_L4_C05
+      - H2_F_L4_C06
+      - H2_F_L5_C01
+      - H2_F_L5_C02
+      - H2_F_L5_C03
+      - H2_F_L5_C04
+      - H2_F_L5_C05
+
+  # 7/8 号点（第四面；若你本意是别的编号再说一声）
+  H2_B:
+    levels:
+      L1: 5
+      L2: 5
+      L3: 6
+      L4: 3
+      L5: 2
+    station_ids:
+      - H3_INSPECT
+      - H3_INSPECT
+    point_1_slots:
+      - H2_B_L1_C01
+      - H2_B_L1_C02
+      - H2_B_L1_C03
+      - H2_B_L1_C04
+      - H2_B_L2_C01
+      - H2_B_L2_C02
+      - H2_B_L2_C03
+      - H2_B_L2_C04
+      - H2_B_L3_C01
+      - H2_B_L3_C02
+      - H2_B_L3_C03
+      - H2_B_L3_C04
+      - H2_B_L3_C05
+      - H2_B_L4_C01
+      - H2_B_L4_C02
+      - H2_B_L5_C01

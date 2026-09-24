@@ -1,0 +1,123 @@
+# Retail stations：7 个地图巡航点。
+# 点号 1–5 为货架巡检，6 为起点/交付台（含小票识别、任务判定，同一物理点），7 为补货台。
+# x/y/yaw、vendor_node_id 以当前地图 XML 为准：map_packages/42_shanghai4/shanghai4.xml
+# vendor_target_id：巡航模式 RCS 任务 ID；可由 scripts/sync_vendor_stations.py 从 RCS 回写。
+# 单站关闭到点厘米修正：该站点下写 align_enable: false（缺省仍对齐；全局开关仍在 nav_defaults.yaml）。
+
+map_name: shanghai4
+stations:
+  # ---- 货架巡检 1–5 ----
+  H1_INSPECT:
+    display_name: "1号-正对货架点1"
+    x: 0.819
+    y: 0.384
+    yaw: 0.05585053606381855
+    arrive_tol_m: 0.08
+    yaw_tol_rad: 0.0873  # 5°
+    max_speed: 0.4
+    vendor_node_id: 1
+    vendor_target_id: 420100001
+
+  H12_INSPECT:
+    display_name: "2号-12货架中间点"
+    x: 0.844
+    y: -0.023
+    yaw: 0.04537856055185257
+    arrive_tol_m: 0.08
+    yaw_tol_rad: 0.0873  # 5°
+    max_speed: 0.4
+    vendor_node_id: 2
+    vendor_target_id: 420100002
+
+  H2_INSPECT:
+    display_name: "3号-正对货架点2"
+    x: 0.867
+    y: -0.450
+    yaw: 0.06300638599699529
+    arrive_tol_m: 0.08
+    yaw_tol_rad: 0.0873  # 5°
+    max_speed: 0.4
+    vendor_node_id: 3
+    vendor_target_id: 420100003
+
+  H23_INSPECT:
+    display_name: "4号-23货架中间点"
+    x: 0.896
+    y: -0.924
+    yaw: 0.06702064327658225
+    arrive_tol_m: 0.08
+    yaw_tol_rad: 0.0873  # 5°
+    max_speed: 0.4
+    vendor_node_id: 4
+    vendor_target_id: 420100004
+
+  H3_INSPECT:
+    display_name: "5号-正对货架点3"
+    x: 0.914
+    y: -1.394
+    yaw: 0.07260569688296412
+    arrive_tol_m: 0.08
+    yaw_tol_rad: 0.0873  # 5°
+    max_speed: 0.4
+    vendor_node_id: 5
+    vendor_target_id: 420100005
+
+  # ---- 业务点：起点与交付台合并为 6 号；Agent 仍用这些名字导航 ----
+  start:
+    display_name: "起点/交付台"
+    x: -0.300
+    y: -1.000
+    yaw: -3.101624613719123
+    arrive_tol_m: 0.10
+    yaw_tol_rad: 0.0873  # 5°
+    max_speed: 0.5
+    vendor_node_id: 6
+    vendor_target_id: 420100006
+    align_enable: false
+
+  delivery_place:
+    display_name: "交付台放货"
+    x: -0.300
+    y: -1.000
+    yaw: -3.101624613719123
+    arrive_tol_m: 0.08
+    yaw_tol_rad: 0.0873  # 5°
+    max_speed: 0.4
+    vendor_node_id: 6
+    vendor_target_id: 420100006
+    align_enable: false
+
+  receipt_viewpoint:
+    display_name: "小票识别"
+    x: -0.300
+    y: -1.000
+    yaw: -3.101624613719123
+    arrive_tol_m: 0.08
+    yaw_tol_rad: 0.0873  # 5°
+    max_speed: 0.4
+    vendor_node_id: 6
+    vendor_target_id: 420100006
+    align_enable: false
+
+  task_boundary:
+    display_name: "任务判定点"
+    x: -0.300
+    y: -1.000
+    yaw: -3.101624613719123
+    arrive_tol_m: 0.12
+    yaw_tol_rad: 0.0873  # 5°
+    max_speed: 0.5
+    vendor_node_id: 6
+    vendor_target_id: 420100006
+    align_enable: false
+
+  replenishment_pickup:
+    display_name: "补货台取货"
+    x: -0.363
+    y: 0.048
+    yaw: -3.1157617806602773
+    arrive_tol_m: 0.08
+    yaw_tol_rad: 0.0873  # 5°
+    max_speed: 0.4
+    vendor_node_id: 7
+    vendor_target_id: 420100007

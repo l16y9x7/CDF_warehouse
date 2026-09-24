@@ -1,0 +1,11 @@
+# Use the same synchronizer and output contract as Tianji.
+slop: 0.1
+queue_size: 30
+qos_reliability: reliable
+cameras:
+  head:
+    enabled: true
+  left_wrist:
+    enabled: true
+  right_wrist:
+    enabled: true

@@ -1,0 +1,12 @@
+# Head camera high-resolution one-frame mode. RGB only by design.
+cameras:
+  head:
+    enabled: true
+    serial_no: "349622071479"
+    enable_color: true
+    color_width: 1920
+    color_height: 1080
+    color_fps: 15
+    enable_depth: false
+    enable_sync: false
+    align_depth: false

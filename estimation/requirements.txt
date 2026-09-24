@@ -1,0 +1,6 @@
+numpy>=1.24,<3
+scipy>=1.10,<2
+opencv-python-headless>=4.8,<5
+matplotlib>=3.7,<4
+requests>=2.31,<3
+pycocotools>=2.0.7,<3

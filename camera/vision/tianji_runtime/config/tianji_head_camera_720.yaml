@@ -1,0 +1,15 @@
+# Head camera standard mode. Existing RGB-D APIs depend on this profile.
+cameras:
+  head:
+    enabled: true
+    serial_no: "349622071479"
+    enable_color: true
+    color_width: 1280
+    color_height: 720
+    color_fps: 15
+    enable_depth: true
+    depth_width: 1280
+    depth_height: 720
+    depth_fps: 15
+    enable_sync: true
+    align_depth: true
