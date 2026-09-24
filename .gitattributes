@@ -1,0 +1,4 @@
+# Preserve the imported AGX files byte-for-byte, including existing CRLF files.
+pose/rokae_web_control/** -text
+pose/arm_motion_control/** -text
+manipulation/rokae_web_control/** -text

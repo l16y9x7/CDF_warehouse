@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "pose_type": "AGV_item_barcode_scan",
+  "frame": "trunk_controller_ref",
+  "state": {
+    "poses": {
+      "trunk": [
+        -200.019101,
+        0.0,
+        999.997921,
+        0.0,
+        -0.000726,
+        -0.000772
+      ]
+    },
+    "pose_frames": {
+      "trunk": "trunk_controller_ref"
+    },
+    "joints_deg": {
+      "trunk": [
+        -40.197976,
+        -42.066423,
+        -7.736463,
+        -0.000772
+      ]
+    },
+    "toolsets": {
+      "trunk": {
+        "end": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ],
+        "ref": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "source": {
+    "log": "logs/motion-2026-09-20.jsonl",
+    "timestamp": "2026-09-20T18:39:49.061+08:00",
+    "operation_id": "dfa42df502de4e01bc61861ef74b8977",
+    "sequence": 12318,
+    "module": "right_arm",
+    "stage": "trunk_retreat"
+  },
+  "samples": [
+    {
+      "timestamp": "2026-09-20T11:37:05.507+08:00",
+      "operation_id": "c528682194484296bcd6f4e33d0d04d1",
+      "pose_mm_deg": [
+        -200.00475,
+        0.0,
+        1000.000456,
+        -0.0,
+        0.000454,
+        -0.001271
+      ]
+    },
+    {
+      "timestamp": "2026-09-20T18:38:42.157+08:00",
+      "operation_id": "94b397cbd8ac42ccbf838a8dd8ec2efb",
+      "pose_mm_deg": [
+        -200.008739,
+        0.0,
+        999.998564,
+        -0.0,
+        0.000454,
+        -0.000726
+      ]
+    },
+    {
+      "timestamp": "2026-09-20T18:39:49.061+08:00",
+      "operation_id": "dfa42df502de4e01bc61861ef74b8977",
+      "pose_mm_deg": [
+        -200.019101,
+        0.0,
+        999.997921,
+        0.0,
+        -0.000726,
+        -0.000772
+      ]
+    }
+  ]
+}

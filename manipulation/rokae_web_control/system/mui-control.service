@@ -1,0 +1,18 @@
+[Unit]
+Description=MUI shared web and Agent control core
+After=network-online.target mui-sdk.service
+Requires=mui-sdk.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/admin/mui/rokae_web_control
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/bash /home/admin/mui/rokae_web_control/start_control_runtime.sh
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=25
+KillMode=control-group
+
+[Install]
+WantedBy=default.target

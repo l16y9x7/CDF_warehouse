@@ -1,0 +1,4 @@
+[Unit]
+Description=MUI web frontend and control core
+Requires=mui-control.service mui-web.service
+After=mui-control.service mui-web.service

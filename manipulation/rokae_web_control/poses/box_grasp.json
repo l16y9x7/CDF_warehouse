@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "frame": "trunk_controller_ref",
+  "unit": "mm",
+  "module": "left_arm",
+  "heights_mm": {
+    "grasp": 802.9007845644711,
+    "descend": 772.9081976490315,
+    "lift": 892.9006624219477
+  },
+  "method": "inv(T_chassis_trunk_ref) @ T_chassis_left_shoulder_sdk @ T_shoulder_tcp @ inv(T_flange_tcp)",
+  "sources": {
+    "下压": {
+      "id": "393411abba9c4469b57b2af81150d790",
+      "revision": 1,
+      "updated_at": "2026-09-21T13:26:03.546866+00:00"
+    },
+    "预抓取": {
+      "id": "265e2459c06944bcbd73cebbe417391f",
+      "revision": 1,
+      "updated_at": "2026-09-21T13:26:50.044154+00:00"
+    },
+    "提起": {
+      "id": "b0633a08acc1479f94ad952f6ccb57f2",
+      "revision": 1,
+      "updated_at": "2026-09-21T13:28:02.112221+00:00"
+    }
+  }
+}

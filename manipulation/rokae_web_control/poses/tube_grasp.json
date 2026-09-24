@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "frame": "trunk_controller_ref",
+  "unit": "mm",
+  "pregrasp_flange_height_mm": 812.9056959008101,
+  "source_memory_point": {
+    "id": "b042ac9de8da458ba047ceafdbf7ddb0",
+    "name": "软管预抓取点",
+    "revision": 1,
+    "captured_at": "2026-09-23T09:19:53.804950+00:00",
+    "saved_pose_right_shoulder_mm_deg": [
+      383.999872,
+      -97.999923,
+      -330.000363,
+      -168.391045,
+      -89.999929,
+      -11.608956
+    ]
+  },
+  "height_rule": "Saved flange transformed through saved trunk joints and SDK toolsets; XY and arm angles are not replayed."
+}

@@ -1,0 +1,22 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),html=fs.readFileSync(path.join(root,'static/index.html'),'utf8');
+const ids=new Set([...html.matchAll(/id="([^"]+)"/g)].map(m=>m[1]));
+ids.add('movelStatus-left_arm');ids.add('movelStatus-right_arm');
+const elements=new Map(),el=id=>{
+  if(!ids.has(id))return null;
+  if(!elements.has(id))elements.set(id,{value:'',disabled:false,hidden:false,textContent:'',dataset:{},removeAttribute(){}});
+  return elements.get(id);
+};
+const ctx=vm.createContext({document:{getElementById:el,querySelectorAll:()=>[]},Date,Number,Boolean,Object,Array,JSON,setTimeout:()=>1,clearTimeout(){}});
+const source=fs.readFileSync(path.join(root,'static/app.js'),'utf8');
+vm.runInContext(source.slice(0,source.lastIndexOf('\nrenderCards();')),ctx);
+const run=s=>vm.runInContext(s,ctx);
+run(`serverStatus={armed:true,rotation_deg_s:6,arm_movel:{planner_version:'endpoint-v1'},placement:{version:'placement-v3'},suction:{available:true}};
+movelExecution={module:'right_arm',active:false,message:'终点通过',endpoint_clearance_mm:-27.26,endpoint_accepted_by:'front_plane',endpoint_front_plane_x_mm:220,endpoint_front_clearance_mm:3.02};updateMoveLControls()`);
+assert(el('movelStatus-right_arm').textContent.includes('允许越过 Y 保护平面'));
+assert(el('movelStatus-right_arm').textContent.includes('220'));
+assert(!el('movelStatus-right_arm').textContent.includes('净余量 -'));
+run("movelExecution.endpoint_accepted_by='y_plane';movelExecution.endpoint_clearance_mm=10;updateMoveLControls()");
+assert(el('movelStatus-right_arm').textContent.includes('终点肘部净余量'));
+assert(!el('movelStatus-right_arm').textContent.includes('允许越过'));
+console.log('PASS front-plane UI: explicit X exception and ordinary Y clearance shown separately');
