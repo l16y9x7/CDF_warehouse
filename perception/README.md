@@ -22,11 +22,11 @@ Windows PowerShell：
 $env:SAM3_URL = "http://127.0.0.1:25541/api/v1/segment"
 ```
 
-## Step 3：启动 Perception
+## Step 3：启动 perception
 
 ```bash
 conda activate slim
-cd Perception
+cd perception
 nohup python -m uvicorn main:app --host 0.0.0.0 --port 25546 > perception.log 2>&1 &
 ```
 

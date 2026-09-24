@@ -5,6 +5,6 @@ __pycache__/
 .venv/
 venv/
 
-# Perception runtime
-Perception/logs/
-Perception/*.log
+# perception runtime
+perception/logs/
+perception/*.log

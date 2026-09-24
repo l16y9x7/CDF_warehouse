@@ -1,6 +1,6 @@
 """FastAPI application factory for the Perception vision barcode service.
 
-Run from the Perception directory:
+Run from the perception directory:
 
     python -m uvicorn app:app --host 0.0.0.0 --port 25546
 
