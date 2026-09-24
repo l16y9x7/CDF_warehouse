@@ -1,0 +1,31 @@
+{
+  "http": {
+    "host": "0.0.0.0",
+    "port": 8081
+  },
+  "nav": {
+    "base_url": "http://127.0.0.1:8001",
+    "health_path": "/health",
+    "goto_path": "/goto",
+    "status_path": "/status",
+    "timeout_sec": 90,
+    "poll_sec": 0.3,
+    "task_id": "ZHONGMIAN"
+  },
+  "waypoints": {
+    "AGV_L": "AGV_L", 
+    "AGV_C": "AGV_C", 
+    "AGV_R": "AGV_R", 
+    "SORTING_BASKET_1": "SORTING_BASKET_1",
+    "SORTING_BASKET_2": "SORTING_BASKET_2", 
+    "SORTING_BASKET_3": "SORTING_BASKET_3", 
+    "SORTING_BASKET_4": "SORTING_BASKET_4", 
+    "SORTING_BASKET_5": "SORTING_BASKET_5", 
+    "REVIEW_BASKET_1": "REVIEW_BASKET_1",
+    "REVIEW_BASKET_2": "REVIEW_BASKET_2",
+    "REVIEW_BASKET_3": "REVIEW_BASKET_3",
+    "REVIEW_BASKET_4": "REVIEW_BASKET_4",
+    "REVIEW_BASKET_5": "REVIEW_BASKET_5",
+    "REVIEW_TABLE": "REVIEW_TABLE"
+  }
+}

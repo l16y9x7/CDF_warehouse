@@ -1,0 +1,19 @@
+[Unit]
+Description=ROKAE RGB-D synchronization with Tianji ROS contract
+After=network-online.target vision-rokae-preview-head-rgbd.service vision-rokae-preview-left-color.service vision-rokae-preview-right-rgbd.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=admin
+WorkingDirectory=/home/admin/vision
+EnvironmentFile=/home/admin/vision/config/ros/ros.env
+Environment=PYTHONNOUSERSITE=1
+ExecStart=/bin/bash -c 'source /home/admin/vision/config/ros/setup.bash && exec /home/admin/miniconda3/envs/nav/bin/python -m vision.tianji_runtime.synced_rgbd_forwarder --ros-args -p synced_config_file:=/home/admin/vision/config/ros/synced_rgbd.yaml'
+Restart=always
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target

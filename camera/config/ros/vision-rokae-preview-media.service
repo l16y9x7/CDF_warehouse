@@ -1,0 +1,19 @@
+[Unit]
+Description=ROKAE media with independent ROS color input
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=admin
+WorkingDirectory=/home/admin/vision
+EnvironmentFile=/home/admin/vision/config/ros/ros.env
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONNOUSERSITE=1
+ExecStart=/bin/bash -c 'source /home/admin/vision/config/ros/setup.bash && exec /home/admin/miniconda3/envs/nav/bin/python -m vision.media_app --config /home/admin/vision/config/vision.json'
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target

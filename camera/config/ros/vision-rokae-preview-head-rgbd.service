@@ -1,0 +1,19 @@
+[Unit]
+Description=ROKAE head Orbbec native ROS RGB-D
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=admin
+WorkingDirectory=/home/admin/vision
+EnvironmentFile=/home/admin/vision/config/ros/ros.env
+Environment=PYTHONNOUSERSITE=1
+ExecStart=/bin/bash -c 'source /home/admin/vision/config/ros/setup.bash && source /home/admin/ros2_ws/install/setup.bash && exec /usr/bin/python3 -m vision.rokae_runtime.driver_supervisor --config /home/admin/vision/config/vision.json --camera head'
+Restart=always
+RestartSec=12
+KillSignal=SIGINT
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target

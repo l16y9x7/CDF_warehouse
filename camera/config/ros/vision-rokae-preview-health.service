@@ -1,0 +1,14 @@
+[Unit]
+Description=ROKAE Owner, ROS RGB-D and Media health check
+After=network-online.target vision-rokae-preview-owner.service vision-rokae-preview-media.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=admin
+WorkingDirectory=/home/admin/vision
+EnvironmentFile=/home/admin/vision/config/ros/ros.env
+Environment=PYTHONNOUSERSITE=1
+ExecStart=/bin/bash -c 'source /home/admin/vision/config/ros/setup.bash && exec /home/admin/miniconda3/envs/nav/bin/python /home/admin/vision/scripts/head-stream-check.py --config /home/admin/vision/config/vision.json --repair'
+TimeoutStartSec=30
+

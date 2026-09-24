@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.pid
+*.log
+runtime/
+smt_runtime/
+zhongmian_runtime/
+.runtime_dir
+.pytest_cache/
+.venv/
+venv/
+.env

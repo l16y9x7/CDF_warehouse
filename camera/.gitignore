@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*.pid
+*.log
+runtime/
+.pytest_cache/
+.venv/
+venv/
+.env
+
+# Field-only snapshot trees; never commit
+backups/
+Log/

@@ -1,0 +1,19 @@
+[Unit]
+Description=Left wrist D405 RGB only 1280x720 15fps
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=admin
+WorkingDirectory=/home/admin/vision
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/bin/bash -c 'source /home/admin/vision/config/ros/setup.bash && exec /usr/bin/python3 -m vision.rokae_runtime.left_wrist_rgb --config /home/admin/vision/config/vision.json'
+Restart=always
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target

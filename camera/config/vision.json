@@ -1,0 +1,67 @@
+{
+  "adapter": "tianji",
+  "http_timeout_sec": 3.0,
+  "camera": {
+    "host": "0.0.0.0",
+    "port": 8003
+  },
+  "media": {
+    "enabled": true,
+    "host": "0.0.0.0",
+    "port": 8005,
+    "push": {
+      "enabled": true,
+      "autostart": false,
+      "device_sn": "ROBOT_100",
+      "stream_server_url": "rtmp://robotsolution.cn:1935",
+      "stream_key": "",
+      "stream_path_template": "dksl/stream/{sn}_{stream_slot}_{camera_index}-{video_channel_index}-0_normal-0",
+      "ffmpeg_bin": "ffmpeg",
+      "streams": [
+        {
+          "camera_id": "head",
+          "stream_slot": 1,
+          "camera_index": 99,
+          "video_channel_index": 0,
+          "enabled": true,
+          "width": 640,
+          "height": 480,
+          "fps": 15,
+          "bitrate": "1200k",
+          "preset": "ultrafast"
+        },
+        {
+          "camera_id": "hand_left",
+          "stream_slot": 2,
+          "camera_index": 99,
+          "video_channel_index": 0,
+          "enabled": true,
+          "width": 640,
+          "height": 480,
+          "fps": 15,
+          "bitrate": "1200k",
+          "preset": "ultrafast"
+        },
+        {
+          "camera_id": "hand_right",
+          "stream_slot": 3,
+          "camera_index": 99,
+          "video_channel_index": 0,
+          "enabled": true,
+          "width": 640,
+          "height": 480,
+          "fps": 15,
+          "bitrate": "1200k",
+          "preset": "ultrafast"
+        }
+      ]
+    }
+  },
+  "tianji": {
+    "base_url": "http://127.0.0.1:8085",
+    "health_path": "/camera/health",
+    "list_path": "/camera/list",
+    "snapshot_path": "/camera/snapshot",
+    "stream_path": "/camera/stream"
+  }
+}

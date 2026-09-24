@@ -1,0 +1,19 @@
+[Unit]
+Description=ROKAE left RealSense direct ROS color
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=admin
+WorkingDirectory=/home/admin/vision
+EnvironmentFile=/home/admin/vision/config/ros/ros.env
+Environment=PYTHONNOUSERSITE=1
+ExecStart=/bin/bash -c 'source /home/admin/vision/config/ros/setup.bash && exec /home/admin/miniconda3/envs/nav/bin/python -m vision.rokae_runtime.realsense_color_publisher --config /home/admin/vision/config/vision.json --camera hand_left'
+Restart=always
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target
