@@ -1,0 +1,2565 @@
+{
+  "version": 1,
+  "source": "explicit fixed snapshot of action reference points; not linked to teaching store",
+  "points": [
+    {
+      "id": "9f37e3f27dfc4c5da9b8511820e289de",
+      "name": "L2观察",
+      "revision": 1,
+      "created_at": "2026-09-17T10:55:46.887573+00:00",
+      "updated_at": "2026-09-17T10:55:46.887573+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            61.086662,
+            96.682365,
+            -99.379742,
+            116.898033,
+            2.53445,
+            12.57513,
+            0.861218
+          ],
+          "right_arm": [
+            -56.469761,
+            83.342274,
+            84.060983,
+            116.18914,
+            5.350012,
+            7.949171,
+            -8.479591
+          ],
+          "trunk": [
+            -53.920671,
+            22.902681,
+            -58.982236,
+            -0.000636
+          ],
+          "head": [
+            0.000544,
+            -32.80077
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            14.674326,
+            209.909074,
+            -367.303072,
+            -160.864857,
+            -66.990062,
+            -8.153043
+          ],
+          "right_arm": [
+            45.070824,
+            -172.263088,
+            -375.583955,
+            -172.923994,
+            -66.41825,
+            -7.816238
+          ],
+          "trunk": [
+            79.998114,
+            0.0,
+            699.99849,
+            0.0,
+            -0.000318,
+            -0.000636
+          ],
+          "head": [
+            109.92415815639413,
+            42.99995182885721,
+            1005.0410534751919,
+            1.0974071268427092e-08,
+            32.79502488119839,
+            -9.199405559399553e-05
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "arm_elbow_deg": {
+          "left_arm": -99.376571,
+          "right_arm": 84.061606
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            0,
+            1,
+            -2,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "right_arm": [
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0
+          ]
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-17T10:55:46.885387+00:00"
+      }
+    },
+    {
+      "id": "45b73e16a51a4d6fa2078f549f1cff11",
+      "name": "L2抓取",
+      "revision": 1,
+      "created_at": "2026-09-17T10:54:10.203384+00:00",
+      "updated_at": "2026-09-17T10:54:10.203384+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            61.086662,
+            96.682365,
+            -99.379729,
+            116.898019,
+            2.534436,
+            12.575102,
+            0.861287
+          ],
+          "right_arm": [
+            -56.469761,
+            83.342297,
+            84.06097,
+            116.18914,
+            5.35004,
+            7.949171,
+            -8.479564
+          ],
+          "trunk": [
+            -36.286798,
+            -36.424626,
+            -17.288758,
+            -0.000636
+          ],
+          "head": [
+            0.000544,
+            -32.80077
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            14.674492,
+            209.908952,
+            -367.303055,
+            -160.864898,
+            -66.99011,
+            -8.152965
+          ],
+          "right_arm": [
+            45.070772,
+            -172.262917,
+            -375.583886,
+            -172.923851,
+            -66.418284,
+            -7.816346
+          ],
+          "trunk": [
+            -100.001364,
+            0.0,
+            1000.000151,
+            0.0,
+            -0.000182,
+            -0.000636
+          ],
+          "head": [
+            -70.09614195390304,
+            42.99995182885721,
+            1305.016871699798,
+            1.0890029807631294e-08,
+            32.79506888119841,
+            -9.199410111383774e-05
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "arm_elbow_deg": {
+          "left_arm": -99.376544,
+          "right_arm": 84.061592
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            0,
+            1,
+            -2,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "right_arm": [
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0
+          ]
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-17T10:54:10.203108+00:00"
+      }
+    },
+    {
+      "id": "195a92f910bb4b57a85c367391c2be77",
+      "name": "扫码1",
+      "revision": 1,
+      "created_at": "2026-09-19T09:52:20.047931+00:00",
+      "updated_at": "2026-09-19T09:52:20.047931+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            16.014,
+            89.583,
+            -74.998,
+            91.727,
+            3.857,
+            13.97,
+            75.621
+          ],
+          "right_arm": [
+            44.516,
+            81.501,
+            -14.976,
+            104.919,
+            40.553,
+            5.356,
+            -75.594
+          ],
+          "trunk": [
+            -40.196841,
+            -42.065606,
+            -7.737326,
+            -0.001998
+          ],
+          "head": [
+            0.001414,
+            -32.800498
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            220.072481,
+            179.964509,
+            -399.81556,
+            76.715426,
+            -89.96195,
+            163.285503
+          ],
+          "right_arm": [
+            240.14085,
+            100.077252,
+            -269.620673,
+            -20.967171,
+            -89.944637,
+            -129.026736
+          ],
+          "trunk": [
+            -199.994428,
+            0.0,
+            1000.000644,
+            -0.0,
+            0.000227,
+            -0.001998
+          ],
+          "head": [
+            -170.08832076153743,
+            42.99969421608139,
+            1305.009634961438,
+            6.41688492957481e-08,
+            32.79520588119869,
+            -0.0005839652412296612
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "arm_elbow_deg": {
+          "left_arm": -74.998,
+          "right_arm": -14.976
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            0,
+            0,
+            -1,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "right_arm": [
+            0,
+            0,
+            -1,
+            1,
+            0,
+            0,
+            -1,
+            0
+          ]
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-19T09:52:19.780168+00:00",
+        "arm_pose_source": "SDK calcFk from screenshot joint angles; TCP in each arm SDK world",
+        "import_source": {
+          "filename": "1.png",
+          "sha256": "d6a492238f6ea07f1a5d44c5fac8c63df7a71000427fdf68e3c1237ea0a622ed",
+          "joint_resolution_deg": 0.001
+        },
+        "joints_source": {
+          "left_arm": "1.png",
+          "right_arm": "1.png",
+          "trunk": "current controller readback",
+          "head": "current controller readback"
+        }
+      }
+    },
+    {
+      "id": "5eba71059fe94c7bbe71b6db53ba163e",
+      "name": "扫码2",
+      "revision": 1,
+      "created_at": "2026-09-19T09:52:20.047931+00:00",
+      "updated_at": "2026-09-19T09:52:20.047931+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            16.014,
+            89.583,
+            -74.998,
+            91.727,
+            3.857,
+            13.97,
+            75.621
+          ],
+          "right_arm": [
+            62.118,
+            71.478,
+            -14.97,
+            79.51,
+            65.256,
+            26.707,
+            19.077
+          ],
+          "trunk": [
+            -40.196841,
+            -42.065606,
+            -7.737326,
+            -0.001998
+          ],
+          "head": [
+            0.001414,
+            -32.800498
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            220.072481,
+            179.964509,
+            -399.81556,
+            76.715426,
+            -89.96195,
+            163.285503
+          ],
+          "right_arm": [
+            370.309303,
+            50.068269,
+            -279.444421,
+            61.86945,
+            -89.92855,
+            -151.872815
+          ],
+          "trunk": [
+            -199.994428,
+            0.0,
+            1000.000644,
+            -0.0,
+            0.000227,
+            -0.001998
+          ],
+          "head": [
+            -170.08832076153743,
+            42.99969421608139,
+            1305.009634961438,
+            6.41688492957481e-08,
+            32.79520588119869,
+            -0.0005839652412296612
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "arm_elbow_deg": {
+          "left_arm": -74.998,
+          "right_arm": -14.97
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            0,
+            0,
+            -1,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "right_arm": [
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-19T09:52:19.780168+00:00",
+        "arm_pose_source": "SDK calcFk from screenshot joint angles; TCP in each arm SDK world",
+        "import_source": {
+          "filename": "2.png",
+          "sha256": "4063693b3a4c9171f8f8d5953985c73e4280be77c0b2a6883b2deeb2abf22bf7",
+          "joint_resolution_deg": 0.001
+        },
+        "joints_source": {
+          "left_arm": "2.png",
+          "right_arm": "2.png",
+          "trunk": "current controller readback",
+          "head": "current controller readback"
+        }
+      }
+    },
+    {
+      "id": "5b4ae1c8a383436294608e81f380c761",
+      "name": "扫码3",
+      "revision": 1,
+      "created_at": "2026-09-19T09:52:20.047931+00:00",
+      "updated_at": "2026-09-19T09:52:20.047931+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            24.869,
+            88.138,
+            -90.001,
+            97.453,
+            -1.753,
+            17.549,
+            10.401
+          ],
+          "right_arm": [
+            64.985,
+            63.41,
+            -19.971,
+            84.535,
+            66.756,
+            31.596,
+            50.923
+          ],
+          "trunk": [
+            -40.196841,
+            -42.065606,
+            -7.737326,
+            -0.001998
+          ],
+          "head": [
+            0.001414,
+            -32.800498
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            220.028077,
+            200.005445,
+            -399.808749,
+            6.70001,
+            -89.968426,
+            -176.701151
+          ],
+          "right_arm": [
+            320.318774,
+            -19.953305,
+            -279.534659,
+            95.394775,
+            -89.930061,
+            -155.401568
+          ],
+          "trunk": [
+            -199.994428,
+            0.0,
+            1000.000644,
+            -0.0,
+            0.000227,
+            -0.001998
+          ],
+          "head": [
+            -170.08832076153743,
+            42.99969421608139,
+            1305.009634961438,
+            6.41688492957481e-08,
+            32.79520588119869,
+            -0.0005839652412296612
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "arm_elbow_deg": {
+          "left_arm": -90.001,
+          "right_arm": -19.971000000000004
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            0,
+            0,
+            -1,
+            1,
+            -1,
+            0,
+            0,
+            0
+          ],
+          "right_arm": [
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-19T09:52:19.780168+00:00",
+        "arm_pose_source": "SDK calcFk from screenshot joint angles; TCP in each arm SDK world",
+        "import_source": {
+          "filename": "3.png",
+          "sha256": "3b8b7ac573aa45aa2e6d919426ae5de5ff98dcb6e79329531aea155fdbb4f850",
+          "joint_resolution_deg": 0.001
+        },
+        "joints_source": {
+          "left_arm": "3.png",
+          "right_arm": "3.png",
+          "trunk": "current controller readback",
+          "head": "current controller readback"
+        }
+      }
+    },
+    {
+      "id": "fb086cbd9c354891bf5cf0d15acf8392",
+      "name": "扫码4",
+      "revision": 1,
+      "created_at": "2026-09-19T09:52:20.047931+00:00",
+      "updated_at": "2026-09-19T09:52:20.047931+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            -18.609,
+            83.665,
+            -75.006,
+            56.727,
+            -10.937,
+            16.532,
+            -50.589
+          ],
+          "right_arm": [
+            64.985,
+            63.41,
+            -19.971,
+            84.535,
+            66.756,
+            31.596,
+            50.923
+          ],
+          "trunk": [
+            -40.196841,
+            -42.065606,
+            -7.737326,
+            -0.001998
+          ],
+          "head": [
+            0.001414,
+            -32.800498
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            420.319407,
+            90.011779,
+            -399.531765,
+            -53.796149,
+            -89.928324,
+            173.797274
+          ],
+          "right_arm": [
+            320.318774,
+            -19.953305,
+            -279.534659,
+            95.394775,
+            -89.930061,
+            -155.401568
+          ],
+          "trunk": [
+            -199.994428,
+            0.0,
+            1000.000644,
+            -0.0,
+            0.000227,
+            -0.001998
+          ],
+          "head": [
+            -170.08832076153743,
+            42.99969421608139,
+            1305.009634961438,
+            6.41688492957481e-08,
+            32.79520588119869,
+            -0.0005839652412296612
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "arm_elbow_deg": {
+          "left_arm": -75.006,
+          "right_arm": -19.971000000000004
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            -1,
+            0,
+            -1,
+            0,
+            -1,
+            0,
+            -1,
+            0
+          ],
+          "right_arm": [
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-19T09:52:19.780168+00:00",
+        "arm_pose_source": "SDK calcFk from screenshot joint angles; TCP in each arm SDK world",
+        "import_source": {
+          "filename": "4.png",
+          "sha256": "8e7a733cad6a62c288369e080ba1651539ff1ffee3730c6d2c9542ce490cb31f",
+          "joint_resolution_deg": 0.001
+        },
+        "joints_source": {
+          "left_arm": "4.png",
+          "right_arm": "4.png",
+          "trunk": "current controller readback",
+          "head": "current controller readback"
+        }
+      }
+    },
+    {
+      "id": "edd38cd94ef643ad9f68692629dabe97",
+      "name": "扫码5",
+      "revision": 1,
+      "created_at": "2026-09-19T10:17:51.196744+00:00",
+      "updated_at": "2026-09-19T10:17:51.196744+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            -38.566,
+            82.811,
+            -30.018,
+            56.953,
+            -37.098,
+            13.591,
+            -62.757
+          ],
+          "right_arm": [
+            81.043,
+            77.217,
+            -28.756,
+            80.137,
+            83.78,
+            30.891,
+            72.579
+          ],
+          "trunk": [
+            -40.192755,
+            -42.061884,
+            -7.73551,
+            0.004585
+          ],
+          "head": [
+            0.000218,
+            -32.818174
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            390.293621,
+            -55.084433,
+            -329.457043,
+            -77.25227,
+            -89.926413,
+            152.248321
+          ],
+          "right_arm": [
+            333.906487,
+            33.665193,
+            -205.394623,
+            -163.893258,
+            -88.394321,
+            128.604072
+          ],
+          "trunk": [
+            -199.871631,
+            0.0,
+            1000.010699,
+            1e-06,
+            0.009897,
+            0.004585
+          ],
+          "head": [
+            -169.91850633155534,
+            43.00251469383229,
+            1305.0146622065893,
+            4.3211997875429015e-07,
+            32.82250588118318,
+            0.0048032342118704404
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "arm_elbow_deg": {
+          "left_arm": -30.018,
+          "right_arm": -28.756000000000004
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            -1,
+            0,
+            -1,
+            0,
+            -1,
+            0,
+            -1,
+            0
+          ],
+          "right_arm": [
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-19T10:17:50.917853+00:00",
+        "arm_pose_source": "SDK calcFk from screenshot joint angles; TCP in each arm SDK world",
+        "import_source": {
+          "filename": "5.png",
+          "sha256": "2e891ceccd35f23b72c7772b6d5c822b9320a01e4a76dd0d39bcbc495ea58c7d",
+          "joint_resolution_deg": 0.001
+        },
+        "joints_source": {
+          "left_arm": "5.png",
+          "right_arm": "5.png",
+          "trunk": "current controller readback",
+          "head": "current controller readback"
+        }
+      }
+    },
+    {
+      "id": "83073358df4f45159f84e300a9cc03aa",
+      "name": "L2放置1",
+      "revision": 5,
+      "created_at": "2026-09-20T06:27:09.922803+00:00",
+      "updated_at": "2026-09-20T10:04:59.457060+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            61.086639,
+            96.682354,
+            -99.379688,
+            116.898033,
+            2.534436,
+            12.575185,
+            0.861218
+          ],
+          "right_arm": [
+            1.688919,
+            71.654274,
+            60.01084,
+            93.177534,
+            109.085985,
+            29.516913,
+            4.981531
+          ],
+          "trunk": [
+            -36.28598,
+            -36.424263,
+            -17.290074,
+            -0.000772
+          ],
+          "head": [
+            0.001305,
+            -32.80077
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            14.674836,
+            209.908754,
+            -367.302892,
+            -160.864937,
+            -66.990233,
+            -8.152969
+          ],
+          "right_arm": [
+            349.999904,
+            -139.999765,
+            -348.242082,
+            -90.000029,
+            1.2e-05,
+            -89.999956
+          ],
+          "trunk": [
+            -99.986919,
+            0.0,
+            1000.000752,
+            0.0,
+            -0.000272,
+            -0.000772
+          ],
+          "head": [
+            -70.0836618060495,
+            43.000279076286816,
+            1305.0174669274209,
+            -6.458502375679066e-08,
+            32.79493388119865,
+            0.0005329650157976451
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "arm_elbow_deg": {
+          "left_arm": -99.376516,
+          "right_arm": 59.99999
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            0,
+            1,
+            -2,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "right_arm": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            0
+          ]
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-20T10:04:59.452287+00:00"
+      }
+    },
+    {
+      "id": "265e2459c06944bcbd73cebbe417391f",
+      "name": "预抓取",
+      "revision": 1,
+      "created_at": "2026-09-21T13:26:50.044154+00:00",
+      "updated_at": "2026-09-21T13:26:50.044154+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            -21.967724,
+            90.602531,
+            -89.999561,
+            63.177388,
+            0.589485,
+            5.028305,
+            0.416066
+          ],
+          "right_arm": [
+            -56.469772,
+            83.342274,
+            84.061011,
+            116.18914,
+            5.349957,
+            7.949171,
+            -8.479578
+          ],
+          "trunk": [
+            -36.286888,
+            -36.424626,
+            -17.288622,
+            -0.000999
+          ],
+          "head": [
+            -0.000218,
+            -32.800226
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            499.647041,
+            169.476074,
+            -339.999889,
+            -70.920076,
+            -89.999968,
+            -109.079891
+          ],
+          "right_arm": [
+            45.070553,
+            -172.263177,
+            -375.583859,
+            -172.924084,
+            -66.418219,
+            -7.816152
+          ],
+          "trunk": [
+            -100.001916,
+            0.0,
+            999.99988,
+            0.0,
+            -9.1e-05,
+            -0.000999
+          ],
+          "head": [
+            -70.09612228914006,
+            42.99936277059008,
+            1305.01669058755,
+            1.4289302461307984e-07,
+            32.79457088119969,
+            -0.001216922599129099
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "arm_elbow_deg": {
+          "left_arm": -90.000003,
+          "right_arm": 84.061633
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            -1,
+            1,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "right_arm": [
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0
+          ]
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-21T13:26:50.042723+00:00"
+      }
+    },
+    {
+      "id": "393411abba9c4469b57b2af81150d790",
+      "name": "下压",
+      "revision": 1,
+      "created_at": "2026-09-21T13:26:03.546866+00:00",
+      "updated_at": "2026-09-21T13:26:03.546866+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            -23.14056,
+            90.561287,
+            -89.999657,
+            55.136852,
+            0.584569,
+            11.895584,
+            0.476477
+          ],
+          "right_arm": [
+            -56.469761,
+            83.342274,
+            84.061011,
+            116.189099,
+            5.350012,
+            7.94913,
+            -8.479591
+          ],
+          "trunk": [
+            -36.286979,
+            -36.424853,
+            -17.289121,
+            -0.000999
+          ],
+          "head": [
+            -0.000218,
+            -32.800226
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            499.64671,
+            169.475954,
+            -370.000512,
+            -164.78748,
+            -89.999934,
+            -15.212523
+          ],
+          "right_arm": [
+            45.07107,
+            -172.262986,
+            -375.58388,
+            -172.923965,
+            -66.418316,
+            -7.816225
+          ],
+          "trunk": [
+            -100.008525,
+            0.0,
+            1000.000399,
+            0.0,
+            -0.000953,
+            -0.000999
+          ],
+          "head": [
+            -70.1065516875934,
+            42.99936277059008,
+            1305.0175236773546,
+            1.63535403318968e-07,
+            32.79375388119987,
+            -0.00121691141875098
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "arm_elbow_deg": {
+          "left_arm": -89.999984,
+          "right_arm": 84.061606
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            -1,
+            1,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "right_arm": [
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0
+          ]
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-21T13:26:03.545635+00:00"
+      }
+    },
+    {
+      "id": "b0633a08acc1479f94ad952f6ccb57f2",
+      "name": "提起",
+      "revision": 1,
+      "created_at": "2026-09-21T13:28:02.112221+00:00",
+      "updated_at": "2026-09-21T13:28:02.112221+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            -22.517452,
+            90.729778,
+            -89.999533,
+            80.958527,
+            0.651613,
+            -13.301985,
+            0.263466
+          ],
+          "right_arm": [
+            -56.469704,
+            83.342308,
+            84.060997,
+            116.189099,
+            5.350012,
+            7.94913,
+            -8.479605
+          ],
+          "trunk": [
+            -36.286888,
+            -36.424672,
+            -17.288531,
+            -0.001044
+          ],
+          "head": [
+            -0.000218,
+            -32.800226
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            499.6471,
+            169.475629,
+            -250.000028,
+            -179.089915,
+            -89.999954,
+            -0.910151
+          ],
+          "right_arm": [
+            45.070523,
+            -172.263133,
+            -375.584016,
+            -172.924153,
+            -66.418195,
+            -7.816056
+          ],
+          "trunk": [
+            -100.002213,
+            0.0,
+            1000.000298,
+            0.0,
+            -4.5e-05,
+            -0.001044
+          ],
+          "head": [
+            -70.09605106170767,
+            42.99933920791458,
+            1305.0167815574855,
+            1.4699763604762033e-07,
+            32.79461588119978,
+            -0.001261920375735521
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "arm_elbow_deg": {
+          "left_arm": -89.999952,
+          "right_arm": 84.061619
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            -1,
+            1,
+            -1,
+            0,
+            0,
+            -1,
+            0,
+            1
+          ],
+          "right_arm": [
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0
+          ]
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-21T13:28:02.110802+00:00"
+      }
+    },
+    {
+      "id": "93895d43c4754d03bd4981a4cd654bcc",
+      "name": "盒子扫码",
+      "revision": 1,
+      "created_at": "2026-09-21T13:34:10.446414+00:00",
+      "updated_at": "2026-09-21T13:34:10.446414+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            -26.6166,
+            73.221806,
+            -60.016512,
+            102.371883,
+            -29.810042,
+            -25.732109,
+            -53.881966
+          ],
+          "right_arm": [
+            14.802418,
+            88.5317,
+            56.003879,
+            39.313586,
+            78.760561,
+            -26.21066,
+            43.718555
+          ],
+          "trunk": [
+            -40.197068,
+            -42.066469,
+            -7.736282,
+            -0.00109
+          ],
+          "head": [
+            -0.000272,
+            -32.800226
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            359.999913,
+            29.999928,
+            -170.000027,
+            -24.662995,
+            -89.999979,
+            114.662988
+          ],
+          "right_arm": [
+            330.000445,
+            -9.999825,
+            -499.999624,
+            -89.999952,
+            -5.4e-05,
+            -30.000004
+          ],
+          "trunk": [
+            -200.00584,
+            0.0,
+            1000.000666,
+            -0.0,
+            9.1e-05,
+            -0.00109
+          ],
+          "head": [
+            -170.0984406206925,
+            42.999286846318505,
+            1305.009839138386,
+            1.5095434172235487e-07,
+            32.79488788119991,
+            -0.001361918232204094
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "arm_elbow_deg": {
+          "left_arm": -59.999993,
+          "right_arm": 55.999997
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            -1,
+            0,
+            -1,
+            1,
+            -1,
+            -1,
+            -1,
+            1
+          ],
+          "right_arm": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            1
+          ]
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-21T13:34:10.445086+00:00"
+      }
+    },
+    {
+      "id": "740d21db99a44ba094c5abc13d8e46cf",
+      "name": "L2盒子预放置",
+      "revision": 2,
+      "created_at": "2026-09-22T03:47:44.014335+00:00",
+      "updated_at": "2026-09-22T04:05:12.222755+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            -15.053925,
+            84.543514,
+            -50.014229,
+            72.948711,
+            -0.922989,
+            24.483939,
+            40.028371
+          ],
+          "right_arm": [
+            -56.469772,
+            83.342262,
+            84.06097,
+            116.189154,
+            5.349957,
+            7.94924,
+            -8.47955
+          ],
+          "trunk": [
+            -36.27849,
+            -36.41827,
+            -17.282856,
+            -0.001135
+          ],
+          "head": [
+            0.009409,
+            -32.822471
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            400.000286,
+            40.00035,
+            -339.99982,
+            -0.000354,
+            -69.999969,
+            -179.999648
+          ],
+          "right_arm": [
+            45.070735,
+            -172.262826,
+            -375.583808,
+            -172.923893,
+            -66.418295,
+            -7.816223
+          ],
+          "trunk": [
+            -99.759022,
+            0.0,
+            999.998762,
+            -0.0,
+            0.020475,
+            -0.001135
+          ],
+          "head": [
+            -69.751913511882,
+            43.00433180789696,
+            1305.0047588145205,
+            2.5548458504231643e-06,
+            32.83733588104338,
+            0.008275385101614968
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "arm_elbow_deg": {
+          "left_arm": -50.005988,
+          "right_arm": 84.061578
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            -1,
+            0,
+            -1,
+            0,
+            -1,
+            0,
+            0,
+            0
+          ],
+          "right_arm": [
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0
+          ]
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-22T04:05:12.220182+00:00"
+      }
+    },
+    {
+      "id": "24659e88da9e45c5912193c8da478d19",
+      "name": "L2盒子放置点",
+      "revision": 1,
+      "created_at": "2026-09-22T04:07:13.711014+00:00",
+      "updated_at": "2026-09-22T04:07:13.711014+00:00",
+      "mode": "hardware",
+      "state": {
+        "joints_deg": {
+          "left_arm": [
+            -19.960098,
+            92.014412,
+            -50.010287,
+            39.516257,
+            2.747777,
+            49.325537,
+            42.160831
+          ],
+          "right_arm": [
+            -56.469784,
+            83.342262,
+            84.060983,
+            116.189154,
+            5.349957,
+            7.949185,
+            -8.47955
+          ],
+          "trunk": [
+            -30.050286,
+            -34.635262,
+            -25.294295,
+            -0.001135
+          ],
+          "head": [
+            0.009463,
+            -32.822797
+          ]
+        },
+        "poses": {
+          "left_arm": [
+            399.999497,
+            39.999861,
+            -440.000355,
+            -4.6e-05,
+            -70.000036,
+            -179.999992
+          ],
+          "right_arm": [
+            45.070729,
+            -172.262766,
+            -375.583824,
+            -172.9239,
+            -66.418284,
+            -7.816205
+          ],
+          "trunk": [
+            0.004657,
+            0.0,
+            999.998052,
+            -0.0,
+            0.020248,
+            -0.001135
+          ],
+          "head": [
+            30.013505993033505,
+            43.00436007635906,
+            1305.010316501833,
+            2.5322533912694466e-06,
+            32.837434881043755,
+            0.008329372861075856
+          ]
+        },
+        "pose_frames": {
+          "left_arm": "left_arm_sdk_world",
+          "right_arm": "right_arm_sdk_world",
+          "trunk": "trunk_controller_ref",
+          "head": "chassis_link"
+        },
+        "toolsets": {
+          "left_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              -0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "right_arm": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0775,
+              -0.1429,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "trunk": {
+            "end": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "ref": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0,
+              0.0
+            ]
+          }
+        },
+        "arm_elbow_deg": {
+          "left_arm": -50.005974,
+          "right_arm": 84.061578
+        },
+        "dragging": {
+          "left_arm": false,
+          "right_arm": false
+        },
+        "operation_state": {
+          "left_arm": "idle",
+          "right_arm": "idle",
+          "trunk": "idle"
+        },
+        "arm_conf_data": {
+          "left_arm": [
+            -1,
+            1,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "right_arm": [
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0
+          ]
+        },
+        "head_pose_source": "URDF FK: chassis_link -> Head_link",
+        "units": {
+          "joints": "deg",
+          "pose": "mm/deg",
+          "rotation": "RPY (Rz Ry Rx)"
+        },
+        "captured_at": "2026-09-22T04:07:13.709635+00:00"
+      }
+    }
+  ],
+  "box_placement_source": {
+    "recorded_at": "2026-09-22T12:31:42.519668",
+    "names": [
+      "L2盒子预放置",
+      "L2盒子放置点"
+    ]
+  }
+}

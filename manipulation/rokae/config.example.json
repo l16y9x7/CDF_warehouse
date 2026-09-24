@@ -1,0 +1,140 @@
+{
+  "web": {
+    "host": "0.0.0.0",
+    "port": 8091,
+    "display_host": "192.168.130.105"
+  },
+  "xcore": {
+    "sdk_root": "/home/admin/mui/xCoreSDK-Python-AR-v0.7.1.ar_4",
+    "local_ip": "192.168.71.51",
+    "left_arm_ip": "192.168.71.161",
+    "right_arm_ip": "192.168.71.160",
+    "trunk_ip": "192.168.71.162"
+  },
+  "motion": {
+    "default_speed_mm_s": 50.0,
+    "min_speed_mm_s": 5.0,
+    "max_speed_mm_s": 1000.0,
+    "max_joint_step_deg": {
+      "left_arm": null,
+      "right_arm": null,
+      "trunk": null,
+      "head": null
+    }
+  },
+  "chassis": {
+    "available": true,
+    "remote_control_service": "/sr_amr_control/remote_control_enabled",
+    "release_emergency_stop_service": "/sr_amr_control/release_emergency_stop",
+    "cmd_vel_topic": "/sr_amr_control/remote_control_cmd_vel",
+    "lease_seconds": 0.6,
+    "default_linear_m_s": 0.15,
+    "default_angular_rad_s": 0.3,
+    "max_linear_m_s": 0.5,
+    "max_angular_rad_s": 0.8
+  },
+  "camera": {
+    "data_directory": "/home/admin/mui/rokae_web_control/data",
+    "rgb_width": 1280,
+    "rgb_height": 720,
+    "capture_fps": 15,
+    "display_fps": 15,
+    "preview_width": 1280,
+    "preview_height": 720,
+    "jpeg_quality": 80,
+    "max_depth_mm": 10000
+  },
+  "ros_camera": {
+    "setup_file": "/home/admin/vision/config/ros/setup.bash",
+    "domain_id": null,
+    "stale_seconds": 2.0,
+    "capture_timeout_seconds": 3.0,
+    "cameras": {
+      "head": {
+        "enabled": true,
+        "model": "Orbbec Gemini 335L (ROS2)",
+        "serial_number": "CP26363000CH",
+        "width": 1280,
+        "height": 720,
+        "fps": 15,
+        "topics": {
+          "color": "/camera/head/synced/color/image_raw",
+          "depth": "/camera/head/synced/depth/image_raw",
+          "info": "/camera/head/synced/color/camera_info"
+        }
+      },
+      "left_wrist": {
+        "enabled": true,
+        "model": "RealSense D405 (RGB only)",
+        "serial_number": "262622270751",
+        "width": 1280,
+        "height": 720,
+        "fps": 15,
+        "color_only": true,
+        "topics": {
+          "color": "/camera/left_wrist/color/image_raw"
+        }
+      }
+    },
+    "left_wrist_rgb_directory": "/home/admin/mui/rokae_web_control/left_wrist_rgb"
+  },
+  "realsense": {
+    "serial_numbers": {
+      "left_wrist": "261822073502",
+      "right_wrist": "261722071442"
+    },
+    "rgb_width": 1280,
+    "rgb_height": 720,
+    "depth_width": 640,
+    "depth_height": 480,
+    "capture_fps": 15,
+    "display_fps": 15,
+    "preview_width": 1280,
+    "preview_height": 720,
+    "jpeg_quality": 80
+  },
+  "pose_estimation": {
+    "service_base_url": "http://192.168.130.136:18082",
+    "health_timeout_seconds": 5.0,
+    "request_timeout_seconds": 240.0,
+    "fresh_frame_timeout_seconds": 3.0,
+    "calibration_file": "/home/admin/mui/rokae_web_control/calibration/head_camera_handeye_20260914.json",
+    "urdf_file": "/home/admin/mui/1.5整机urdf-0.8AR5-20260520.zip",
+    "class_name": "Avene",
+    "z_ref_mm": 1200.0,
+    "body_radius_mm": 28.5,
+    "fit_mode": "cylinder_3d",
+    "front_rule": {
+      "front_axis_chassis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "front_origin_chassis": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "front_band_mm": 100000.0
+    },
+    "stationary_tolerance_deg": 0.1,
+    "jpeg_quality": 95,
+    "axis_overlay_length_mm": 120.0,
+    "front_axis_source": "trunk_sdk_x",
+    "grasp_height_trunk_mm_by_sku": {}
+  },
+  "logging": {
+    "directory": "/home/admin/mui/rokae_web_control/logs",
+    "state_sample_interval_seconds": 0.25,
+    "state_sample_max_seconds": 180.0
+  },
+  "telemetry": {
+    "poll_interval_seconds": 1.0,
+    "stale_after_seconds": 3.0
+  },
+  "hardware_service": {
+    "socket_path": "/home/admin/mui/rokae_web_control/.run/sdk.sock",
+    "host": "0.0.0.0",
+    "port": 8092
+  }
+}

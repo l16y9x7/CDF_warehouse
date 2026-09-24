@@ -1,0 +1,18 @@
+[Unit]
+Description=MUI right wrist RGB only 1280x720 at 15fps
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/admin/termitech-zhongmian/vision
+EnvironmentFile=/home/admin/termitech-zhongmian/vision/config/ros/ros.env
+Environment=PYTHONNOUSERSITE=1
+ExecStart=/bin/bash -c 'source /home/admin/termitech-zhongmian/vision/config/ros/setup.bash && export PYTHONPATH=/home/admin/termitech-zhongmian/vision:$PYTHONPATH && exec /home/admin/miniconda3/envs/nav/bin/python /home/admin/mui/rokae_web_control/camera_right_rgb.py --config /home/admin/termitech-zhongmian/vision/config/vision.json'
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGINT
+TimeoutStopSec=20
+
+[Install]
+WantedBy=default.target

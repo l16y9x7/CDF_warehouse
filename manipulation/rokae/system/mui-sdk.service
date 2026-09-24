@@ -1,0 +1,18 @@
+[Unit]
+Description=MUI persistent SDK owner and independent read-only upper-body API
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/admin/mui/rokae_web_control
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=LD_LIBRARY_PATH=/home/admin/mui/xCoreSDK-Python-AR-v0.7.1.ar_4/rokae_xcore
+ExecStart=/usr/bin/python3 /home/admin/mui/rokae_web_control/hardware_service.py --config /home/admin/mui/rokae_web_control/config.json
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+KillMode=control-group
+
+[Install]
+WantedBy=default.target

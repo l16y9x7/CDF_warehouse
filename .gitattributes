@@ -1,0 +1,3 @@
+# The imported AGX snapshot contains both LF and CRLF files. Preserve exact
+# bytes so a Git checkout continues to pass the initial SHA-256 verification.
+* -text

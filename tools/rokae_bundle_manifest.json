@@ -1,0 +1,1086 @@
+{
+  "schema_version": 1,
+  "source_project": "/home/admin/mui/rokae_web_control",
+  "captured_at": "20260924-110235",
+  "entries": [
+    {
+      "source": "agent/rokae/AGENT_API.md",
+      "destination": "AGENT_API.md",
+      "imported_sha256": "69802d1e81db7b257ff1af256604802a61d394309b18b069d7bfcc968342e2ff",
+      "mode": "0o644"
+    },
+    {
+      "source": "agent/rokae/MANIPULATOR_STATE_API.md",
+      "destination": "MANIPULATOR_STATE_API.md",
+      "imported_sha256": "0c3d5e9834054f64588128e7f4b634703e8e4e80069dd4c0ac0ddcafdfd4a147",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/README.md",
+      "destination": "README.md",
+      "imported_sha256": "776b4fbee9fa72608815bb8f650ba36add1873750c67187b715db059cc395c6a",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/SERVICE_LIFECYCLE.md",
+      "destination": "SERVICE_LIFECYCLE.md",
+      "imported_sha256": "963bd14550aa2b32d0785eb4fc1c779b8cd997f94cd36c1ba75fe2bcf568f7d4",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/TORSO_GUARD.md",
+      "destination": "TORSO_GUARD.md",
+      "imported_sha256": "7156eb86f2878be27171db7e49bb847a83869487a73c24e1849b1c15de328bd6",
+      "mode": "0o644"
+    },
+    {
+      "source": "agent/rokae/UPPER_BODY_API.md",
+      "destination": "UPPER_BODY_API.md",
+      "imported_sha256": "76657f777aa2918f7aab41d6a1e1143a503324558247c5ae9ba0a57036ba1336",
+      "mode": "0o664"
+    },
+    {
+      "source": "camera/rokae/camera_right_rgb.py",
+      "destination": "camera_right_rgb.py",
+      "imported_sha256": "27859369ae9b4d768f3b6a3d8e1098fe6133584ab9e654111bc5cee9a530a1aa",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/config.example.json",
+      "destination": "config.example.json",
+      "imported_sha256": "4f904483aa302cba71cf805856bf4e8270e336b1d6df33792107369272ea7502",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/configure_remote_no_timeout.sh",
+      "destination": "configure_remote_no_timeout.sh",
+      "imported_sha256": "dc85298d32cdb066a2b86c58dfa36d453003cfc33857fbd82a66a480e465539c",
+      "mode": "0o755"
+    },
+    {
+      "source": "manipulation/rokae/control_runtime.py",
+      "destination": "control_runtime.py",
+      "imported_sha256": "8f9f8dcd34e280b883fff05f78876a01b99f18804f33df0ad55ab5dce28d2666",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/hardware_service.py",
+      "destination": "hardware_service.py",
+      "imported_sha256": "46fe1f4007acab0ca23f75df75c88fb9a422b6c6d24cc146e60f5b32d7ad6fdb",
+      "mode": "0o644"
+    },
+    {
+      "source": "pose/rokae/poses/action_poses.json",
+      "destination": "poses/action_poses.json",
+      "imported_sha256": "f525caf2ca4a722225acf378d09ce0ae4e88bc17867b0ea92c0d69793acd1084",
+      "mode": "0o644"
+    },
+    {
+      "source": "pose/rokae/poses/barcode_trunk.json",
+      "destination": "poses/barcode_trunk.json",
+      "imported_sha256": "66e7b7e56ef32577233885f415040e9ab37d918f62b45f2d6588dec7fdb27bf7",
+      "mode": "0o644"
+    },
+    {
+      "source": "pose/rokae/poses/box_grasp.json",
+      "destination": "poses/box_grasp.json",
+      "imported_sha256": "d2b477459dd9cc74f8673d437164327bae887e8b13faac4e7f32e7ebdc4e01b0",
+      "mode": "0o644"
+    },
+    {
+      "source": "pose/rokae/poses/tube_grasp.json",
+      "destination": "poses/tube_grasp.json",
+      "imported_sha256": "f30af7839658408a6785bc7343f6bebe2a09e265faa9bd1d2602b30b4ecb9b35",
+      "mode": "0o664"
+    },
+    {
+      "source": "pose/rokae/poses/tube_scan.json",
+      "destination": "poses/tube_scan.json",
+      "imported_sha256": "395533ce2b84e5360a9a47ca20d9a34728af0a042c803af0988de523b51b0985",
+      "mode": "0o664"
+    },
+    {
+      "source": "pose/rokae/poses/tube_scan_turn.json",
+      "destination": "poses/tube_scan_turn.json",
+      "imported_sha256": "80eb7cec307a7e9e277d3e98721f8be3e380a4e9b634055e7474c6383c790a5f",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/recover_trunk_j2.sh",
+      "destination": "recover_trunk_j2.sh",
+      "imported_sha256": "7b1713253a7a3041477f322ff943bf8c3f0368b6333a05cee124dfe761a8dddb",
+      "mode": "0o750"
+    },
+    {
+      "source": "agent/rokae/rokae_robot_state/__init__.py",
+      "destination": "rokae_robot_state/__init__.py",
+      "imported_sha256": "4020f38e834d06e5ff04cfc0b64c0d0e2e549e415285dce849f9f4127abb7022",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/__init__.py",
+      "destination": "rokae_web/__init__.py",
+      "imported_sha256": "cc7972e14a5e08766b55988d263fc2a81f31252b42c132f4e2dd18022a7c8336",
+      "mode": "0o664"
+    },
+    {
+      "source": "pose/rokae/rokae_web/action_poses.py",
+      "destination": "rokae_web/action_poses.py",
+      "imported_sha256": "2d05da47b5533f0a125f761f0aad97bc08a39330379c2a71c3aba6f62c677b76",
+      "mode": "0o644"
+    },
+    {
+      "source": "agent/rokae/rokae_web/agent_actions.py",
+      "destination": "rokae_web/agent_actions.py",
+      "imported_sha256": "d87060e220cf59c8af5fb237f6568b7b2f10138e560b1b9a89b0b40428cf423f",
+      "mode": "0o644"
+    },
+    {
+      "source": "agent/rokae/rokae_web/agent_geometry.py",
+      "destination": "rokae_web/agent_geometry.py",
+      "imported_sha256": "cc7c88b7d5a67222be4acf43b7ba525b664dbdf4bf958d782922905be1c90957",
+      "mode": "0o644"
+    },
+    {
+      "source": "agent/rokae/rokae_web/agent_http.py",
+      "destination": "rokae_web/agent_http.py",
+      "imported_sha256": "356e7a02635111ec8c960d1985ac0a218a431ee9f26757fa268ecec838e39eff",
+      "mode": "0o644"
+    },
+    {
+      "source": "agent/rokae/rokae_web/agent_planning.py",
+      "destination": "rokae_web/agent_planning.py",
+      "imported_sha256": "71815fe9bac24379e875c60ed8d46e9db47824e4c1d9158dcbe15e71b31383ae",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/arm_movel.py",
+      "destination": "rokae_web/arm_movel.py",
+      "imported_sha256": "5cf1d568ece8259a1c9734587108f3f70d7f32ed8353833bfde89a48d530f5e6",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/audit.py",
+      "destination": "rokae_web/audit.py",
+      "imported_sha256": "dbe6312f08b3f8d4ae90e3a4c662c75d7d418245066a3d38f1ecd816f11ca7cb",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/backends.py",
+      "destination": "rokae_web/backends.py",
+      "imported_sha256": "766002b826f9db1ed586b84b1588fd161627789c138841864c3d7eb8eb5c8133",
+      "mode": "0o664"
+    },
+    {
+      "source": "pose/rokae/rokae_web/barcode_pose.py",
+      "destination": "rokae_web/barcode_pose.py",
+      "imported_sha256": "d9a970157ecdbc36653c7f45035a99c285600046d28d9b0dfe3bbe3b6195fa95",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/battery.py",
+      "destination": "rokae_web/battery.py",
+      "imported_sha256": "31667899b77cd061cccaad89799b8b9626f6f84b708afdc26c393bc652d2e571",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/box_clearance.py",
+      "destination": "rokae_web/box_clearance.py",
+      "imported_sha256": "a6a26a495110644a7c64dd13cf1fe17779117eeaaea278ef775a2aded9073595",
+      "mode": "0o664"
+    },
+    {
+      "source": "camera/rokae/rokae_web/camera.py",
+      "destination": "rokae_web/camera.py",
+      "imported_sha256": "00a820ec681d8001dbf4ceabbfa3b6a087fc73e65128d7f952d835b90c033f02",
+      "mode": "0o664"
+    },
+    {
+      "source": "camera/rokae/rokae_web/camera_manager.py",
+      "destination": "rokae_web/camera_manager.py",
+      "imported_sha256": "f3327c6fffe88cb875e2c4cae35ccf5fa3c5d912a51f021ba03a07d4dd8c9251",
+      "mode": "0o664"
+    },
+    {
+      "source": "camera/rokae/rokae_web/camera_restart.py",
+      "destination": "rokae_web/camera_restart.py",
+      "imported_sha256": "000085a9a8d3c13dfd3ddcc34eb673176993c3658a72b77d8ba37c1ece969402",
+      "mode": "0o664"
+    },
+    {
+      "source": "camera/rokae/rokae_web/capture_preview.py",
+      "destination": "rokae_web/capture_preview.py",
+      "imported_sha256": "b498593170a68426ec44209ac0a787926515a6a48a49569b12f2cd9e39f1cdf4",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/config.py",
+      "destination": "rokae_web/config.py",
+      "imported_sha256": "fe6f066d2a93c571fe86572603caab576db4c706598bc0619513a265a7da9293",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/control_proxy.py",
+      "destination": "rokae_web/control_proxy.py",
+      "imported_sha256": "bce9797b9f5b0a13d8205d315073fec1e539038396d038cff86fa44055dfef71",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/control_trace.py",
+      "destination": "rokae_web/control_trace.py",
+      "imported_sha256": "5da8f49c37932e553f88033832634d374f1722597e3008927e7088ae6556860b",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/grasp_compensation.py",
+      "destination": "rokae_web/grasp_compensation.py",
+      "imported_sha256": "5274f7f4e69ab37f2e4ecbbea579dc73feb5242e796a0d00105a728b196a009a",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/grasp_gripper.py",
+      "destination": "rokae_web/grasp_gripper.py",
+      "imported_sha256": "0213b53613a03e95f6865c66a45b90365971b94329cc03f4b1c283380f48bd01",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/grasp_pose.py",
+      "destination": "rokae_web/grasp_pose.py",
+      "imported_sha256": "7355f657cf40afd154441856667d2979f2eaec94a1decadf1d5787c50bd3e874",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/grasp_test.py",
+      "destination": "rokae_web/grasp_test.py",
+      "imported_sha256": "fb480d2e83e2405c689555c0e45ee0b2a021473b644e2b4530047ff7ff24c4d2",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/gripper.py",
+      "destination": "rokae_web/gripper.py",
+      "imported_sha256": "140acd961b6e7a7cc6b73ba6783524286bfc5723bc8273521e369a51c1e993a6",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/hardware_owner.py",
+      "destination": "rokae_web/hardware_owner.py",
+      "imported_sha256": "d6266b4eb0578ce636bc56bce764019ff8074f26c79e3cd1d76ba9bfe7cda654",
+      "mode": "0o644"
+    },
+    {
+      "source": "pose/rokae/rokae_web/head_kinematics.py",
+      "destination": "rokae_web/head_kinematics.py",
+      "imported_sha256": "5faeb5614d497181f1c84b89f1f0f04c870a01008eb6d0d71eae9703420684aa",
+      "mode": "0o664"
+    },
+    {
+      "source": "camera/rokae/rokae_web/http_camera.py",
+      "destination": "rokae_web/http_camera.py",
+      "imported_sha256": "0c6810f34cbf95c08be137297a718b2c8dc4f79135e3dfd929be13b2fbabf47b",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/log_analysis.py",
+      "destination": "rokae_web/log_analysis.py",
+      "imported_sha256": "85051c90332ab639a7df9c52f4c63fb4df96d3d5a99faed5892703fda27b686c",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/manipulator_reader.py",
+      "destination": "rokae_web/manipulator_reader.py",
+      "imported_sha256": "7e49229e97f08ab080fbc451902a79c450a70437b194ca720546c3c229cfc992",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/manipulator_telemetry.py",
+      "destination": "rokae_web/manipulator_telemetry.py",
+      "imported_sha256": "be2d0a53fca5cc044207eb83807636130936b68b60044db6ebdb911c2c5c7b4e",
+      "mode": "0o664"
+    },
+    {
+      "source": "pose/rokae/rokae_web/memory_motion.py",
+      "destination": "rokae_web/memory_motion.py",
+      "imported_sha256": "bcc01727fb70243d83753421b3feb55f03db544dceccf7de8de58e8f47e2e7cc",
+      "mode": "0o664"
+    },
+    {
+      "source": "pose/rokae/rokae_web/memory_points.py",
+      "destination": "rokae_web/memory_points.py",
+      "imported_sha256": "aa208b3c1ed8e26b7f772a10e568c34229d2d7bdf1f6044652c684589ca9b035",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/placement_planning.py",
+      "destination": "rokae_web/placement_planning.py",
+      "imported_sha256": "6c3e546e2def2be4755f2a8e7f718ef5a0f2214bd0af2c6ac04b849677b68b45",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/placement_sequence.py",
+      "destination": "rokae_web/placement_sequence.py",
+      "imported_sha256": "f3ae3f3e1ff7ed6448d4106d2363dcc46762cfa84fa44c2a70ea2cdffa98670f",
+      "mode": "0o664"
+    },
+    {
+      "source": "estimation/rokae/rokae_web/pose_estimation.py",
+      "destination": "rokae_web/pose_estimation.py",
+      "imported_sha256": "a549693f9f2d91166d12be622d9a6f2be1d7c630619ae871ed5cad127696dae8",
+      "mode": "0o664"
+    },
+    {
+      "source": "pose/rokae/rokae_web/pose_frames.py",
+      "destination": "rokae_web/pose_frames.py",
+      "imported_sha256": "f5c5b95ccd8e607e9976ab1069dce89f2a3dfbdc7eb7279c314899258cf53457",
+      "mode": "0o664"
+    },
+    {
+      "source": "estimation/rokae/rokae_web/pose_protocol.py",
+      "destination": "rokae_web/pose_protocol.py",
+      "imported_sha256": "fc50f0ff35c5bc7f469808b8537705706976b7b6dfdd9673cf243c4416ffe475",
+      "mode": "0o644"
+    },
+    {
+      "source": "estimation/rokae/rokae_web/pose_targets.py",
+      "destination": "rokae_web/pose_targets.py",
+      "imported_sha256": "205151e87873ea612e1b02cfd6867ac8c3625395dcdae10d4e7014b3d7fa819e",
+      "mode": "0o664"
+    },
+    {
+      "source": "camera/rokae/rokae_web/realsense.py",
+      "destination": "rokae_web/realsense.py",
+      "imported_sha256": "42109c99f1421baace9b6be86c3ea232791e99e544513797caee06c1c7106e92",
+      "mode": "0o664"
+    },
+    {
+      "source": "camera/rokae/rokae_web/rgb_recording.py",
+      "destination": "rokae_web/rgb_recording.py",
+      "imported_sha256": "9102dd1120e6815445d26f62957d9e3973426961a54964f555bcde7be5c5aedc",
+      "mode": "0o664"
+    },
+    {
+      "source": "camera/rokae/rokae_web/ros_camera.py",
+      "destination": "rokae_web/ros_camera.py",
+      "imported_sha256": "45e65428ce7094d8709df7c1445c877cb9afb3ca45cac9808e3b0329c9566f45",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/scan_sequence.py",
+      "destination": "rokae_web/scan_sequence.py",
+      "imported_sha256": "0940dc2471541a214ec5fc64727f5ffd7c12e5c99fc88f608c3beafe9f851b9f",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/sdk_broker.py",
+      "destination": "rokae_web/sdk_broker.py",
+      "imported_sha256": "a32d64f8a7451210fe2f3d7f48eaff77d3025aa2d96e184db4f7db3a1d5ad3f0",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/sdk_wire.py",
+      "destination": "rokae_web/sdk_wire.py",
+      "imported_sha256": "9816a4f5ba48844834774d5034397f3cc322707be372dde52a89afd444773acf",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/service.py",
+      "destination": "rokae_web/service.py",
+      "imported_sha256": "aa62baf41d1ae7307e298a2629f8940435994ae8fe82e73782dce3b2d5e87b7f",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/suction.py",
+      "destination": "rokae_web/suction.py",
+      "imported_sha256": "103d27239ea4a00c9b9b87d69aa666ff1e728926de3c6a59824b254c5aa5adb7",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/synchronized_start.py",
+      "destination": "rokae_web/synchronized_start.py",
+      "imported_sha256": "aeca0e2fcb7f4dca26433985f5c0a2b998a364d3ed0351743c7f09e8090230c3",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/telemetry.py",
+      "destination": "rokae_web/telemetry.py",
+      "imported_sha256": "aa9ba6f040c47ce5b92947adf9c54859244da44ea753c04347bc08ec4e6c01c6",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/telemetry_http.py",
+      "destination": "rokae_web/telemetry_http.py",
+      "imported_sha256": "e821a9cc6c1be1c69a298e5a0bbbdf2e022f1fc3317665125c8f6176e6b60206",
+      "mode": "0o644"
+    },
+    {
+      "source": "pose/rokae/rokae_web/trunk_frame.py",
+      "destination": "rokae_web/trunk_frame.py",
+      "imported_sha256": "c3e7e2fab24b33a4f41e17921b223819f400abb4b12a39a3999c42e90644e11d",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/trunk_retreat.py",
+      "destination": "rokae_web/trunk_retreat.py",
+      "imported_sha256": "3b93ca5eb1d3139d701a04e73087f077e07a8e1948da3e782085897732386069",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/tube_grasp.py",
+      "destination": "rokae_web/tube_grasp.py",
+      "imported_sha256": "055f5498543f412376133eb23452672b09a9aeb682fd41fe6c3eb9e234508358",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/tube_placement.py",
+      "destination": "rokae_web/tube_placement.py",
+      "imported_sha256": "7be4c0c71f877ef8173c246d4f4fecb24c40ad8d5804c8a1075cfc99a0b844fe",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/tube_scan.py",
+      "destination": "rokae_web/tube_scan.py",
+      "imported_sha256": "198b3ea23196b0b19426ad8d906242f8e008fb127ccc358181b53b3a965e8206",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/rokae_web/web.py",
+      "destination": "rokae_web/web.py",
+      "imported_sha256": "90804275b6bbb7b9a81bceacc3a526ddfd993c902ba3c91c033ccb9e000a8083",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/server.py",
+      "destination": "server.py",
+      "imported_sha256": "712e5c974684081509cca63a34fdf2e8b7bc65e7a3d7840701a96093d8cf6196",
+      "mode": "0o664"
+    },
+    {
+      "source": "navigation/rokae/start_chassis_node.sh",
+      "destination": "start_chassis_node.sh",
+      "imported_sha256": "62c085ac07af9c80699245376f565a96cc8b5b2e95fa2f42c9285f3b7663ffbe",
+      "mode": "0o775"
+    },
+    {
+      "source": "manipulation/rokae/start_control_runtime.sh",
+      "destination": "start_control_runtime.sh",
+      "imported_sha256": "db4019e8b422669af25e108a2b2faaf340280ef9759f89fc5ca873577e25c64a",
+      "mode": "0o755"
+    },
+    {
+      "source": "manipulation/rokae/start_hardware.sh",
+      "destination": "start_hardware.sh",
+      "imported_sha256": "55469071edbe1ad3b4493575260bce97624238c8bfb87ca47b5b644f5f6faa31",
+      "mode": "0o755"
+    },
+    {
+      "source": "manipulation/rokae/start_mock.sh",
+      "destination": "start_mock.sh",
+      "imported_sha256": "34cad60d0886ad99f7b5c5d4fa1e706ff7a2ee2937ae05305ce05adba2c96e32",
+      "mode": "0o775"
+    },
+    {
+      "source": "manipulation/rokae/static/app.js",
+      "destination": "static/app.js",
+      "imported_sha256": "e5739013c353f29b8928ae3b7d32972ba57040df65dede2bcb8da180b1d3783e",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/static/index.html",
+      "destination": "static/index.html",
+      "imported_sha256": "7cc3dad6dd902830d3aff1f9085c6ffff92a39f5432ba54ceb5e9371d4a0f9b0",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/static/style.css",
+      "destination": "static/style.css",
+      "imported_sha256": "ac62bc40eafd54274413a01dd80b807d3cbc68bce0b1e599e2859842b7c708d6",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/system/99-rokae-keepalive.conf",
+      "destination": "system/99-rokae-keepalive.conf",
+      "imported_sha256": "37b5339c83b3b120d53335ab615db1141b59d437ced8faf3c42e98450be6c3e2",
+      "mode": "0o664"
+    },
+    {
+      "source": "camera/rokae/system/install_camera_recovery_permission.sh",
+      "destination": "system/install_camera_recovery_permission.sh",
+      "imported_sha256": "b14d59cab2f718fe84abe90e398da4611e0f5ea996c82ed6f2a9793587b89bb0",
+      "mode": "0o764"
+    },
+    {
+      "source": "camera/rokae/system/install_camera_restart_permission.sh",
+      "destination": "system/install_camera_restart_permission.sh",
+      "imported_sha256": "42428127b7b4b6174bd523f59e8b1871be6d874a076c3a484068daced3bde602",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/system/mui-control.service",
+      "destination": "system/mui-control.service",
+      "imported_sha256": "bac997fee0fd36193f5d37c2fb7cca02377ef34e6562194ee559c1efe4fc61b5",
+      "mode": "0o644"
+    },
+    {
+      "source": "camera/rokae/system/mui-right-wrist-rgb.service",
+      "destination": "system/mui-right-wrist-rgb.service",
+      "imported_sha256": "871df64b77e0c49c8d911d6e219b995670d518a63187a54c588c34e4b84c3283",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/system/mui-sdk.service",
+      "destination": "system/mui-sdk.service",
+      "imported_sha256": "507d052146f356b4315619ba7b5f9c8ee691822d4182a15589a69ad0462aed85",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/fixtures/elbow_x220_20260922.json",
+      "destination": "tests/fixtures/elbow_x220_20260922.json",
+      "imported_sha256": "46333fc677f7b6d048da30243940f96b87a2a15039e50fd8fc07b5aaf2ebb7cb",
+      "mode": "0o644"
+    },
+    {
+      "source": "pose/rokae/tests/test_action_calibrations.py",
+      "destination": "tests/test_action_calibrations.py",
+      "imported_sha256": "981b934369d9e5d4d98625e8c139e90f0cfd0b9b617acce9049f31f4d6d32f0f",
+      "mode": "0o644"
+    },
+    {
+      "source": "agent/rokae/tests/test_agent_camera_contract.py",
+      "destination": "tests/test_agent_camera_contract.py",
+      "imported_sha256": "4a8162f8cb73440b636a52d48ac7bb417ba348fc0c01c822b5c2d3016b8daed4",
+      "mode": "0o644"
+    },
+    {
+      "source": "agent/rokae/tests/test_agent_interfaces.py",
+      "destination": "tests/test_agent_interfaces.py",
+      "imported_sha256": "ac5eae94d61e8c2981483e86fa4738eaf3386fada3a8710bd3fa7fbf95090b23",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_ar_backend.py",
+      "destination": "tests/test_ar_backend.py",
+      "imported_sha256": "28859ccaf68077d1336148c22d3a474207b47857e886b101dd1a0fe53b6b1ffc",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_arm_movel.py",
+      "destination": "tests/test_arm_movel.py",
+      "imported_sha256": "4c91d889cedd60750d2d5ec8ef24b46feb3409fb9d0bad919b447d61fb9f499e",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_audit.py",
+      "destination": "tests/test_audit.py",
+      "imported_sha256": "3ceab80dedadbbfc7686b53045e0389ebbf9a73d0a86ef2b3e6d26045c84fb8b",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_battery.py",
+      "destination": "tests/test_battery.py",
+      "imported_sha256": "c5c01a0ef931f7eba118f6ecf5652cfaa8fc91f67c522d9cb2941349b33d9df9",
+      "mode": "0o644"
+    },
+    {
+      "source": "agent/rokae/tests/test_box_agent.py",
+      "destination": "tests/test_box_agent.py",
+      "imported_sha256": "f8e90e804cde72d39d590d2e0e72c926847e562b8917e2c016f967b9ef1c9a24",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_box_clearance.py",
+      "destination": "tests/test_box_clearance.py",
+      "imported_sha256": "6955bc7124a93422224ae860c086f44656d1be7f29d2c0d04b48a449388e9261",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_box_placement.py",
+      "destination": "tests/test_box_placement.py",
+      "imported_sha256": "28f5fa7dd6b3a1b2df0d562108fa0663f4c09c0f9368c31653381b58dd5dd011",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_box_placement_ui.js",
+      "destination": "tests/test_box_placement_ui.js",
+      "imported_sha256": "5edb983d23816284310a5b146cdef57a419787ed80a1562363d82fe65fae83d5",
+      "mode": "0o644"
+    },
+    {
+      "source": "camera/rokae/tests/test_camera.py",
+      "destination": "tests/test_camera.py",
+      "imported_sha256": "ac359a979dd00657c1faaaca3f72b05f0357b2c00e6d25abe29374bb8738aac1",
+      "mode": "0o664"
+    },
+    {
+      "source": "camera/rokae/tests/test_camera_restart.py",
+      "destination": "tests/test_camera_restart.py",
+      "imported_sha256": "b73647b7c800f9af00383c823d6049a7046fefbfac23aad315f5c76f642d0316",
+      "mode": "0o664"
+    },
+    {
+      "source": "camera/rokae/tests/test_camera_ui.js",
+      "destination": "tests/test_camera_ui.js",
+      "imported_sha256": "ae3aeca30ba8106f951c49efd794c357cd8ac15d37e7d738db6310feaa11b5c8",
+      "mode": "0o644"
+    },
+    {
+      "source": "camera/rokae/tests/test_capture_preview.py",
+      "destination": "tests/test_capture_preview.py",
+      "imported_sha256": "596fa849e3bc3b4a1711d25b2b6d41a2b2468caeab0e69dd84adad87507cc5a1",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_chassis_avoidance.py",
+      "destination": "tests/test_chassis_avoidance.py",
+      "imported_sha256": "86509823c0a126ddae0e7b9d42d781fdc961d722d9f99b77eb760d2147df6300",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_chassis_avoidance_ui.js",
+      "destination": "tests/test_chassis_avoidance_ui.js",
+      "imported_sha256": "5bbea6d88c873e974e1dcc5ed02c6bd3f9118a8434625f7cbaccbb45727185d8",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_chassis_status_ui.js",
+      "destination": "tests/test_chassis_status_ui.js",
+      "imported_sha256": "d400dc7e603e0fe2aa9d0348e9a9646c30af121b9f13a5413a973ca753684e85",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_control_proxy.py",
+      "destination": "tests/test_control_proxy.py",
+      "imported_sha256": "30ae2c45c39db53db43a41437a47d8a95519ffc186715fd977c7e2837518202f",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_control_trace.py",
+      "destination": "tests/test_control_trace.py",
+      "imported_sha256": "8bd9884fc984dd8d863f03d21ae5839e06c29b1887cc82778a79ffd94f2cd987",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_elbow_front_plane.py",
+      "destination": "tests/test_elbow_front_plane.py",
+      "imported_sha256": "e95f9088c93a5b0fc7e62f3a42b4a379c848858452c1b2928a374fe306dcef4a",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_elbow_front_plane_ui.js",
+      "destination": "tests/test_elbow_front_plane_ui.js",
+      "imported_sha256": "0f1452228b0ca2c86ec20e681873d37d4a46d66c732d8c699a6a6218a0178dfa",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_grasp_compensation.py",
+      "destination": "tests/test_grasp_compensation.py",
+      "imported_sha256": "7cf223db3b7f8bb8b20986fb63d171a5527943f33cc573a5de71141cf40d34d5",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_grasp_open.py",
+      "destination": "tests/test_grasp_open.py",
+      "imported_sha256": "e5e8d5b35a128d30e1499d7374942018a52b3db5acb6c7325d867d856b81b7bd",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_grasp_pose.py",
+      "destination": "tests/test_grasp_pose.py",
+      "imported_sha256": "7e23b515d151eb5cbf00c5de86cf837b0d357d586e3d0cac912ebe2e77d7f9a5",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_grasp_test.py",
+      "destination": "tests/test_grasp_test.py",
+      "imported_sha256": "86e4d1c8c41802b8f1f18620955e8dfae52f26f2cfdc8040641ea801ac688191",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_gripper.py",
+      "destination": "tests/test_gripper.py",
+      "imported_sha256": "dd23724995ae6e4cfd3710b3692478689ff1b3925b1f06c05631f1ed2d66992d",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_gripper_controls_ui.js",
+      "destination": "tests/test_gripper_controls_ui.js",
+      "imported_sha256": "1d741a646ac2570e632b597b93cd56a49ba544b915b322b71c2a58b8199e2037",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_left_box_grasp.py",
+      "destination": "tests/test_left_box_grasp.py",
+      "imported_sha256": "678fd0a2081e85dafa641d275d4704d7b4cd1498ee49f1bffc103e5caa9c47e3",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_left_box_ui.js",
+      "destination": "tests/test_left_box_ui.js",
+      "imported_sha256": "fa9ad5280526bb9963a903979eadd8b38fe9d71ed655c6bc893a88051d43c304",
+      "mode": "0o644"
+    },
+    {
+      "source": "camera/rokae/tests/test_left_wrist_rgb.py",
+      "destination": "tests/test_left_wrist_rgb.py",
+      "imported_sha256": "f2a7c70c6470ad0ed1aa649284bee8d6b7c8e67f0786f53dd1563cbf5096f459",
+      "mode": "0o644"
+    },
+    {
+      "source": "camera/rokae/tests/test_left_wrist_ui.js",
+      "destination": "tests/test_left_wrist_ui.js",
+      "imported_sha256": "3183d2d62ae0e462c1fc63587f8847647232be6cb997f875f71ab518100e30fc",
+      "mode": "0o644"
+    },
+    {
+      "source": "agent/rokae/tests/test_manipulator_state.py",
+      "destination": "tests/test_manipulator_state.py",
+      "imported_sha256": "0d617845f85cd8214b10079b8aabf739bdd270e0276354dbc8b456b8797150d1",
+      "mode": "0o664"
+    },
+    {
+      "source": "pose/rokae/tests/test_memory_motion.py",
+      "destination": "tests/test_memory_motion.py",
+      "imported_sha256": "28777086fc0bb2192abe4adcb82c9554233a32add33cd30849e3fa4d60bb8330",
+      "mode": "0o644"
+    },
+    {
+      "source": "pose/rokae/tests/test_memory_points.py",
+      "destination": "tests/test_memory_points.py",
+      "imported_sha256": "73a8dab55223d8ceb671212aeeeb8b9b8565cb272a6352d14c67221e940a6a75",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_placement_preflight.py",
+      "destination": "tests/test_placement_preflight.py",
+      "imported_sha256": "181f8013710a5d3acc6f6774de48b5f56b4faf965baeb7184d5d7f65d208751a",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_placement_sequence.py",
+      "destination": "tests/test_placement_sequence.py",
+      "imported_sha256": "a9f7933ef2872fd2ecc6904a39466e06160cac9b431352209164ba09e5a6fee0",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_placement_ui.js",
+      "destination": "tests/test_placement_ui.js",
+      "imported_sha256": "644aa115092df1a81631ffd11b7cff0ecf3ee81701c399fcd16a7a4a0e530c3d",
+      "mode": "0o664"
+    },
+    {
+      "source": "estimation/rokae/tests/test_pose_estimation.py",
+      "destination": "tests/test_pose_estimation.py",
+      "imported_sha256": "93be9f28c181f56e342433736333e1c65fcfa0408983747de988a3bdedfe6e77",
+      "mode": "0o664"
+    },
+    {
+      "source": "pose/rokae/tests/test_pose_frames.py",
+      "destination": "tests/test_pose_frames.py",
+      "imported_sha256": "1afc69919e31af0f9dac6935ec696494c46787e1de788bf4180ec770f4109d08",
+      "mode": "0o664"
+    },
+    {
+      "source": "estimation/rokae/tests/test_pose_protocol.py",
+      "destination": "tests/test_pose_protocol.py",
+      "imported_sha256": "cb8e24393aae382c4e1d7157f0a04568ad6128fb992fdeb35fba84f1628f0ed2",
+      "mode": "0o644"
+    },
+    {
+      "source": "estimation/rokae/tests/test_pose_quality_passthrough.py",
+      "destination": "tests/test_pose_quality_passthrough.py",
+      "imported_sha256": "c2befd063867308d26a3ba6f75dc3e1434f107801b3513c3b62f93f25aa29feb",
+      "mode": "0o664"
+    },
+    {
+      "source": "estimation/rokae/tests/test_pose_targets.py",
+      "destination": "tests/test_pose_targets.py",
+      "imported_sha256": "f0e0aa6533bca34f1b2f4fd9e0120aea9b5316ca05af6ffd5d3a190c09ecdc99",
+      "mode": "0o664"
+    },
+    {
+      "source": "estimation/rokae/tests/test_pose_targets_ui.js",
+      "destination": "tests/test_pose_targets_ui.js",
+      "imported_sha256": "9be4b0ac12086c590334083dc6ae7cc4cea3e3e6c1075cd41db50e0ac92c3169",
+      "mode": "0o664"
+    },
+    {
+      "source": "camera/rokae/tests/test_ros_camera.py",
+      "destination": "tests/test_ros_camera.py",
+      "imported_sha256": "5cacf58e0a721f0831601d0a8f01842208f96662e812a4c0d3b2a3efa9350454",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_scan_sequence.py",
+      "destination": "tests/test_scan_sequence.py",
+      "imported_sha256": "9a2d986f0f56962ac2795da23c93cfa0bfbf38e5a9ff532ce586446eeaf5d1a9",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_scan_ui.js",
+      "destination": "tests/test_scan_ui.js",
+      "imported_sha256": "8329707a026808670c554adbcfbe9711c1aecab423d99909a54f2603ab7cb25f",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_sdk_broker.py",
+      "destination": "tests/test_sdk_broker.py",
+      "imported_sha256": "8afd1d04f32d08a535e221f1a45e37e945e83a4de2c641051e59e89662fadf87",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_service.py",
+      "destination": "tests/test_service.py",
+      "imported_sha256": "8991be678d7c024f4c26be8d506192182b4dcca4b7bf4654b05bae0f13030872",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_startup_lifecycle.py",
+      "destination": "tests/test_startup_lifecycle.py",
+      "imported_sha256": "041a230067ab1fe63f02f60d3f91b7251f01c8f90ccf026b69137f80daa01adc",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_suction.py",
+      "destination": "tests/test_suction.py",
+      "imported_sha256": "71b9ccaff914ed907401ae7060dadad363e384798f24100fe168f2741ada85c2",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_suction_ui.js",
+      "destination": "tests/test_suction_ui.js",
+      "imported_sha256": "b4c22c0162dca558829b5a150d3b98d33984816badcb4730a65998f83af9f5b4",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_synchronized_start.py",
+      "destination": "tests/test_synchronized_start.py",
+      "imported_sha256": "5bcd45e3993a6b6c43b8de6bd433425f65e74d3ea1476fde24c9205af6a2084b",
+      "mode": "0o644"
+    },
+    {
+      "source": "pose/rokae/tests/test_trunk_frame.py",
+      "destination": "tests/test_trunk_frame.py",
+      "imported_sha256": "bf8350a784d322d69b9eab5448f8d61251bcab23c57dc3c6d67df1e1e3a64b28",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_trunk_retreat.py",
+      "destination": "tests/test_trunk_retreat.py",
+      "imported_sha256": "3cc67d2f486b9ffe25ff986266f8d7a5acc29d3b77f5ade8ab9f310ccda7e67d",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_tube_actions_ui.js",
+      "destination": "tests/test_tube_actions_ui.js",
+      "imported_sha256": "d94af5c9f88f9b09048b7b56751014c63061f54369c61f71a54cf5c3e6c93a8c",
+      "mode": "0o664"
+    },
+    {
+      "source": "agent/rokae/tests/test_tube_agent.py",
+      "destination": "tests/test_tube_agent.py",
+      "imported_sha256": "5be5417e41a4a670e23d6e0e766fd2c5ccd00136a7d38c7e5b7d71b44affd316",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_tube_grasp.py",
+      "destination": "tests/test_tube_grasp.py",
+      "imported_sha256": "07d44a9da6d422e894f470c125c4233b0400d11e1bd23640f6065b3ae5718472",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_tube_placement.py",
+      "destination": "tests/test_tube_placement.py",
+      "imported_sha256": "d6e8ef3aa256f674eb8c8f4c4b0fe9c63f8f297cd6159367d1859a1921cc4c15",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_tube_scan.py",
+      "destination": "tests/test_tube_scan.py",
+      "imported_sha256": "87f185f072a020d2d45faf4b523c0a613ce5f91e874c1bc2a939478dbdbb422d",
+      "mode": "0o664"
+    },
+    {
+      "source": "agent/rokae/tests/test_upper_body_telemetry.py",
+      "destination": "tests/test_upper_body_telemetry.py",
+      "imported_sha256": "736ad1cfa77fe7074d84ca2ee44d422beb59c2f03b41cdde1678c9cf705a615f",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/tests/test_web_gripper.py",
+      "destination": "tests/test_web_gripper.py",
+      "imported_sha256": "2307fde1cf0f101f282464d5d5af4075e535ffcb3eaa1161ca717f537fde5263",
+      "mode": "0o664"
+    },
+    {
+      "source": "pose/rokae/tests/test_web_memory.py",
+      "destination": "tests/test_web_memory.py",
+      "imported_sha256": "4a00604c7d7d62ea8f51379ad0004cb40635e10dd37c4d6dfdbe3d15c9762d4b",
+      "mode": "0o664"
+    },
+    {
+      "source": "estimation/rokae/tests/test_web_pose.py",
+      "destination": "tests/test_web_pose.py",
+      "imported_sha256": "5f9c13be4e05738ddf795d838b6212765da36f878531176ac332a65a089e21f0",
+      "mode": "0o644"
+    },
+    {
+      "source": "camera/rokae/tools/calibrate_head_handeye.py",
+      "destination": "tools/calibrate_head_handeye.py",
+      "imported_sha256": "9c80e3ea82e9c7fe9d9d3305a4d6c696419075da8f49429b1ee70c2ff2026b26",
+      "mode": "0o775"
+    },
+    {
+      "source": "manipulation/rokae/tools/read_robot_info.py",
+      "destination": "tools/read_robot_info.py",
+      "imported_sha256": "5e78ce5ef910bebd76f0c02368abc6570ebd3b329b5ba76f954512984e8a5769",
+      "mode": "0o664"
+    },
+    {
+      "source": "manipulation/rokae/tools/recover_trunk_j2.py",
+      "destination": "tools/recover_trunk_j2.py",
+      "imported_sha256": "a8ac00ff59f41bad665bd0a64a37111e3f8c3ae4e860f9c2ce2ed9cb67218dc5",
+      "mode": "0o750"
+    },
+    {
+      "source": "estimation/rokae/tools/transform_head_camera_point.py",
+      "destination": "tools/transform_head_camera_point.py",
+      "imported_sha256": "d1022a708267ec6614b20444ad1d4f84fd6377aa7447e73524cea554432d06ac",
+      "mode": "0o775"
+    },
+    {
+      "source": "manipulation/rokae/torso_guard.json",
+      "destination": "torso_guard.json",
+      "imported_sha256": "e0317dd417943bda5771292ae1635a3ac6ecf87fc44ce7165ae4d0911bf58501",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/wait_control_ready.py",
+      "destination": "wait_control_ready.py",
+      "imported_sha256": "bf870d81576201601ec01f5fbc55cf8d7366fbb916d08be4d08e91df039ab82a",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/system/mui-web.service",
+      "destination": "system/mui-web.service",
+      "imported_sha256": "904aa48ffb1d4703345acb7e12ea0dbeeb7c0f18c4aa4178b4b9bbceb828f8ae",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/rokae/system/mui.target",
+      "destination": "system/mui.target",
+      "imported_sha256": "7f9a94784c6627ec462261b929b4a184246d0f5efc8bb06ae0f8a56344f9ba5e",
+      "mode": "0o644"
+    },
+    {
+      "source": "manipulation/arm_motion_control/config.example.json",
+      "destination": "arm_motion_control/config.example.json",
+      "imported_sha256": "be867c2ef4832b3a7b2408bd2aa51126d70a9f4b464a3b5948237c368149f5d6",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/execute_live.py",
+      "destination": "arm_motion_control/execute_live.py",
+      "imported_sha256": "6278b31b62cff482afcc9688378c1762cefab5add62b1a08bf518e9305b1d3c8",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/freeze_target.py",
+      "destination": "arm_motion_control/freeze_target.py",
+      "imported_sha256": "cb872e0741161df9edd6193b41802121f37802de84943b588d9a56a02eda90b4",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/geometry.py",
+      "destination": "arm_motion_control/geometry.py",
+      "imported_sha256": "94a26c50d6b604b8524fa3ea91db0358d8487b0c1ac809904a325d752bad5828",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/localization.py",
+      "destination": "arm_motion_control/localization.py",
+      "imported_sha256": "c9271daa557e4c7e0f3995ce9f9ccbdcba1023ce2a24d76eeb8026fa518fb53b",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/model.py",
+      "destination": "arm_motion_control/model.py",
+      "imported_sha256": "47751fa7122ce8b62d1149f243d7dbc0af4272b6e0245f3559d166f188db2817",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/plan_live.py",
+      "destination": "arm_motion_control/plan_live.py",
+      "imported_sha256": "56d5d49a862629062d3482d5783fb3810f653e2a443e3942cff9f9715d3d7609",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/planner.py",
+      "destination": "arm_motion_control/planner.py",
+      "imported_sha256": "b82404d76324b339248e1a3d85d654b394478470d68d4f6a876571dde2226f64",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/README.md",
+      "destination": "arm_motion_control/README.md",
+      "imported_sha256": "450ba7066ebd3ab5fbaf54e51eb4a536b36caa267f1fbe99f14e057cbb8df2df",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/sdk_readonly.py",
+      "destination": "arm_motion_control/sdk_readonly.py",
+      "imported_sha256": "7e0ce2e8e32c3d0c02aca193731810249b87b4e1d8b8f8a32f927fc8436f7afd",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/test_motion.py",
+      "destination": "arm_motion_control/test_motion.py",
+      "imported_sha256": "080a838bedf148e4d9e300b74a3252427c72f355cd6f582b55601eb31ae34a4b",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/test_torso_guard.py",
+      "destination": "arm_motion_control/test_torso_guard.py",
+      "imported_sha256": "1e9727b4754625f67745bbb1cc85f920a77088e905b51b0fb7e3c2d43f6537c6",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/TORSO_GUARD.md",
+      "destination": "arm_motion_control/TORSO_GUARD.md",
+      "imported_sha256": "530faae93f0dede822aaa5fc2d43cdb14cf64b82ed9e89abee8cbfe3088a1f88",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/torso_guard.py",
+      "destination": "arm_motion_control/torso_guard.py",
+      "imported_sha256": "3a8e3f8de18417b97b16e6a3b8523614f1b82c628601da09af9d56b8f4e4994a",
+      "mode": "0o666"
+    },
+    {
+      "source": "manipulation/arm_motion_control/torso_guard_adapter.py",
+      "destination": "arm_motion_control/torso_guard_adapter.py",
+      "imported_sha256": "253feebd976ae13a49b029d95ad7ad197b406a87c3348c62d14d220828e737f0",
+      "mode": "0o666"
+    }
+  ],
+  "excluded": [
+    {
+      "path": "calibration/avene_grasp_height_20260919.json",
+      "reason": "Deployment-specific configuration or teaching/calibration data; keep on AGX."
+    },
+    {
+      "path": "calibration/head_camera_handeye_20260914.json",
+      "reason": "Deployment-specific configuration or teaching/calibration data; keep on AGX."
+    },
+    {
+      "path": "calibration/right_wrist_camera_handeye_20260903.json",
+      "reason": "Deployment-specific configuration or teaching/calibration data; keep on AGX."
+    },
+    {
+      "path": "config.json",
+      "reason": "Deployment-specific configuration or teaching/calibration data; keep on AGX."
+    },
+    {
+      "path": "memory_points/hardware.json",
+      "reason": "Deployment-specific configuration or teaching/calibration data; keep on AGX."
+    }
+  ],
+  "additional_source_project": "/home/admin/mui/arm_motion_control"
+}

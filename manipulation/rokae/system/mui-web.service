@@ -1,0 +1,18 @@
+[Unit]
+Description=MUI web frontend on port 8091
+Requires=mui-control.service
+After=mui-control.service
+PartOf=mui.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/admin/mui/rokae_web_control
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStartPre=/usr/bin/python3 /home/admin/mui/rokae_web_control/wait_control_ready.py --config /home/admin/mui/rokae_web_control/config.json
+ExecStart=/usr/bin/python3 /home/admin/mui/rokae_web_control/server.py --config /home/admin/mui/rokae_web_control/config.json --hardware
+Restart=on-failure
+RestartSec=3
+TimeoutStartSec=50
+TimeoutStopSec=10
+KillMode=control-group

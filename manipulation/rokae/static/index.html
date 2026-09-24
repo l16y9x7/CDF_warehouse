@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>珞石轮臂机器人控制台</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">ROKAE MOBILE MANIPULATOR</p>
+      <h1>全身控制台 <span>第一阶段</span></h1>
+    </div>
+    <div class="status-strip">
+      <div id="batteryStatus" class="battery-status" role="status" aria-live="polite" aria-atomic="true" title="等待电池数据">
+        <span class="battery-icon" aria-hidden="true"><span id="batteryFill"></span></span>
+        <span><strong id="batteryValue">电量 --</strong><small id="batteryDetail">读取中</small></span>
+      </div>
+      <span id="modeBadge" class="badge warning">载入中</span>
+      <span id="logBadge" class="badge warning">日志状态读取中</span>
+      <span id="armBadge" class="badge">控制已锁定</span>
+      <button id="armButton" class="primary">解锁控制</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="safetyBanner" class="safety-banner">
+      <strong>安全门：</strong>
+      <span id="safetyText">正在读取服务器模式。</span>
+    </section>
+
+    <section class="toolbar panel">
+      <button id="readbackButton" class="primary">回读全部状态</button>
+      <label class="speed-field">
+        <span>平移速度</span>
+        <input id="speedInput" type="number" min="5" max="1000" step="5" value="50">
+        <b>mm/s</b>
+        <small id="speedInputLimit">范围 5–1000 mm/s</small>
+      </label>
+      <label class="speed-field">
+        <span>旋转速度</span>
+        <input id="rotationSpeedInput" type="number" min="0.1" max="200" step="0.1" value="6">
+        <b>°/s</b>
+        <small id="rotationSpeedInputLimit">范围 0.1–200 °/s</small>
+      </label>
+      <button id="saveSpeedButton" disabled>保存速度</button>
+      <span id="readbackTime" class="muted">尚未回读</span>
+      <p class="speed-hint muted">所有 MoveL 使用这两个速度上限；保存后对后续任务生效。MoveJ、关节运动沿用原速度规则。<span id="speedSaveStatus" role="status"></span></p>
+    </section>
+
+    <section id="memorySection" class="panel memory-panel" aria-labelledby="memoryTitle">
+      <div class="module-head">
+        <div><p class="eyebrow">UPPER BODY MEMORY</p><h2 id="memoryTitle">上身记忆点</h2></div>
+        <span id="memoryPhase" class="badge">待命</span>
+      </div>
+      <div class="memory-actions">
+        <label class="memory-select">已有记忆点
+          <select id="memorySelect" disabled><option value="">正在读取记忆点…</option></select>
+        </label>
+        <button id="memoryCreate" disabled>新增记忆点</button>
+        <button id="memoryOverwrite" disabled>覆盖记忆点</button>
+        <button id="memoryDelete" class="danger" disabled>删除记忆点</button>
+        <button id="memoryExecute" class="primary" disabled>执行记忆点</button>
+        <button id="memoryStop" class="danger" disabled>停止执行</button>
+        <button id="memoryRefresh">刷新列表</button>
+      </div>
+      <p class="muted">保存头部、躯干、双臂共 20 轴关节及 6D 位姿。执行顺序：双臂同时运动并到位 → 头部与躯干同时运动。执行时采用上方已保存的速度，MoveL 同时使用平移与旋转上限；执行中修改速度只影响下一次。</p>
+      <p id="memoryStatus" class="memory-status" role="status" aria-live="polite">正在读取记忆点…</p>
+      <dialog id="memoryNameDialog" aria-labelledby="memoryNameTitle">
+        <form id="memoryNameForm" class="memory-name-form">
+          <h3 id="memoryNameTitle">新增记忆点</h3>
+          <label for="memoryNameInput">记忆点名称</label>
+          <input id="memoryNameInput" name="name" maxlength="80" required autocomplete="off" autofocus placeholder="例如：观察位、收纳位">
+          <p class="muted">保存时会重新回读当前上身的全部关节和位姿。</p>
+          <div class="card-actions">
+            <button id="memoryNameCancel" type="button">取消</button>
+            <button id="memoryNameSave" class="primary" type="submit">保存当前状态</button>
+          </div>
+        </form>
+      </dialog>
+    </section>
+
+    <section id="cameraSection">
+      <div class="section-title camera-title">
+        <div>
+          <p class="eyebrow">RGB-D CAMERAS</p>
+          <h2>视觉摄像头</h2>
+          <p class="camera-description">相机由开机服务管理；头部使用同步 RGB-D，左手 D405 仅使用 RGB；按需获取单帧、保存数据或调用 A800 位姿估计。</p>
+        </div>
+      </div>
+      <div class="camera-grid">
+        <article class="panel camera-card">
+          <div class="module-head camera-card-head">
+            <div><p class="eyebrow">CAMERAS</p><h3>摄像头采集</h3></div>
+            <div><span id="cameraBadge-head" class="badge">头部等待 ROS2</span>
+            <span id="cameraBadge-left_wrist" class="badge">左手等待数据</span>
+            <span id="cameraBadge-right_wrist" class="badge">右手等待数据</span></div>
+          </div>
+          <div class="camera-card-actions">
+            <button id="cameraRestartButton-head" data-camera-restart="all" disabled>重启摄像头服务（三路）</button>
+          </div>
+          <p class="camera-info muted">点击后一起重启头部、左腕、右腕摄像头服务；重启期间采集暂时不可用，结果在下方显示。</p>
+          <figure>
+            <div class="camera-frame"><img id="rgbCameraFrame-head" data-camera-image="head" alt="头部 RGB 当前帧" hidden><img id="rgbCameraFrame-left_wrist" data-camera-image="left_wrist" alt="左手 RGB 当前帧" hidden><img id="rgbCameraFrame-right_wrist" data-camera-image="right_wrist" alt="右手 RGB 当前帧" hidden></div>
+            <figcaption id="cameraPreviewCaption">RGB 单帧预览 · 1280 × 720；头部完整记录需要同步 RGB-D，双手仅 RGB</figcaption>
+          </figure>
+          <div class="camera-capture-actions">
+            <button id="cameraFrameButton-head" class="primary" data-camera-frame="head" disabled>获取头部当前帧</button>
+            <button id="cameraFrameButton-left_wrist" class="primary" data-camera-frame="left_wrist" disabled>获取左手当前帧</button>
+            <button id="cameraFrameButton-right_wrist" class="primary" data-camera-frame="right_wrist" disabled>获取右手当前帧</button>
+            <button id="cameraRecordButton-head" data-camera-record="head" disabled>记录头部当前数据</button>
+            <button id="cameraRecordButton-left_wrist" data-camera-rgb-record="left_wrist" disabled>采集左手 RGB 画面</button>
+            <button id="cameraRecordButton-right_wrist" data-camera-rgb-record="right_wrist" disabled>采集右手 RGB 画面</button>
+          </div>
+          <p id="cameraInfo-head" class="camera-info muted" aria-live="polite">等待头部 ROS2 同步 RGB-D 数据</p>
+          <p id="cameraInfo-right_wrist" class="camera-info muted" aria-live="polite">等待右手 RGB 数据 · 1280×720 @15 · 不启用深度</p>
+          <p id="cameraInfo-left_wrist" class="camera-info muted" aria-live="polite">等待左手 RGB 数据 · 1280×720 @15 · 不启用深度</p>
+        </article>
+
+        <article class="panel camera-card pose-estimation-card">
+          <div class="module-head camera-card-head">
+            <div><p class="eyebrow">GRASP OBJECT POSE</p><h3>被抓取物品的位姿估计</h3></div>
+            <span id="poseServiceBadge" class="badge">A800 检查中</span>
+          </div>
+          <p class="pose-estimation-hint">
+            使用头部 RGB、对齐深度和当前上身姿态调用 A800 定位服务。选择物品后点击获取位姿，四类物品均使用头部相机，只识别并保存定位结果，不执行机器人动作。
+          </p>
+          <div class="camera-card-actions">
+            <label for="poseTargetSelect">识别物品</label>
+            <select id="poseTargetSelect">
+              <option value="bottle">白色罐子（bottle）</option>
+              <option value="box">方盒（box）</option>
+              <option value="tube">软管（tube）</option>
+              <option value="basket">篮筐</option>
+            </select>
+            <button id="poseEstimateButton" class="primary">获取位姿</button>
+          </div>
+          <div class="camera-card-actions">
+            <label for="poseTargetSide">商品所在箱（按头部画面左右）</label>
+            <select id="poseTargetSide"><option value="LEFT">左箱</option><option value="RIGHT" selected>右箱</option></select>
+            <span class="muted">罐类和软管固定右箱，方盒固定左箱；软管支持抓取、扫码和放置，篮筐直接定位。</span>
+          </div>
+          <p id="poseEstimateStatus" class="pose-estimation-status muted" aria-live="polite">
+            尚未进行位姿估计
+          </p>
+          <figure id="poseResultFigure" hidden>
+            <div class="camera-frame"><img id="poseResultImage" alt="被抓取物品位姿估计结果图"></div>
+            <figcaption>本次请求的头部相机图像和位姿标注</figcaption>
+          </figure>
+          <div id="poseResultData" class="pose-result-data" hidden>
+            <dl>
+              <div><dt>识别目标及参考点</dt><dd id="poseTargetSemantics">—</dd></div>
+              <div><dt>底盘坐标参考点 XYZ（mm）</dt><dd id="poseLocationChassis">—</dd></div>
+              <div id="poseLocationShoulderRow" hidden><dt>右肩坐标参考点 XYZ（mm）</dt><dd id="poseLocationShoulder">—</dd></div>
+              <div id="poseLocationLeftShoulderRow" hidden><dt>左肩坐标参考点 XYZ（mm）</dt><dd id="poseLocationLeftShoulder">—</dd></div>
+              <div><dt>相机坐标参考点 mm</dt><dd id="poseReferenceCamera">—</dd></div>
+              <div><dt>保存位置</dt><dd id="poseSavedAt">—</dd></div>
+            </dl>
+          </div>
+          <details id="poseLocationDetails" hidden>
+            <summary>定位方向、位姿矩阵及接口返回详情</summary>
+            <p class="muted">篮筐矩阵平移为 CAD 原点，中心请看上方参考点。商品参考点和方向不等同于完整六自由度位姿。</p>
+            <pre id="poseLocationJson" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:28rem;overflow:auto"></pre>
+          </details>
+          <div id="poseWorldData" class="pose-result-data" hidden>
+            <dl>
+              <div><dt>物品抓取点（底盘系 XYZ，mm）</dt><dd id="poseWorldGrasp">—</dd></div>
+              <div><dt>拍照时躯干 J1–J4 °</dt><dd id="poseCaptureTrunk">—</dd></div>
+              <div><dt>识别点高度 h（躯干 SDK）</dt><dd id="poseRecognitionHeight">—</dd></div>
+              <div><dt>当前类别固定抓取高度</dt><dd id="poseFixedHeight">—</dd></div>
+              <div><dt>抓取点补偿（躯干 SDK XYZ，mm）</dt><dd id="poseGraspOffset">—</dd></div>
+            </dl>
+          </div>
+          <div class="camera-card-actions pose-reproject-actions">
+            <button id="poseReprojectLeftButton" type="button" disabled>方盒：转换到左肩坐标系</button>
+            <button id="poseReprojectButton" type="button">读取当前躯干并转换到右肩坐标系</button>
+          </div>
+          <p id="poseReprojectStatus" class="pose-estimation-status muted" aria-live="polite">尚未转换；使用最近一次有效的世界坐标抓取点</p>
+          <div id="poseShoulderData" class="pose-result-data" hidden>
+            <dl>
+              <div><dt id="poseShoulderGraspLabel">肩部抓取法兰 6D Pose（mm / °）</dt><dd id="poseShoulderGrasp">—</dd></div>
+              <div><dt id="poseShoulderPregraspLabel">肩部预抓取法兰 6D Pose（mm / °）</dt><dd id="poseShoulderPregrasp">—</dd></div>
+              <div id="poseShoulderLiftRow" hidden><dt>左肩提起终点法兰 6D Pose（mm / °）</dt><dd id="poseShoulderLift">—</dd></div>
+              <div id="poseShoulderDescendRow" hidden><dt>左肩下降终点法兰 6D Pose（mm / °）</dt><dd id="poseShoulderDescend">—</dd></div>
+              <div><dt>当前躯干 J1–J4 °</dt><dd id="poseShoulderTrunk">—</dd></div>
+            </dl>
+          </div>
+          <p id="poseBoxClearance" class="pose-estimation-status muted" aria-live="polite">箱体距离：等待有效的物品和前挡板结果</p>
+          <p class="pose-warning">按商品使用固定躯干 SDK 高度平面：罐子保持原标定，盒子使用“预抓取”标定高度，软管使用“软管预抓取点”的法兰高度。经过识别点沿躯干 Z+ 作直线，取交点为抓取点。仅罐类加 Y+10 mm 补偿，软管和左臂不补偿。预抓取/抓取的虚拟夹爪长度：右臂 d+250 / 175 mm，左臂 d+230 / 165 mm；沿躯干 X−扣除后转换到对应肩部。d 按最终抓取点计算。</p>
+          <p class="pose-estimation-hint">法兰朝向在躯干 SDK 系赋为 RPY [180, −90, 0]°，保护平面仍使用 Chest_link。</p>
+          <div class="camera-card-actions">
+            <button id="graspTestButton" type="button" class="primary" disabled>抓取测试</button>
+            <button id="graspTestStop" type="button" class="warning" disabled>停止抓取</button>
+          </div>
+          <p class="pose-estimation-hint">罐类（右臂，普通流程）：确认夹爪完全张开 → 预抓取 → 抓取 → 合爪 → 右臂沿躯干 SDK Z+40 mm → 右臂沿躯干 SDK X−后退 (d+20) mm → 右臂沿躯干 SDK Z+75 mm → 上身沿躯干 SDK X−后退 100 mm → 结束。躯干运动时双臂和头部保持关节不动。</p>
+          <p class="pose-estimation-hint">方盒（左臂，普通流程）：确认吸盘关闭 → 预抓取 → 抓取 → 下降到“下压”标定高度 → 打开吸盘 → 提起到“提起”标定高度 → 左臂沿躯干 SDK X−后退 (d+30) mm → 躯干后退100 mm。下降和提起仅改变躯干 SDK Z，保持 X/Y 和姿态；后续保持吸盘打开。</p>
+          <p class="pose-estimation-hint">抓取段不可达时，依次尝试躯干前移 A=50/100/150/200 mm，与对应手臂同步到抓取点。抬升后右臂相对肩部退 (d+20−A) mm、左臂退 (d+30−A) mm：右臂配合躯干同步退 A mm，两者到位后右臂再抬升75 mm，到位后躯干独立后退100 mm；左臂配合躯干同步退 A mm，再单独躯干后退100 mm。手臂退距为负时表示相对肩部前伸。</p>
+          <p class="pose-estimation-hint">手臂各段均使用终点躯干保护 MoveL：首段使用对应手臂输入臂角（留空取实测值），后续每段重新回读臂角。全部运动使用开始时网页已保存的平移与旋转速度。缺少前挡板平面时拒绝抓取。动作位姿保存于独立标定文件，删除网页记忆点不会影响流程。</p>
+          <p class="pose-warning">夹爪随顶部总控制解锁和锁定；自动闭合前需完成夹爪初始化。点击时按当前躯干重新转换已显示的估计结果。保护段仅检查终点肘部；中途失败或停止即取消后续动作。</p>
+          <p class="muted">软管：规划前确认夹爪预开到130→水平预抓取/抓取→法兰原地下俯30°→合爪→回正同时退d−20（若补偿A，手臂退d−20−A、躯干同步收回A）→右臂退40/躯干退100 mm同时开始、均到位后结束。无额外抬升。</p>
+          <p id="graspTestStatus" class="pose-estimation-status muted" aria-live="polite">抓取测试待命</p>
+          <div class="button-row">
+            <button id="scanSequenceButton" type="button" class="primary" disabled>下一步：扫码采集</button>
+            <button id="scanSequenceStop" type="button" class="warning" disabled>停止扫码</button>
+          </div>
+          <p class="muted">罐子：扫码1→2→3→4→5，每点保存一张左腕 RGB，再执行原偏移回位。盒子：双臂到“盒子扫码”位姿，躯干不动，保存一张右腕 RGB。拍照后双臂同时返回 L2抓取，均到位后躯干返回 L2抓取。头部与吸盘状态保持。</p>
+          <p class="muted">软管：双臂到“软管扫码1”→拍左腕照片→右臂右移100 mm→仅右臂到历史翻转A点（完整关节角/位姿）→保持A朝向左移100 mm→拍第二张左腕照片→右移100 mm→双臂回 L2抓取→躯干单独前进100 mm。平移沿右肩Y轴，右移为负、左移为正；头部及夹持状态保持，两张照片保存在同一个独立子文件夹。</p>
+          <p id="scanSequenceStatus" class="pose-estimation-status muted" aria-live="polite">扫码采集待命</p>
+          <div class="camera-card-actions">
+            <button id="placementButton" class="primary" disabled>罐子放置</button>
+            <button id="boxPlacementButton" class="primary" disabled>盒子放置</button>
+            <button id="tubePlacementButton" class="primary" disabled>软管放置</button>
+            <button id="placementStop" class="danger" disabled>停止放置</button>
+          </div>
+          <p class="pose-estimation-hint">使用网页上一次有效的篮筐右肩参考点。仅右臂到 L2放置1 → 右臂保护运动至 Y=参考点 Y−30 mm → 躯干 X+200 mm 与右臂 X=参考点 X−350 mm 同步前进 → 右臂 J7−30° → 松开夹爪 → J7 恢复 → 躯干与右臂同步退回 → 右臂保护运动反向平移回 L2放置1 → 右臂返回点击放置前的位置。头部和左臂保持关节不动；每步到位后继续，按去程相反顺序回退。</p>
+          <p class="pose-estimation-hint">盒子：取“L2盒子预放置”的左臂位姿，仅替换 Y=篮筐左肩参考点 Y+110 mm；左臂保护 MoveL 到预放置点 → 躯干沿 SDK X+100 mm 前进到位，双臂关节保持不动 → 左臂保护 MoveL 沿左肩 Z−100 mm 下降到位 → 关闭吸盘 → 双臂同时返回 L2抓取 → 头部与躯干返回 L2抓取。使用网页速度；开始至释放前不改变吸盘，失败或停止不自动释放、不自动回位。</p>
+          <p class="pose-estimation-hint">软管：镜像“L2盒子预放置”的法兰位置，Y=篮筐右肩参考点 Y−80 mm，夹具水平朝胸部正前方；右臂保护 MoveL 到预放置点 → 躯干沿 SDK X+100 mm 前进到位 → 右臂 J6−30° 到位 → 夹爪完全张开至0并确认 → J6恢复原值 → 双臂同时返回 L2抓取 → 头部与躯干返回 L2抓取。释放前保持夹持；失败或停止不自动释放、不自动回位。</p>
+          <p id="tubePlacementStatus" class="pose-estimation-status muted" aria-live="polite">软管放置：请先识别篮筐，取得右肩参考点</p>
+          <p id="boxPlacementStatus" class="pose-estimation-status muted" aria-live="polite">盒子放置：请先识别篮筐，取得左肩参考点</p>
+          <p id="placementStatus" class="pose-estimation-status muted" aria-live="polite">放置待命 · 请先识别篮筐；罐子需解锁并初始化右手夹爪，盒子使用左手吸盘</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <div><p class="eyebrow">JOINT SPACE</p><h2>全身关节角</h2></div>
+        <p>输入单位：度；执行前会回读当前状态，运动范围由控制器软限位保护。</p>
+      </div>
+      <div id="jointGrid" class="card-grid"></div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <div><p class="eyebrow">CARTESIAN SPACE</p><h2>双臂与躯干 Pose</h2></div>
+        <p>位置 mm，姿态角和臂角 °；双臂使用各自肩部原点的 SDK 世界系（Z 向上）。可选择 MoveJ、MoveL 或躯干保护 MoveL。</p>
+      </div>
+      <div id="poseGrid" class="card-grid three"></div>
+    </section>
+
+    <section id="gripperSection">
+      <div class="section-title">
+        <div><p class="eyebrow">END EFFECTORS</p><h2>夹爪开合</h2></div>
+        <p>右臂 Robotiq 2F-85；位置 0 为全开，数值增大时缓慢闭合。</p>
+      </div>
+      <div class="panel gripper-panel">
+        <div class="gripper-topline">
+          <div class="gripper-badges">
+            <span id="gripperControlBadge" class="badge">请解锁顶部总控制</span>
+            <span id="gripperStateBadge" class="badge">状态未读取</span>
+          </div>
+        </div>
+        <div class="gripper-buttons gripper-motion-buttons">
+          <button id="gripperActivateButton" disabled>初始化夹爪</button>
+          <button id="gripperOpenButton" disabled>夹爪全开</button>
+          <button id="gripperCloseButton" disabled>夹爪全闭</button>
+        </div>
+        <div class="gripper-slider-block">
+          <label for="gripperPositionSlider">目标位置 <output id="gripperPositionValue">0</output> / 255</label>
+          <input id="gripperPositionSlider" type="range" min="0" max="255" step="1" value="0" disabled>
+          <div class="gripper-scale"><span>0 · 全开</span><span>255 · 全闭</span></div>
+          <p>拖动滑块选择位置，松开后以低速移动。初始化会让夹爪自行开合一次。</p>
+        </div>
+        <p id="gripperReadback" class="gripper-readback" aria-live="polite">当前位置：未读取</p>
+        <div class="gripper-slider-block">
+          <h3>左臂电动吸盘</h3>
+          <div class="gripper-buttons gripper-motion-buttons">
+            <button id="suctionOpenButton" class="primary" disabled>吸盘打开</button>
+            <button id="suctionCloseButton" disabled>吸盘关闭</button>
+          </div>
+          <p id="suctionStatus" aria-live="polite">吸盘：尚未发送指令</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <div><p class="eyebrow">FREE DRIVE</p><h2>双臂拖拽</h2></div>
+        <p>开启后进入待命；只有按住机械臂末端按钮时才允许笛卡尔自由拖拽。</p>
+      </div>
+      <div id="dragGrid" class="card-grid two"></div>
+    </section>
+
+    <section id="chassisSection">
+      <div class="section-title">
+        <div><p class="eyebrow">MOBILE BASE</p><h2>底盘遥控</h2></div>
+        <p>按住运动，松手即停；服务端 0.6 秒指令租约兜底。</p>
+      </div>
+      <div class="panel chassis-panel">
+        <div class="chassis-statusbar">
+          <span id="chassisBadge" class="badge">遥控未启用</span>
+          <p id="chassisError" role="status" hidden></p>
+        </div>
+        <div class="chassis-meta">
+          <div class="chassis-actions">
+            <button id="chassisEnableButton">启用底盘遥控</button>
+            <button id="chassisReleaseEmergencyButton" class="warning" aria-describedby="chassisEmergencyHint" disabled>解除底盘急停</button>
+          </div>
+          <p id="chassisEmergencyHint" class="chassis-hint">仅在物理急停已经松开，但启用底盘遥控仍提示 70002 时解除；需先解锁网页控制。</p>
+          <div class="chassis-avoidance">
+            <div class="chassis-actions">
+              <span id="chassisAvoidanceBadge" class="badge" role="status">遥控避障：未读取</span>
+              <button id="chassisAvoidanceButton" aria-describedby="chassisAvoidanceHint" disabled>切换遥控避障</button>
+            </div>
+            <p id="chassisAvoidanceHint" class="chassis-hint">仅影响手动遥控的整体避障；重新启用遥控时会恢复避障。</p>
+            <p id="chassisAvoidanceError" class="chassis-hint" role="status" hidden></p>
+          </div>
+          <div class="chassis-speeds">
+            <label class="chassis-speed" for="linearSpeed">
+              <span>线速度</span>
+              <span class="chassis-input-row"><input id="linearSpeed" type="number" min="0.02" max="0.5" step="0.01" value="0.15" aria-describedby="linearSpeedLimit"><span>m/s</span></span>
+              <small id="linearSpeedLimit">范围 0.02–0.50</small>
+            </label>
+            <label class="chassis-speed" for="angularSpeed">
+              <span>角速度</span>
+              <span class="chassis-input-row"><input id="angularSpeed" type="number" min="0.05" max="0.8" step="0.05" value="0.30" aria-describedby="angularSpeedLimit"><span>rad/s</span></span>
+              <small id="angularSpeedLimit">范围 0.05–0.80</small>
+            </label>
+          </div>
+        </div>
+        <div class="chassis-pad" aria-label="底盘按住遥控">
+          <button class="hold" data-vector="0,0,1" aria-label="左转">↶</button>
+          <button class="hold" data-vector="1,0,0" aria-label="前进">↑</button>
+          <button class="hold" data-vector="0,0,-1" aria-label="右转">↷</button>
+          <button class="hold" data-vector="0,1,0" aria-label="左移">←</button>
+          <button id="chassisStopButton" class="stop">STOP</button>
+          <button class="hold" data-vector="0,-1,0" aria-label="右移">→</button>
+          <span></span>
+          <button class="hold" data-vector="-1,0,0" aria-label="后退">↓</button>
+          <span></span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "sdk_root": "/home/admin/mui/xCoreSDK-Python-AR-v0.7.1.ar_4",
+  "urdf_zip": "/home/admin/mui/1.5整机urdf-0.8AR5-20260520.zip",
+  "local_ip": "192.168.71.51",
+  "right_arm_ip": "192.168.71.160",
+  "trunk_ip": "192.168.71.162",
+  "torso_plane_y_mm": 0.0,
+  "elbow_plane_margin_mm": 30.0,
+  "linear_sample_mm": 5.0,
+  "max_joint_step_deg": 5.0,
+  "max_arm_angle_change_deg": 90.0,
+  "execution_enabled": false
+}
