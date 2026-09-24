@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "robot-agent"
+version = "0.1.0"
+description = "Layered workflow and skill runtime for robot agents"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "httpx>=0.27,<1",
+    "numpy>=1.26,<3",
+    "Pillow>=10,<12",
+    "PyYAML>=6,<7",
+    "uvicorn>=0.30,<1",
+]
+
+[project.scripts]
+agent-mocks = "agent.capabilities.mocks.server:main"
+agent-server = "agent.server:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"agent.debug" = ["static/*.html", "static/*.css", "static/*.js"]
+"agent.orders" = ["static/*.html", "static/*.css", "static/*.js", "static/*.svg"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["B017"]

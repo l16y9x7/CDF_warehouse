@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f4ef">
+  <title>机器人智能拣选</title>
+  <link rel="stylesheet" href="/orders/assets/styles.css?v=20260924a">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/orders/" aria-label="机器人智能拣选首页">
+      <span class="brand-mark"><span></span></span>
+      <span><strong>ROBO PICK</strong><small>机器人智能拣选</small></span>
+    </a>
+    <div class="robot-state"><i></i><span id="robot-state-text">系统准备就绪</span></div>
+  </header>
+
+  <main>
+    <section id="shop-view" class="shop-view">
+      <div class="hero">
+        <div>
+          <p class="eyebrow">AUTOMATED FULFILLMENT</p>
+          <h1>选好商品，<br><em>交给机器人。</em></h1>
+          <p class="hero-copy">创建您的订单，机器人会逐件抓取商品并放入同一个篮筐。</p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="hero-scene">
+            <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+            <div class="basket-illustration"><span></span><span></span><span></span></div>
+            <div class="robot-arm"><b></b><i></i></div>
+            <div class="float-card fc-one">精准识别 <strong>99%</strong></div>
+            <div class="float-card fc-two"><i></i> 实时运行</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="shop-layout">
+        <section class="catalog-section">
+          <div class="section-heading">
+            <div><p class="eyebrow">PRODUCT CATALOG</p><h2>选择商品</h2></div>
+            <span id="product-count" class="muted"></span>
+          </div>
+          <div id="product-grid" class="product-grid" aria-live="polite"></div>
+        </section>
+
+        <aside class="order-card">
+          <div class="order-card-head">
+            <div><p class="eyebrow">YOUR ORDER</p><h2>我的订单</h2></div>
+            <span id="cart-count" class="cart-count">0</span>
+          </div>
+          <div id="cart-items" class="cart-items"></div>
+          <div id="empty-cart" class="empty-cart">
+            <span class="empty-icon">＋</span>
+            <strong>还没有选择商品</strong>
+            <p>从左侧挑选您需要的商品</p>
+          </div>
+          <div class="mode-switch" role="group" aria-label="执行模式">
+            <button id="mode-real" class="mode-option active" type="button" data-mock="false">真机</button>
+            <button id="mode-mock" class="mode-option" type="button" data-mock="true">Mock</button>
+          </div>
+          <div class="basket-picker">
+            <div class="basket-title"><span>目标篮筐</span><small>所有商品将放入同一个篮筐</small></div>
+            <div class="basket-fields">
+              <label>行<select id="basket-row"><option>L1</option><option>L2</option><option>L3</option><option>L4</option></select></label>
+              <label>列<select id="basket-column"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+            </div>
+          </div>
+          <div class="order-summary"><span>商品总数</span><strong><b id="total-items">0</b> 件</strong></div>
+          <button id="submit-order" class="primary-button" type="button" disabled>
+            <span>确认下单</span><i>→</i>
+          </button>
+          <p class="safe-note"><span>✓</span> 下单后商品清单将锁定，机器人立即开始执行</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="progress-view" class="progress-view hidden">
+      <div class="progress-hero">
+        <div>
+          <button id="back-to-shop" class="text-button hidden" type="button">← 创建新订单</button>
+          <p class="eyebrow">ORDER IN PROGRESS</p>
+          <h1 id="progress-title">机器人正在处理您的订单</h1>
+          <p id="order-number" class="order-number"></p>
+          <p id="order-mode" class="order-mode"></p>
+        </div>
+        <div id="status-orb" class="status-orb"><div><span id="percent">0</span><small>%</small></div><p>订单进度</p></div>
+      </div>
+
+      <div class="progress-layout">
+        <section class="live-card">
+          <div class="live-head">
+            <div><span id="live-dot" class="live-dot"></span><p>机器人实时状态</p></div>
+            <span id="order-status" class="status-pill"></span>
+          </div>
+          <ol id="step-log" class="step-log" aria-live="polite">
+            <li class="step-empty">等待机器人开始</li>
+          </ol>
+          <div id="risk-warning" class="risk-warning hidden"><strong>请留意现场状态</strong><p></p></div>
+          <div id="order-actions" class="order-actions">
+            <button id="retry-order" class="primary-button hidden" type="button"><span>重试当前步骤</span><i>↻</i></button>
+            <button id="cancel-order" class="secondary-button" type="button">取消订单</button>
+          </div>
+        </section>
+
+        <aside class="detail-card">
+          <div class="detail-head"><div><p class="eyebrow">ORDER DETAILS</p><h2>订单明细</h2></div><span id="basket-label"></span></div>
+          <div id="progress-items" class="progress-items"></div>
+          <div class="overall-progress"><div><span>整体进度</span><strong id="progress-copy">0 / 0 件</strong></div><div class="progress-track"><i id="progress-bar"></i></div></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden" role="status"></div>
+  <script type="module" src="/orders/assets/app.js?v=20260924a"></script>
+</body>
+</html>

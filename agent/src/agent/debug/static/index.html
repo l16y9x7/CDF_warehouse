@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agent 调试台</title>
+  <link rel="stylesheet" href="/debug/assets/styles.css?v=20260923c">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">A</span>
+      <div><strong>Agent 调试台</strong><span>Capability / Skill / Workflow</span></div>
+    </div>
+    <div class="target-switch" role="group" aria-label="运行目标">
+      <button type="button" data-target="mock" class="active">Mock</button>
+      <button type="button" data-target="real">真机</button>
+    </div>
+    <div id="target-state" class="target-state"><span></span>检查中</div>
+  </header>
+
+  <div id="real-warning" class="real-warning hidden">
+    当前连接真机。Workflow 会直接受理；物理 Capability 和 Skill 点击执行后立即运行。
+  </div>
+
+  <main class="workspace">
+    <aside class="catalog-panel">
+      <div class="panel-head">
+        <h1>调用目录</h1>
+        <button id="mobile-close" class="icon-button" type="button" aria-label="关闭目录">×</button>
+      </div>
+      <div class="search-wrap">
+        <span>⌕</span><input id="search" type="search" placeholder="搜索模块或操作" autocomplete="off">
+      </div>
+      <div id="layer-tabs" class="tabs">
+        <button type="button" data-layer="capability" class="active">能力</button>
+        <button type="button" data-layer="skill">Skill</button>
+        <button type="button" data-layer="workflow">Workflow</button>
+      </div>
+      <nav id="catalog" class="catalog"></nav>
+    </aside>
+
+    <section class="form-panel">
+      <div class="mobile-title">
+        <button id="mobile-open" class="icon-button" type="button" aria-label="打开目录">☰</button>
+        <span>调用配置</span>
+      </div>
+      <div id="selection-empty" class="empty-state">从左侧选择一个操作</div>
+      <div id="operation" class="hidden">
+        <div class="operation-head">
+          <div>
+            <div id="operation-path" class="eyebrow"></div>
+            <h2 id="operation-title"></h2>
+            <p id="operation-description"></p>
+          </div>
+          <span id="physical-badge" class="badge danger hidden">物理动作</span>
+        </div>
+        <form id="run-form">
+          <div class="input-section-head">
+            <h3>入参说明</h3>
+            <span>可从候选值中选择，也可直接输入自定义值</span>
+          </div>
+          <div id="fields" class="fields"></div>
+          <div class="run-actions">
+            <button id="run-button" class="primary-button" type="submit">执行</button>
+            <button id="reset-button" class="secondary-button" type="button">重置</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <aside class="result-panel">
+      <div class="panel-head result-head">
+        <h2>执行详情</h2>
+        <div class="result-actions">
+          <button id="related-logs" class="secondary-button hidden" type="button">相关日志</button>
+          <button id="terminate-button" class="danger-button hidden" type="button">终止任务</button>
+          <span id="result-status" class="status-badge neutral">未执行</span>
+        </div>
+      </div>
+      <div id="metrics" class="metrics"></div>
+      <div id="media-preview" class="media-preview hidden">
+        <div class="media-stage">
+          <img id="preview-image" alt="相机快照">
+          <canvas id="preview-overlay" class="media-overlay" aria-hidden="true"></canvas>
+          <div id="media-error" class="media-error hidden">图片已不可用或加载失败</div>
+        </div>
+        <div class="media-caption">
+          <strong id="media-title"></strong>
+          <span id="media-meta"></span>
+        </div>
+        <div id="media-thumbnails" class="media-thumbnails" role="list" aria-label="本次运行拍摄图片"></div>
+      </div>
+      <div class="detail-tabs">
+        <button type="button" data-detail="result" class="active">结果</button>
+        <button type="button" data-detail="trace">调用链</button>
+        <button type="button" data-detail="events">原始事件</button>
+        <button type="button" data-detail="request">请求</button>
+      </div>
+      <div id="trace-view" class="trace-view hidden"></div>
+      <pre id="detail-json" class="json-view">等待执行</pre>
+    </aside>
+  </main>
+
+  <section class="history-band">
+    <div class="history-head">
+      <div><h2>执行历史</h2><span id="history-count">0 条</span></div>
+      <div class="filters">
+        <select id="history-layer" aria-label="历史层级"><option value="">全部层级</option><option value="capability">Capability</option><option value="skill">Skill</option><option value="workflow">Workflow</option></select>
+        <select id="history-status" aria-label="历史状态"><option value="">全部状态</option><option>RUNNING</option><option>ACCEPTED</option><option>SUCCEEDED</option><option>FAILED</option><option>WAITING_CONFIRMATION</option><option>CANCELLED</option></select>
+        <button id="refresh-history" class="icon-button" type="button" title="刷新历史" aria-label="刷新历史">↻</button>
+      </div>
+    </div>
+    <div class="history-table-wrap">
+      <table>
+        <thead><tr><th>时间</th><th>目标</th><th>层级</th><th>操作</th><th>状态</th><th>耗时</th></tr></thead>
+        <tbody id="history-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="logs-section" class="logs-band">
+    <div class="history-head">
+      <div><h2>运行日志</h2><span id="logs-count">0 条</span></div>
+      <div class="filters log-filters">
+        <select id="log-level" aria-label="日志级别"><option value="">全部级别</option><option>ERROR</option><option>WARNING</option><option>INFO</option><option>DEBUG</option></select>
+        <input id="log-event" type="search" placeholder="事件标识" aria-label="事件标识">
+        <input id="log-component" type="search" placeholder="组件名称" aria-label="组件名称">
+        <input id="log-task-id" type="search" placeholder="任务 ID" aria-label="任务 ID">
+        <input id="log-run-id" type="search" placeholder="运行 ID" aria-label="运行 ID">
+        <input id="log-from" type="datetime-local" aria-label="开始时间" title="开始时间">
+        <input id="log-to" type="datetime-local" aria-label="结束时间" title="结束时间">
+        <input id="log-search" type="search" placeholder="搜索中文说明或错误码" aria-label="搜索日志">
+        <label class="auto-refresh"><input id="log-auto-refresh" type="checkbox">自动刷新</label>
+        <button id="refresh-logs" class="icon-button" type="button" title="刷新日志" aria-label="刷新日志">↻</button>
+      </div>
+    </div>
+    <div class="logs-table-wrap">
+      <table>
+        <thead><tr><th>时间</th><th>级别</th><th>中文说明</th><th>事件</th><th>任务 / 运行</th><th>耗时</th></tr></thead>
+        <tbody id="logs-body"></tbody>
+      </table>
+    </div>
+    <button id="load-more-logs" class="secondary-button hidden" type="button">加载更多</button>
+  </section>
+
+  <dialog id="log-dialog">
+    <h2>日志详情</h2>
+    <pre id="log-detail" class="json-view compact"></pre>
+    <div class="dialog-actions"><button id="copy-log" class="secondary-button" type="button">复制日志</button><button id="close-log" class="primary-button" type="button">关闭</button></div>
+  </dialog>
+
+  <div id="toast" class="toast hidden"></div>
+  <script type="module" src="/debug/assets/app.js?v=20260923c"></script>
+</body>
+</html>
