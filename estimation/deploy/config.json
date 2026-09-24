@@ -1,0 +1,53 @@
+{
+  "service": {
+    "default_host": "0.0.0.0",
+    "default_port": 25540,
+    "max_body_bytes": 33554432,
+    "artifact_subdir": "requests",
+    "save_request_inputs": true,
+    "enable_3d_render": true,
+    "async_3d_render": true
+  },
+  "sam3": {
+    "backend": "legacy_18003",
+    "urls": {
+      "legacy_18003": "http://127.0.0.1:25551/infer",
+      "multipart_segment": "http://127.0.0.1:25541/api/v1/segment"
+    },
+    "mask_threshold": 0.5,
+    "timeout_s": 180.0
+  },
+  "basket": {
+    "default_prompt": "the central white plastic basket",
+    "default_threshold": 0.7,
+    "mesh_relative_path": "cad/Basket/Basket.obj",
+    "mesh_scale": 0.001,
+    "foundationpose_url": "http://127.0.0.1:25550/infer",
+    "foundationpose_registered_cad": false
+  },
+  "prompts": {
+    "container_box": "each individual open cardboard box",
+    "bottle": "The main cylindrical body of each white bottle",
+    "box": "All visible top surfaces of the blue green boxes",
+    "tube": "All individual gray green package ends"
+  },
+  "classes": {
+    "bottle": {
+      "box_threshold": 0.5,
+      "target_threshold": 0.5
+    },
+    "box": {
+      "box_threshold": 0.5,
+      "target_threshold": 0.5
+    },
+    "tube": {
+      "box_threshold": 0.5,
+      "target_threshold": 0.2
+    }
+  },
+  "front_rule_default": {
+    "front_axis_chassis": [1.0, 0.0, 0.0],
+    "front_origin_chassis": [0.0, 0.0, 0.0],
+    "front_band_mm": 100000.0
+  }
+}
