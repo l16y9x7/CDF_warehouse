@@ -1,0 +1,4 @@
+# 清华 PyPI（中国源）。也可用：UV_DEFAULT_INDEX=https://mirrors.aliyun.com/pypi/simple
+[[index]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true

@@ -1,0 +1,86 @@
+{
+  "device": {
+    "sn": "ROBOT_001",
+    "name": "珞石机器人01",
+    "deviceType": "term",
+    "robotType": "wheel_arm",
+    "alias": "珞石机器人01"
+  },
+  "mqtt": {
+    "broker_host": "robotsolution.cn",
+    "broker_port": 1883,
+    "username": "admin",
+    "password": "",
+    "topics": {
+      "services": "thing/product/robot/{sn}/services",
+      "services_reply": "thing/product/robot/{sn}/services_reply",
+      "events": "thing/product/robot/{sn}/event",
+      "osd": "thing/product/robot/{sn}/osd",
+      "trajectory": "thing/product/robot/{sn}/trajectory"
+    },
+    "command_worker_count": 4,
+    "command_dedupe_ttl_sec": 300,
+    "command_dedupe_max_entries": 2048,
+    "reconnect_initial_sec": 1,
+    "reconnect_max_sec": 60,
+    "publish_ack_timeout_sec": 3,
+    "osd_report_interval": 1,
+    "osd_summary_log_every": 3
+  },
+  "scenarios": {
+    "smt": {
+      "url": "http://127.0.0.1:8090",
+      "enabled": false
+    },
+    "wrc": {
+      "url": "http://127.0.0.1:8091",
+      "enabled": false
+    },
+    "piano": {
+      "url": "http://127.0.0.1:8092",
+      "enabled": false
+    },
+    "retail": {
+      "url": "http://127.0.0.1:8093",
+      "enabled": false
+    },
+    "rokae": {
+      "url": "http://127.0.0.1:8094",
+      "enabled": true
+    }
+  },
+  "default_scenario": "rokae",
+  "http_timeout_sec": 8.0,
+  "debug_http": {
+    "enabled": true,
+    "host": "0.0.0.0",
+    "port": 8088
+  },
+  "map_sync": {
+    "enabled": true,
+    "sync_on_start": true,
+    "report_url": "https://robotsolution.cn/dj-prod-api/robotDog/map",
+    "upload_timeout_sec": 60,
+    "identity_file": "map_index.json",
+    "default_source_map_id": "kim-zhongmian",
+    "platform_api": {
+      "resource": "robot_dog_service",
+      "resource_token": "da2f0bfba2bdb694bf94232e9911966e"
+    }
+  },
+  "media": {
+    "url": "http://127.0.0.1:8005",
+    "push_on_start": true,
+    "stream_key": "41db35390ddad33f83944f44b8b75ded"
+  },
+  "state": {
+    "navigation": "http://127.0.0.1:8001",
+    "camera": "http://127.0.0.1:8003"
+  },
+  "trajectory": {
+    "enabled": true,
+    "report_interval_sec": 1.0,
+    "map_frame": "map",
+    "robot_frame": "base_link"
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "adapter": "rokae",
+  "http_timeout_sec": 3.0,
+  "camera": {
+    "host": "0.0.0.0",
+    "port": 8003
+  },
+  "media": {
+    "enabled": true,
+    "host": "0.0.0.0",
+    "port": 8005,
+    "push": {
+      "enabled": true,
+      "autostart": false,
+      "device_sn": "",
+      "stream_server_url": "rtmp://robotsolution.cn:1935",
+      "stream_key": "",
+      "ffmpeg_bin": "",
+      "streams": [
+        {
+          "camera_id": "head",
+          "stream_slot": 1,
+          "enabled": true,
+          "width": 640,
+          "height": 480,
+          "fps": 10,
+          "bitrate": "1200k",
+          "preset": "ultrafast"
+        },
+        {
+          "camera_id": "hand_left",
+          "stream_slot": 2,
+          "enabled": true,
+          "width": 640,
+          "height": 480,
+          "fps": 10,
+          "bitrate": "1200k",
+          "preset": "ultrafast"
+        },
+        {
+          "camera_id": "hand_right",
+          "stream_slot": 3,
+          "enabled": true,
+          "width": 640,
+          "height": 480,
+          "fps": 10,
+          "bitrate": "1200k",
+          "preset": "ultrafast"
+        }
+      ]
+    }
+  },
+  "health": {
+    "service_prefix": "vision-rokae-preview-",
+    "repair_units": {
+      "rgbd": ["head-rgbd", "right-rgbd"],
+      "head-source": "head-rgbd",
+      "hand_left-source": "left-color",
+      "hand_right-source": "right-rgbd",
+      "owner": "owner",
+      "synced-rgbd": "synced-rgbd",
+      "media": "media"
+    },
+    "ros_requirements": {
+      "head": {
+        "depth_topic": "/camera/head/depth/image_rect_raw",
+        "require_depth": true,
+        "require_synced": false,
+        "repair_unit": "head-source"
+      },
+      "hand_left": {
+        "require_depth": false,
+        "require_synced": false,
+        "repair_unit": "hand_left-source"
+      },
+      "hand_right": {
+        "depth_topic": "/camera/right_wrist/aligned_depth_to_color/image_raw",
+        "require_depth": true,
+        "require_synced": true,
+        "repair_unit": "hand_right-source"
+      }
+    }
+  },
+  "rokae": {
+    "base_url": "http://127.0.0.1:8085",
+    "owner": {
+      "host": "0.0.0.0",
+      "port": 8085,
+      "cameras": {
+        "head": {
+          "enabled": true,
+          "backend": "v4l2",
+          "match": {
+            "type": "entity",
+            "value": ""
+          },
+          "width": 640,
+          "height": 480,
+          "fps": 10,
+          "warmup_frames": 3,
+          "frame_stale_sec": 2.0
+        },
+        "hand_left": {
+          "enabled": true,
+          "backend": "v4l2",
+          "match": {
+            "type": "usb_path",
+            "value": ""
+          },
+          "width": 640,
+          "height": 480,
+          "fps": 10,
+          "warmup_frames": 3,
+          "frame_stale_sec": 2.0
+        },
+        "hand_right": {
+          "enabled": true,
+          "backend": "v4l2",
+          "match": {
+            "type": "usb_path",
+            "value": ""
+          },
+          "width": 640,
+          "height": 480,
+          "fps": 10,
+          "warmup_frames": 3,
+          "frame_stale_sec": 2.0
+        }
+      }
+    },
+    "notes": {
+      "vendor": "珞石（ROKAE）",
+      "model": "Helios",
+      "fill": "按现场填写 head.match.value（entity）、hand_*.match.value（USB 路径）、device_sn 与 stream_key；SDK 为显式可选后端，不根据相机品牌自动启用"
+    }
+  }
+}

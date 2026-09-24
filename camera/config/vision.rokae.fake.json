@@ -1,0 +1,18 @@
+{
+  "adapter": "rokae",
+  "http_timeout_sec": 3.0,
+  "camera": {"host": "127.0.0.1", "port": 8003},
+  "media": {"enabled": false, "host": "127.0.0.1", "port": 8005, "push": {"enabled": false}},
+  "rokae": {
+    "base_url": "http://127.0.0.1:18086",
+    "owner": {
+      "host": "127.0.0.1",
+      "port": 18086,
+      "cameras": {
+        "head": {"enabled": true, "backend": "fake", "match": {"type": "fake"}, "width": 320, "height": 240},
+        "hand_left": {"enabled": true, "backend": "fake", "match": {"type": "fake"}, "width": 320, "height": 240},
+        "hand_right": {"enabled": false, "backend": "fake", "match": {"type": "fake"}}
+      }
+    }
+  }
+}

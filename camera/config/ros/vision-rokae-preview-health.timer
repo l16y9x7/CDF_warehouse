@@ -1,0 +1,11 @@
+[Unit]
+Description=Run ROKAE video health check periodically
+
+[Timer]
+OnBootSec=45
+OnUnitActiveSec=20
+AccuracySec=2
+Unit=vision-rokae-preview-health.service
+
+[Install]
+WantedBy=timers.target

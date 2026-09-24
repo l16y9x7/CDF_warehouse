@@ -1,0 +1,32 @@
+# Default navigation parameters for retail_nav_bridge
+retail_nav_bridge:
+  ros__parameters:
+    adapter: mock
+    status_hz: 10.0
+    pose_hz: 20.0
+    default_max_speed: 0.5
+    # Preferred geometric arrive tolerances (override per-station YAML values).
+    default_arrive_tol_m: 0.3  #线性容差
+    default_yaw_tol_rad: 0.2   # ~11.5°
+    default_timeout_sec: 120.0
+    mock_linear_speed: 0.6
+    mock_angular_speed: 0.8
+    mock_mapping_duration_sec: 2.0
+    s2_service_timeout_sec: 60.0
+    s2_map_dir: ""
+    s2_arrive_stable_ticks: 2
+    # HMI「导航节点」用坐标导航；「站台节点」才可用 CreateTaskById
+    s2_station_nav_mode: id   # pose | id | id_then_pose
+    s2_navigation_mode: 1       # 仅 id 模式：0 自主 / 1 巡线
+    s2_require_server_state: false  # 本机常无 /server/State，默认不强制
+    # 到点后厘米修正（GoToStation 内部，不改 HTTP）
+    # 单站关闭：retail_stations.yaml 该站点下写 align_enable: false
+    align_enable: true
+    align_fail_nav: false          # true：修正失败则本单导航失败
+    align_xy_tol_m: 0.02           # ≤2cm 不修该轴
+    align_yaw_tol_deg: 2.0
+    align_xy_max_m: 0.25           # 单轴超过则不硬挪
+    align_yaw_max_deg: 20.0
+    # server/GetMapInfo 导出的厂商原生 bmap/png/xml/pcd 保存目录
+    vendor_map_export_dir: /home/nvidia/kai/TianJi/ros2_ws/src/retail_nav_bridge/config/map_packages
+    stations_file: ""

@@ -1,0 +1,60 @@
+{
+  "description": "Merge objects and stream rows by camera_id into a ROS-source site config; do not replace the complete streams array or use this as a complete vision.json",
+  "rokae": {
+    "owner": {
+      "source": "ros",
+      "cameras": {
+        "hand_left": {
+          "enabled": true,
+          "backend": "realsense",
+          "match": {
+            "type": "realsense_serial",
+            "value": "REALSENSE_SERIAL"
+          },
+          "width": 1280,
+          "height": 720,
+          "fps": 15,
+          "enable_depth": false,
+          "require_depth": false,
+          "require_synced": false,
+          "frame_stale_sec": 2.0
+        },
+        "hand_right": {
+          "enabled": false
+        }
+      }
+    }
+  },
+  "media": {
+    "push": {
+      "streams": [
+        {
+          "camera_id": "hand_left",
+          "stream_slot": 2,
+          "enabled": true,
+          "width": 1280,
+          "height": 720,
+          "fps": 15,
+          "bitrate": "1200k"
+        },
+        {
+          "camera_id": "hand_right",
+          "stream_slot": 3,
+          "enabled": false
+        }
+      ]
+    }
+  },
+  "health": {
+    "repair_units": {
+      "hand_left-source": "left-color"
+    },
+    "ros_requirements": {
+      "hand_left": {
+        "require_depth": false,
+        "require_synced": false,
+        "repair_unit": "hand_left-source"
+      }
+    }
+  }
+}

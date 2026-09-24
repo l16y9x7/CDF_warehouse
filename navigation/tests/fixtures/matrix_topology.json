@@ -1,0 +1,10 @@
+{
+  "meta": {"length_unit": "mm"},
+  "data": {
+    "station": [
+      {"id": 1, "name": "s1-A", "pos.x": 288.667, "pos.y": -848.667, "pos.yaw": 0},
+      {"id": 2, "name": "s2-B", "pos.x": 501, "pos.y": -848.667, "pos.yaw": 0},
+      {"id": 3, "name": "s3-C", "pos.x": 700, "pos.y": -848.667, "pos.yaw": 0}
+    ]
+  }
+}

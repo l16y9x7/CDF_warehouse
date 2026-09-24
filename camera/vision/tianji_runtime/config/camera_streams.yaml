@@ -1,0 +1,56 @@
+# Camera HTTP gateway topic map.
+# Aliases allow Agent / 中控使用 hand_left 等业务名，同时兼容真机 right_wrist 命名。
+
+stale_after_sec: 2.0
+jpeg_quality: 80
+max_depth_mm: 4000
+stream_fps: 15
+
+# Head camera profile switch exposed by POST /camera/head/resolution.
+# 1080 is intentionally RGB-only; switching back to 720 restores the exact
+# aligned RGB-D contract used by every existing camera API.
+head_resolution_switch:
+  enabled: true
+  camera_id: head
+  node_name: /camera/head
+  serial_no: "349622071479"
+  process_runtime_dir: /home/nvidia/sxy/TianJi/scripts/runtime/tianji_cameras/head_profile
+  process_profile_configs:
+    720: tianji_head_camera_720.yaml
+    1080: tianji_head_camera_1080.yaml
+  process_stop_timeout_sec: 8.0
+  process_startup_probe_sec: 1.0
+  parameter_timeout_sec: 10.0
+  readiness_timeout_sec: 12.0
+  startup_timeout_sec: 60.0
+  profiles:
+    720:
+      color_profile: 1280x720x15
+      depth_profile: 1280x720x15
+      enable_depth: true
+      align_depth: true
+      settle_frames: 15
+    1080:
+      color_profile: 1920x1080x15
+      enable_depth: false
+      align_depth: false
+      settle_frames: 30
+
+cameras:
+  head:
+    color: /camera/head/color/image_raw
+    depth: /camera/head/aligned_depth_to_color/image_raw
+  left_wrist:
+    color: /camera/left_wrist/color/image_raw
+    depth: /camera/left_wrist/aligned_depth_to_color/image_raw
+  right_wrist:
+    color: /camera/right_wrist/color/image_raw
+    depth: /camera/right_wrist/aligned_depth_to_color/image_raw
+
+aliases:
+  left: left_wrist
+  right: right_wrist
+  hand_left: left_wrist
+  hand_right: right_wrist
+  left_hand: left_wrist
+  right_hand: right_wrist

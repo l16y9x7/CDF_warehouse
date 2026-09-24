@@ -1,0 +1,18 @@
+# Synced RGB-D forwarder: time-align color + aligned_depth, attach color camera_info,
+# then republish under /camera/<id>/synced/... for pose estimation.
+#
+# Spatial align is already done by RealSense (aligned_depth_to_color).
+# This node only does temporal sync + forward.
+
+slop: 0.1
+queue_size: 30
+# RealSense Humble 默认发 RELIABLE；必须匹配否则收不到图。
+qos_reliability: reliable
+
+cameras:
+  head:
+    enabled: true
+  left_wrist:
+    enabled: true
+  right_wrist:
+    enabled: true

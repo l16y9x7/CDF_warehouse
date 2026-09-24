@@ -1,0 +1,29 @@
+# Wrist cameras stay in one long-lived process group while head profiles switch.
+cameras:
+  left_wrist:
+    enabled: true
+    serial_no: "348122071295"
+    enable_color: true
+    color_width: 640
+    color_height: 480
+    color_fps: 15
+    enable_depth: true
+    depth_width: 640
+    depth_height: 480
+    depth_fps: 15
+    enable_sync: true
+    align_depth: true
+
+  right_wrist:
+    enabled: true
+    serial_no: "233522079527"
+    enable_color: true
+    color_width: 640
+    color_height: 480
+    color_fps: 15
+    enable_depth: true
+    depth_width: 640
+    depth_height: 480
+    depth_fps: 15
+    enable_sync: true
+    align_depth: true
