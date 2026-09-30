@@ -31,8 +31,8 @@ usage() {
 Usage: bash start_services.sh [start|stop|restart|status|install|help]
 
   start    Start SAM3, FoundationPose, estimation, then perception (default).
-  stop     Stop only processes started by this script.
-  restart  Stop managed services, then start them again.
+  stop     Stop only recorded service processes.
+  restart  Recover this checkout's perception/estimation PIDs, then restart.
   status   Check the services and their HTTP endpoints.
   install  Install perception/estimation dependencies (model services preinstalled).
 
@@ -234,6 +234,97 @@ owned_pid() {
     printf '%s\n' "$pid"
 }
 
+# An old manual launch may share the operator's shell process group. Only send
+# group signals when the verified service PID is itself the group leader.
+process_group_leader() {
+    local stat
+    local -a fields
+    stat=$(cat "/proc/$1/stat" 2>/dev/null) || return 1
+    read -r -a fields <<< "${stat##*) }"
+    [[ ${fields[2]:-} == "$1" ]]
+}
+
+matches_service_command() {
+    local name=$1 executable=$2 cwd=$3 entry app_dir arg
+    shift 3
+    [[ ${executable##*/} =~ ^python([0-9]+(\.[0-9]+)*)?$ ]] || return 1
+    (( $# >= 2 )) || return 1
+    shift # argv[0]; the actual executable was read from /proc/PID/exe.
+    while (( $# )); do
+        case "$1" in
+            -u|-B|-E|-s|-S|-I|-O|-OO) shift ;;
+            *) break ;;
+        esac
+    done
+    (( $# )) || return 1
+    if [[ $name == estimation ]]; then
+        entry=$1
+        [[ $entry == /* ]] || entry="$cwd/$entry"
+        [[ $entry -ef $ROOT/estimation/deploy/server.py ]]
+        return
+    fi
+    [[ $name == perception ]] || return 1
+    if [[ $1 == -m && ${2:-} == uvicorn ]]; then
+        shift 2
+    elif [[ ${1##*/} == uvicorn ]]; then
+        shift
+    else
+        return 1
+    fi
+    [[ ${1:-} == main:app || ${1:-} == app:app ]] || return 1
+    shift
+    app_dir=$cwd
+    while (( $# )); do
+        arg=$1
+        shift
+        case "$arg" in
+            --app-dir)
+                (( $# )) || return 1
+                app_dir=$1
+                shift ;;
+            --app-dir=*) app_dir=${arg#*=} ;;
+        esac
+    done
+    [[ $app_dir == /* ]] || app_dir="$cwd/$app_dir"
+    [[ $app_dir -ef $ROOT/perception ]]
+}
+
+service_process_matches() {
+    local name=$1 pid=$2 executable cwd
+    local -a args
+    [[ -O /proc/$pid && -r /proc/$pid/cmdline ]] || return 1
+    executable=$(readlink -f -- "/proc/$pid/exe") || return 1
+    cwd=$(readlink -f -- "/proc/$pid/cwd") || return 1
+    mapfile -d '' -t args < "/proc/$pid/cmdline" || return 1
+    matches_service_command "$name" "$executable" "$cwd" "${args[@]}"
+}
+
+recover_service_record() {
+    local name=$1 listeners remaining pid token current
+    local -A candidates=()
+    owned_pid "$name" >/dev/null && return 0
+    port_busy "$name" || return 0
+    listeners=$(ss -H -ltnp "sport = :${PORTS[$name]}") || die 'Cannot inspect listening process IDs.'
+    remaining=$listeners
+    while [[ $remaining =~ pid=([0-9]+) ]]; do
+        pid=${BASH_REMATCH[1]}
+        candidates[$pid]=1
+        remaining=${remaining#*pid=$pid}
+    done
+    if (( ${#candidates[@]} != 1 )); then
+        printf '%s\n' "$listeners" >&2
+        die "Port ${PORTS[$name]} is already occupied outside this launcher; cannot identify a single $name process owned by this user. Inspect: ss -ltnp 'sport = :${PORTS[$name]}'"
+    fi
+    for pid in "${!candidates[@]}"; do :; done
+    [[ $pid -gt 1 ]] || die "Refusing to recover $name PID $pid."
+    token=$(process_token "$pid") || die "$name PID $pid exited during inspection; retry restart."
+    service_process_matches "$name" "$pid" || die "Port ${PORTS[$name]} is owned by PID $pid, which could not be verified as this checkout's $name service ($ROOT/$name); left unchanged. Inspect: ps -fp $pid"
+    current=$(process_token "$pid") || die "$name PID $pid exited during inspection; retry restart."
+    [[ $current == "$token" ]] || die "$name PID $pid changed during inspection; retry restart."
+    printf '%s %s\n' "$pid" "$token" > "$RUNTIME/$name.pid"
+    printf '%s: recovered verified service PID %s from port %s\n' "$name" "$pid" "${PORTS[$name]}"
+}
+
 healthy() {
     local code
     if [[ $1 == sam3 && -z $SAM3_HEALTH_URL ]]; then
@@ -310,8 +401,11 @@ stop_service() {
         fi
         return 0
     fi
-    # setsid makes the Python PID its process group ID; stop its workers too.
-    kill -TERM -- "-$pid" 2>/dev/null || kill -TERM "$pid" 2>/dev/null || true
+    if process_group_leader "$pid"; then
+        kill -TERM -- "-$pid" 2>/dev/null || kill -TERM "$pid" 2>/dev/null || true
+    else
+        kill -TERM "$pid" 2>/dev/null || true
+    fi
     deadline=$((SECONDS + STOP_TIMEOUT))
     while owned_pid "$name" >/dev/null; do
         if (( SECONDS >= deadline )); then
@@ -466,6 +560,12 @@ case "$ACTION" in
             esac
         fi
         if [[ $ACTION == restart ]]; then
+            # Verify all occupied application ports and replacement interpreters
+            # before stopping anything. Never recover external model services.
+            recover_service_record estimation
+            recover_service_record perception
+            resolve_python estimation
+            resolve_python perception
             stop_service perception
             stop_service estimation
             stop_service foundationpose

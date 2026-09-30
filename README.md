@@ -59,8 +59,8 @@ FoundationPose 使用仓库内的 [start_25550.sh](start_25550.sh)，默认部�
 ```bash
 bash start_services.sh          # SAM3 → FoundationPose → estimation → perception
 bash start_services.sh status   # 查看四个服务的进程及 HTTP 状态
-bash start_services.sh stop     # perception → estimation → FoundationPose → SAM3
-bash start_services.sh restart  # 重启四个服务
+bash start_services.sh stop     # 按相反顺序停止已记录的服务
+bash start_services.sh restart  # 恢复本仓库业务服务的 PID 记录后重启，保留外部模型服务
 ```
 
 脚本自动定位仓库目录，可从任意工作目录调用，服务退出终端后仍在后台运行。
@@ -99,7 +99,14 @@ SAM3 / FoundationPose 已有进程运行或对应端口已监听时，自动跳�
 健康检查未就绪时会打印提示并继续；`status` 会区分外部服务和本脚本管理的服务，显示实际健康状态。
 复用的外部模型服务不会被接管，也不会被 `stop`、`restart` 或启动失败回滚终止。
 本脚本自己启动并记录的进程仍由 `stop` / `restart` 管理。
-estimation / perception 的外部端口占用仍会报错，避免重复启动。
+若 estimation / perception 已通过手动命令或旧脚本启动，但没有有效 PID 记录，运行
+`bash start_services.sh restart` 会从监听端口查找 PID，并核对当前用户、真实 Python
+可执行文件和入口路径：estimation 必须执行本仓库的 `estimation/deploy/server.py`，
+perception 必须通过 Uvicorn 加载本仓库 `perception/` 的 `main:app` 或 `app:app`。
+验证通过后恢复 PID 记录，重启并使用新的日志目录；之后也可通过 `stop` 管理。
+停止前会检查两个业务服务的进程身份和 Python 环境，无法确认身份、存在多个监听 PID 或权限不足时
+给出诊断命令，不自动终止这些进程。手动启动的服务若与终端共用进程组，只向服务 PID 发送停止信号。
+普通 `start` 遇到未记录的 estimation / perception 端口占用仍会报错，可使用上述 `restart` 完成接管。
 本次启动失败时，会停止本次新启动的服务，保留此前已运行的服务。
 
 ```bash
