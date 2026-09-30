@@ -6,6 +6,9 @@ __pycache__/
 venv/
 .pytest_cache/
 .env
+
+# Service logs, PID records, locks and local diagnostics
+/logs/
 .runtime/
 
 # perception runtime

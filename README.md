@@ -63,8 +63,34 @@ bash start_services.sh stop     # perception → estimation → FoundationPose �
 bash start_services.sh restart  # 重启四个服务
 ```
 
-脚本自动定位仓库目录，可从任意工作目录调用。日志与 PID 记录保存在
-`.runtime/perception-estimation/`，服务退出终端后仍在后台运行。
+脚本自动定位仓库目录，可从任意工作目录调用，服务退出终端后仍在后台运行。
+一键脚本启动的服务统一写入 `/data/CDF_warehouse/logs`，运行用户需对此目录有写权限：
+
+```text
+/data/CDF_warehouse/logs/
+├── perception/
+│   ├── perception.log                 # 服务标准输出和错误
+│   ├── recognize_sku_barcode.log      # 识别流水线日志
+│   └── not_found_*.jpg                # 识别失败图片（有失败时生成）
+├── estimation/
+│   ├── estimation.log                 # 服务标准输出和错误
+│   └── requests/                      # 推理请求、结果及调试文件
+├── sam3/sam3.log
+├── foundationpose/foundationpose.log
+└── runtime/
+    ├── *.pid                          # 进程 ID 和启动时间标识
+    └── launcher.lock                  # 防止并发启动/停止
+```
+
+可用 `CDF_LOG_DIR` 覆盖根目录（必须为绝对路径，后续所有管理命令使用同一值）。
+`RECOGNIZE_SKU_BARCODE_LOG_PATH` 和 `AXIS_SERVICE_OUTPUT` 若已显式设置，优先使用这些值。
+仓库根目录 `logs/` 整体已加入 `.gitignore`，包括日志、图片、请求数据、PID、锁和本地
+`logs/checks/` 测试文件；旧 `.runtime/` 也继续忽略。PID 和锁用于管理进程，不应在服务运行时清空。
+
+升级时自动迁移旧 `.runtime/perception-estimation/` 中尚未迁移的 PID 记录，不重启服务。
+已运行进程保持原来的日志目的地，下一次重新启动后使用新目录；旧日志保留原位。
+外部复用的 SAM3 / FoundationPose 保持其原有日志配置。
+
 SAM3 README 没有定义健康接口，因此默认向分割地址发送 GET，收到 2xx 或 405 即视为接口可访问；
 不会发送推理请求。若部署提供专用健康接口，可通过 `SAM3_HEALTH_URL` 指定，脚本要求其返回成功状态。
 这些探测不代表模型加载或真实推理成功。
@@ -77,10 +103,10 @@ estimation / perception 的外部端口占用仍会报错，避免重复启动�
 本次启动失败时，会停止本次新启动的服务，保留此前已运行的服务。
 
 ```bash
-tail -f .runtime/perception-estimation/sam3.log
-tail -f .runtime/perception-estimation/foundationpose.log
-tail -f .runtime/perception-estimation/perception.log
-tail -f .runtime/perception-estimation/estimation.log
+tail -f /data/CDF_warehouse/logs/perception/perception.log
+tail -f /data/CDF_warehouse/logs/estimation/estimation.log
+tail -f /data/CDF_warehouse/logs/sam3/sam3.log
+tail -f /data/CDF_warehouse/logs/foundationpose/foundationpose.log
 ```
 
 ### 使用已有 Conda / venv 环境或自定义配置
@@ -128,6 +154,9 @@ FoundationPose 内部的 `SAM3_API_URL` 保留原脚本默认值 `http://127.0.0
 
 | 环境变量 | 默认值 / 用途 |
 | --- | --- |
+| `CDF_LOG_DIR` | `/data/CDF_warehouse/logs`，各服务日志及 `runtime/` PID、锁文件的共同根目录 |
+| `RECOGNIZE_SKU_BARCODE_LOG_PATH` | `$CDF_LOG_DIR/perception/recognize_sku_barcode.log`，识别失败图片也写入此文件所在目录 |
+| `AXIS_SERVICE_OUTPUT` | `$CDF_LOG_DIR/estimation/requests`，estimation 请求与调试文件 |
 | `SERVICE_HOST` | `0.0.0.0`，两个服务的监听地址 |
 | `PERCEPTION_PORT` / `ESTIMATION_PORT` | `25546` / `25540` |
 | `START_SAM3` | 默认 `1`，自动复用已运行的 SAM3，未运行才启动；设为 `0` 跳过启动和检查 |

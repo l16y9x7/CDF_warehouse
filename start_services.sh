@@ -3,7 +3,9 @@
 set -Eeuo pipefail
 
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-RUNTIME="$ROOT/.runtime/perception-estimation"
+LOG_ROOT=${CDF_LOG_DIR:-/data/CDF_warehouse/logs}
+RUNTIME="$LOG_ROOT/runtime"
+LEGACY_RUNTIME="$ROOT/.runtime/perception-estimation"
 SERVICE_HOST=${SERVICE_HOST:-0.0.0.0}
 PERCEPTION_PORT=${PERCEPTION_PORT:-25546}
 ESTIMATION_PORT=${ESTIMATION_PORT:-25540}
@@ -20,7 +22,7 @@ FOUNDATIONPOSE_SCRIPT=${FOUNDATIONPOSE_SCRIPT:-$ROOT/start_25550.sh}
 FOUNDATIONPOSE_START_TIMEOUT=${FOUNDATIONPOSE_START_TIMEOUT:-300}
 FOUNDATIONPOSE_HEALTH_URL=${FOUNDATIONPOSE_HEALTH_URL:-http://127.0.0.1:25550/health}
 FOUNDATIONPOSE_URL=${BASKET_FP_URL:-http://127.0.0.1:25550/infer}
-declare -A PYTHONS PORTS URLS DIRS
+declare -A PYTHONS PORTS URLS DIRS LOG_FILES
 SAM3_COMMAND=()
 STARTED=()
 
@@ -35,6 +37,9 @@ Usage: bash start_services.sh [start|stop|restart|status|install|help]
   install  Install perception/estimation dependencies (model services preinstalled).
 
 Configuration (environment variables):
+  CDF_LOG_DIR                          Log root (/data/CDF_warehouse/logs)
+  RECOGNIZE_SKU_BARCODE_LOG_PATH        Recognition log (logs/perception/recognize_sku_barcode.log)
+  AXIS_SERVICE_OUTPUT                  Estimation artifacts (logs/estimation/requests)
   PERCEPTION_PYTHON / ESTIMATION_PYTHON  Existing Python executable paths
   SERVICE_HOST                         Bind address (default: 0.0.0.0)
   PERCEPTION_PORT / ESTIMATION_PORT     Ports (default: 25546 / 25540)
@@ -59,7 +64,9 @@ Configuration (environment variables):
 Prepare model services and weights before starting. SAM3 uses fixed port 25541.
 FoundationPose runs through start_25550.sh --foreground with PORT=25550.
 Already running model services are reused without taking ownership of external PIDs.
-Logs and PID records: .runtime/perception-estimation/
+Logs: /data/CDF_warehouse/logs/<service>/<service>.log
+PID records and launcher lock: /data/CDF_warehouse/logs/runtime/
+CDF_LOG_DIR overrides the common log root; use the same value for all actions.
 EOF
 }
 
@@ -123,9 +130,23 @@ URLS[foundationpose]=${FOUNDATIONPOSE_HEALTH_URL:-$FOUNDATIONPOSE_URL}
 DIRS[perception]="$ROOT/perception"
 DIRS[estimation]="$ROOT/estimation"
 
-mkdir -p -- "$RUNTIME"
+[[ $LOG_ROOT == /* ]] || die 'CDF_LOG_DIR must be an absolute path.'
+mkdir -p -- "$RUNTIME" || die "Cannot create runtime directory: $RUNTIME"
 exec 9>"$RUNTIME/launcher.lock"
 flock -n 9 || die 'Another launcher operation is in progress.'
+# Coordinate with the previous launcher during an upgrade. Never create a new
+# .runtime directory; retain its existing lock while migrating old PID records.
+if [[ -d $LEGACY_RUNTIME ]]; then
+    exec 8>"$LEGACY_RUNTIME/launcher.lock"
+    flock -n 8 || die 'Another launcher operation is in progress (legacy runtime).'
+fi
+for name in sam3 foundationpose estimation perception; do
+    mkdir -p -- "$LOG_ROOT/$name" || die "Cannot create log directory: $LOG_ROOT/$name"
+    LOG_FILES[$name]="$LOG_ROOT/$name/$name.log"
+    if [[ -f $LEGACY_RUNTIME/$name.pid && ! -e $RUNTIME/$name.pid ]]; then
+        mv -- "$LEGACY_RUNTIME/$name.pid" "$RUNTIME/$name.pid"
+    fi
+done
 
 resolve_python() {
     local name=$1 override venv python
@@ -261,7 +282,7 @@ check_service() {
         return 0
     fi
     if pid=$(owned_pid "$name"); then
-        healthy "$name" || die "$name is running (PID $pid) but unhealthy. See $RUNTIME/$name.log"
+        healthy "$name" || die "$name is running (PID $pid) but unhealthy. See ${LOG_FILES[$name]} (older processes may still log in $LEGACY_RUNTIME)."
         return 0
     fi
     if port_busy "$name"; then
@@ -345,11 +366,13 @@ start_service() {
         [[ -n ${PYTHONS[$name]:-} ]] || resolve_python "$name"
         command=(env "SAM3_URL=$SAM3_URL" "SAM3_BACKEND=$PERCEPTION_BACKEND"
             "SKU_API_URL=${SKU_API_URL:-http://$HEALTH_HOST:$ESTIMATION_PORT}"
+            "RECOGNIZE_SKU_BARCODE_LOG_PATH=${RECOGNIZE_SKU_BARCODE_LOG_PATH:-$LOG_ROOT/perception/recognize_sku_barcode.log}"
             "PYTHONUNBUFFERED=1" "${PYTHONS[$name]}"
             -m uvicorn main:app --host "$SERVICE_HOST" --port "$PERCEPTION_PORT")
     else
         [[ -n ${PYTHONS[$name]:-} ]] || resolve_python "$name"
         command=(env "SAM3_URL=$SAM3_URL" "SAM3_BACKEND=$SAM3_BACKEND"
+            "AXIS_SERVICE_OUTPUT=${AXIS_SERVICE_OUTPUT:-$LOG_ROOT/estimation/requests}"
             "MPLBACKEND=Agg" "PYTHONUNBUFFERED=1"
             "FIT_BOOTSTRAP_WORKERS=${FIT_BOOTSTRAP_WORKERS:-6}"
             "FIT_BOOTSTRAP_BOOTS=${FIT_BOOTSTRAP_BOOTS:-4}"
@@ -366,9 +389,9 @@ start_service() {
     (
         cd -- "${DIRS[$name]}"
         exec nohup setsid "${command[@]}"
-    ) >>"$RUNTIME/$name.log" 2>&1 < /dev/null 9>&- &
+    ) >>"${LOG_FILES[$name]}" 2>&1 < /dev/null 8>&- 9>&- &
     pid=$!
-    token=$(process_token "$pid") || die "$name exited during launch. See $RUNTIME/$name.log"
+    token=$(process_token "$pid") || die "$name exited during launch. See ${LOG_FILES[$name]}"
     printf '%s %s\n' "$pid" "$token" > "$RUNTIME/$name.pid"
     STARTED=("$name" "${STARTED[@]}")
     deadline=$((SECONDS + timeout))
@@ -380,8 +403,8 @@ start_service() {
         fi
         sleep 0.5
     done
-    tail -n 30 -- "$RUNTIME/$name.log" >&2 || true
-    die "$name failed to become ready. See $RUNTIME/$name.log"
+    tail -n 30 -- "${LOG_FILES[$name]}" >&2 || true
+    die "$name failed to become ready. See ${LOG_FILES[$name]}"
 }
 
 case "$ACTION" in
@@ -457,6 +480,6 @@ case "$ACTION" in
         for name in "${SERVICES[@]}"; do
             start_service "$name"
         done
-        printf 'Logs: %s/ (sam3.log, foundationpose.log, estimation.log, perception.log)\n' "$RUNTIME"
+        printf 'Logs: %s/<service>/<service>.log; PID records: %s/\n' "$LOG_ROOT" "$RUNTIME"
         ;;
 esac
