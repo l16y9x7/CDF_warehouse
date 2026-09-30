@@ -1,5 +1,8 @@
 # 化妆品与篮筐位姿定位服务
 
+Ubuntu 上可在仓库根目录运行 `bash start_services.sh`，按顺序启动 SAM3、FoundationPose、
+estimation 和 perception；部署路径、依赖准备及停止/重启命令见[仓库 README](../README.md)。
+
 ## 1. 前置服务
 
 在启动本定位服务前，需确保以下服务已在后台运行并完成模型加载：

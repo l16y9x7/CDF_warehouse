@@ -1,5 +1,9 @@
 # Perception 视觉条码服务
 
+Ubuntu 上可在仓库根目录运行 `bash start_services.sh`，一并启动 SAM3、FoundationPose、estimation 和 perception。
+默认使用下文的 SAM3 目录及 Conda 环境；路径覆盖、依赖准备和管理命令见[仓库 README](../README.md)。
+以下命令保留为手动分步启动方式。
+
 ## Step 1：部署 SAM3 服务
 
 端口固定为 `25541`。
