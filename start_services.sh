@@ -42,12 +42,12 @@ Configuration (environment variables):
   SAM3_CONDA_ENV                       Existing Conda environment (sam3)
   SAM3_CONDA_SH                        Optional path to conda.sh
   SAM3_PYTHON                          Explicit Python instead of Conda activation
-  START_SAM3                           1: manage local SAM3; 0: use external SAM3
+  START_SAM3                           1: reuse/start local SAM3; 0: skip SAM3
   SAM3_URL                             Shared SAM3 endpoint
   SAM3_BACKEND                          multipart_segment or legacy_18003
   SAM3_HEALTH_URL                      Optional dedicated health URL
   SAM3_START_TIMEOUT                   SAM3 startup wait limit (300 seconds)
-  START_FOUNDATIONPOSE                 1: invoke local script; 0: use external service
+  START_FOUNDATIONPOSE                 1: reuse/start local service; 0: skip it
   FOUNDATIONPOSE_SCRIPT                Bundled start_25550.sh (--foreground)
   FOUNDATIONPOSE_ROOT                  Model deployment root (/data/quinn/foundationpose)
   FOUNDATIONPOSE_PYTHON                Optional Python override (ROOT/env/bin/python)
@@ -58,6 +58,7 @@ Configuration (environment variables):
 
 Prepare model services and weights before starting. SAM3 uses fixed port 25541.
 FoundationPose runs through start_25550.sh --foreground with PORT=25550.
+Already running model services are reused without taking ownership of external PIDs.
 Logs and PID records: .runtime/perception-estimation/
 EOF
 }
@@ -225,20 +226,47 @@ healthy() {
     curl --noproxy '*' --fail --silent --max-time 2 "${URLS[$1]}" >/dev/null
 }
 
+is_model_service() {
+    [[ $1 == sam3 || $1 == foundationpose ]]
+}
+
+port_busy() {
+    local listeners
+    listeners=$(ss -H -ltn "sport = :${PORTS[$1]}") || die 'Cannot inspect listening ports.'
+    [[ -n $listeners ]]
+}
+
+model_is_running() {
+    is_model_service "$1" || return 1
+    owned_pid "$1" >/dev/null || port_busy "$1"
+}
+
+report_reused_model() {
+    local name=$1 owner=external
+    if owned_pid "$name" >/dev/null; then
+        owner=managed
+    fi
+    if healthy "$name"; then
+        printf '%s: already running (%s), skipped startup; ready %s\n' "$name" "$owner" "${URLS[$name]}"
+    else
+        printf '%s: already running (%s), skipped startup; health check not ready, continuing: %s\n' "$name" "$owner" "${URLS[$name]}"
+    fi
+}
+
 check_service() {
-    local name=$1 pid listeners
+    local name=$1 pid
+    # Existing model servers do not need this checkout's Conda environment,
+    # weights or launch script. A server still warming up must not block startup.
+    if model_is_running "$name"; then
+        return 0
+    fi
     if pid=$(owned_pid "$name"); then
         healthy "$name" || die "$name is running (PID $pid) but unhealthy. See $RUNTIME/$name.log"
         return 0
     fi
-    listeners=$(ss -H -ltn "sport = :${PORTS[$name]}") || die 'Cannot inspect listening ports.'
-    if [[ -n $listeners ]]; then
-        if [[ $name == sam3 ]]; then
-            die 'SAM3 port 25541 is already occupied outside this launcher. Use START_SAM3=0 to keep using an externally managed SAM3.'
-        fi
-        if [[ $name == foundationpose ]]; then
-            die 'FoundationPose port 25550 is already occupied outside this launcher. Use START_FOUNDATIONPOSE=0 to keep using an externally managed service.'
-        fi
+    if port_busy "$name"; then
+        # A model may have appeared since the first preflight probe.
+        is_model_service "$name" && return 0
         die "Port ${PORTS[$name]} is already occupied outside this launcher; stop that service yourself or choose a different port."
     fi
     if [[ $name == sam3 ]]; then
@@ -254,7 +282,11 @@ stop_service() {
     local name=$1 pid deadline
     if ! pid=$(owned_pid "$name"); then
         rm -f -- "$RUNTIME/$name.pid"
-        printf '%s: not running under this launcher\n' "$name"
+        if is_model_service "$name" && port_busy "$name"; then
+            printf '%s: running externally, left unchanged\n' "$name"
+        else
+            printf '%s: not running under this launcher\n' "$name"
+        fi
         return 0
     fi
     # setsid makes the Python PID its process group ID; stop its workers too.
@@ -291,6 +323,12 @@ resolve_foundationpose_script() {
 start_service() {
     local name=$1 pid token deadline timeout=$START_TIMEOUT
     local -a command
+    # Recheck immediately before launching in case another process started the
+    # model during preflight. Never write a PID file or add it to rollback.
+    if model_is_running "$name"; then
+        report_reused_model "$name"
+        return 0
+    fi
     if pid=$(owned_pid "$name"); then
         printf '%s: already running (PID %s)\n' "$name" "$pid"
         return 0
@@ -372,6 +410,13 @@ case "$ACTION" in
                     printf '%s: ready (PID %s) %s\n' "$name" "$pid" "${URLS[$name]}"
                 else
                     printf '%s: running but unhealthy (PID %s)\n' "$name" "$pid"
+                    result=1
+                fi
+            elif is_model_service "$name" && port_busy "$name"; then
+                if healthy "$name"; then
+                    printf '%s: ready (external, reused) %s\n' "$name" "${URLS[$name]}"
+                else
+                    printf '%s: running externally, health check not ready %s\n' "$name" "${URLS[$name]}"
                     result=1
                 fi
             else

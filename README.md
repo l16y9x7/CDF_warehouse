@@ -68,7 +68,12 @@ bash start_services.sh restart  # 重启四个服务
 SAM3 README 没有定义健康接口，因此默认向分割地址发送 GET，收到 2xx 或 405 即视为接口可访问；
 不会发送推理请求。若部署提供专用健康接口，可通过 `SAM3_HEALTH_URL` 指定，脚本要求其返回成功状态。
 这些探测不代表模型加载或真实推理成功。
-重复启动会复用本脚本已启动且健康的服务；端口被其他进程占用时会报错，不会终止其他进程。
+SAM3 / FoundationPose 已有进程运行或对应端口已监听时，自动跳过启动并继续后续服务，
+无需设置 `START_SAM3=0` 或 `START_FOUNDATIONPOSE=0`，也不再要求本机有相应的启动环境和模型文件。
+健康检查未就绪时会打印提示并继续；`status` 会区分外部服务和本脚本管理的服务，显示实际健康状态。
+复用的外部模型服务不会被接管，也不会被 `stop`、`restart` 或启动失败回滚终止。
+本脚本自己启动并记录的进程仍由 `stop` / `restart` 管理。
+estimation / perception 的外部端口占用仍会报错，避免重复启动。
 本次启动失败时，会停止本次新启动的服务，保留此前已运行的服务。
 
 ```bash
@@ -98,7 +103,8 @@ bash start_services.sh
 SAM3 默认会完整激活 Conda 环境，包括其环境变量和激活钩子；如已自行准备好运行环境，
 也可以设置 `SAM3_PYTHON="/path/to/env/bin/python"` 直接运行，此时跳过 Conda 激活。
 
-如果 SAM3 已由其他方式启动、位于远程服务器，或使用外部 TRT 服务，可以关闭本地 SAM3 管理：
+本地已启动的 SAM3 / FoundationPose 会自动复用。如果 SAM3 位于远程服务器，
+使用外部 TRT 服务，或希望完全跳过本地检查，可以关闭本地 SAM3 管理：
 
 ```bash
 export START_SAM3=0
@@ -108,7 +114,7 @@ bash start_services.sh
 
 此模式跳过 SAM3 的启动和检查，不会接管外部 SAM3 进程。
 `stop` / `restart` 仍会清理本脚本此前启动且记录在 PID 文件中的本地 SAM3。
-FoundationPose 已由其他方式运行或不处理篮筐时，也可以设置 `START_FOUNDATIONPOSE=0`，
+FoundationPose 位于远程服务器或不处理篮筐时，也可以设置 `START_FOUNDATIONPOSE=0`，
 跳过 FoundationPose 的启动和检查；远程地址可通过 `BASKET_FP_URL` 指定。
 停止和重启同样只处理本脚本已记录的进程，不会接管外部 FoundationPose。
 
@@ -124,7 +130,7 @@ FoundationPose 内部的 `SAM3_API_URL` 保留原脚本默认值 `http://127.0.0
 | --- | --- |
 | `SERVICE_HOST` | `0.0.0.0`，两个服务的监听地址 |
 | `PERCEPTION_PORT` / `ESTIMATION_PORT` | `25546` / `25540` |
-| `START_SAM3` | 默认 `1`，启动本地 SAM3；设为 `0` 使用外部服务 |
+| `START_SAM3` | 默认 `1`，自动复用已运行的 SAM3，未运行才启动；设为 `0` 跳过启动和检查 |
 | `SAM3_DIR` | `/data/steven/sam3_api`，应包含 `backend/app.py` |
 | `SAM3_CONDA_ENV` / `SAM3_CONDA_SH` | 环境名默认 `sam3`；可指定 Conda 激活脚本路径 |
 | `SAM3_PYTHON` | 可选，直接指定 SAM3 Python，跳过 Conda 激活 |
@@ -132,7 +138,7 @@ FoundationPose 内部的 `SAM3_API_URL` 保留原脚本默认值 `http://127.0.0
 | `SAM3_BACKEND` | `multipart_segment`；外部 TRT 设为 `legacy_18003` 并设置 `START_SAM3=0`，默认地址随之变为 `http://127.0.0.1:25551/infer` |
 | `SAM3_HEALTH_URL` | 可选，部署提供的专用健康检查地址 |
 | `SAM3_START_TIMEOUT` | SAM3 接口启动等待秒数，默认 `300` |
-| `START_FOUNDATIONPOSE` | 默认 `1`；设为 `0` 跳过本地 FoundationPose 的启动和检查 |
+| `START_FOUNDATIONPOSE` | 默认 `1`，自动复用已运行的 FoundationPose，未运行才启动；设为 `0` 跳过启动和检查 |
 | `FOUNDATIONPOSE_SCRIPT` | 默认仓库内 `start_25550.sh`；自定义脚本须支持 `--foreground` 并 `exec` 服务进程 |
 | `FOUNDATIONPOSE_ROOT` | 默认 `/data/quinn/foundationpose`，FoundationPose 代码、环境和模型根目录 |
 | `FOUNDATIONPOSE_PYTHON` | 默认 `$FOUNDATIONPOSE_ROOT/env/bin/python` |
