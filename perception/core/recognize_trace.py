@@ -26,6 +26,8 @@ class DecodeAttemptTrace:
 
 @dataclass
 class RecognizePipelineTrace:
+    request_id: str = ""
+    operation: str = "recognize_sku_barcode"
     sku_id: str = ""
     name: str = ""
     image_path: str = ""
@@ -96,7 +98,7 @@ class RecognizePipelineTrace:
 
     def format_summary(self) -> str:
         lines: list[str] = [
-            f"step=pipeline_summary status={self.status}",
+            f"step=pipeline_summary request_id={self.request_id} operation={self.operation} status={self.status}",
             (
                 f"request sku_id={self.sku_id!r} name={self.name!r} "
                 f"image_source={self.image_source!r} "
@@ -104,6 +106,12 @@ class RecognizePipelineTrace:
                 f"sam3_threshold={self.sam3_threshold:.3f}"
             ),
         ]
+        if self.saved_image_path is not None:
+            lines.append(f"saved_image={self.saved_image_path!r}")
+        if self.status == "ERROR":
+            lines.append(f"ERROR: {self.failure_reason or 'request_failed'} "
+                         f"(total_ms={self.total_ms}, timings_ms={self.timings_ms})")
+            return "\n".join(lines)
 
         read_ms = self.timings_ms.get("read_image")
         if self.image_shape is not None:
@@ -147,6 +155,11 @@ class RecognizePipelineTrace:
 
         if self.selected_bbox is None:
             lines.extend(["  ↓", f"NOT_FOUND: 未选中候选 (total_ms={self.total_ms})"])
+            return "\n".join(lines)
+
+        if self.operation == "locate_sku_qr_code":
+            lines.append(f"FOUND: bbox={self.selected_bbox} "
+                         f"(total_ms={self.total_ms}, timings_ms={self.timings_ms})")
             return "\n".join(lines)
 
         lines.append("  ↓")
@@ -208,8 +221,6 @@ class RecognizePipelineTrace:
                 f"NOT_FOUND: {reason} (total_ms={self.total_ms}, "
                 f"timings_ms={self.timings_ms})"
             )
-            if self.saved_image_path is not None:
-                not_found_line += f", saved_image={self.saved_image_path!r}"
             lines.append(not_found_line)
 
         return "\n".join(lines)

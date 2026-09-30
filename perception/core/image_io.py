@@ -11,17 +11,17 @@ import numpy as np
 from fastapi import HTTPException
 
 
-def load_image_from_path(image_path: str) -> np.ndarray:
+def read_image_from_path(image_path: str) -> bytes:
     path = Path(image_path).expanduser()
     if not path.is_file():
         raise HTTPException(status_code=400, detail=f"图片不存在: {image_path}")
-    image = cv2.imread(str(path), cv2.IMREAD_COLOR)
-    if image is None:
-        raise HTTPException(status_code=400, detail=f"无法读取图片: {image_path}")
-    return image
+    try:
+        return path.read_bytes()
+    except OSError as error:
+        raise HTTPException(status_code=400, detail=f"无法读取图片: {image_path}") from error
 
 
-def load_image_from_base64(image_base64: str) -> np.ndarray:
+def read_image_from_base64(image_base64: str) -> bytes:
     encoded = image_base64.strip()
     if not encoded:
         raise HTTPException(status_code=400, detail="图片不能为空")
@@ -33,10 +33,27 @@ def load_image_from_base64(image_base64: str) -> np.ndarray:
         raise HTTPException(status_code=400, detail="图片 Base64 格式错误") from error
     if not image_bytes:
         raise HTTPException(status_code=400, detail="图片不能为空")
-    image = cv2.imdecode(np.frombuffer(image_bytes, np.uint8), cv2.IMREAD_COLOR)
+    return image_bytes
+
+
+def decode_image_bytes(image_bytes: bytes) -> np.ndarray:
+    if not image_bytes:
+        raise HTTPException(status_code=400, detail="图片不能为空")
+    try:
+        image = cv2.imdecode(np.frombuffer(image_bytes, np.uint8), cv2.IMREAD_COLOR)
+    except cv2.error as error:
+        raise HTTPException(status_code=400, detail="无法读取图片: 内容不是有效图片") from error
     if image is None:
-        raise HTTPException(status_code=400, detail="无法读取图片: Base64 内容不是有效图片")
+        raise HTTPException(status_code=400, detail="无法读取图片: 内容不是有效图片")
     return image
+
+
+def load_image_from_path(image_path: str) -> np.ndarray:
+    return decode_image_bytes(read_image_from_path(image_path))
+
+
+def load_image_from_base64(image_base64: str) -> np.ndarray:
+    return decode_image_bytes(read_image_from_base64(image_base64))
 
 
 def load_request_image(

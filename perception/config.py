@@ -54,6 +54,18 @@ RECOGNIZE_SKU_BARCODE_LOG_PATH = os.getenv(
     "RECOGNIZE_SKU_BARCODE_LOG_PATH",
     str(_PERCEPTION_ROOT / "logs" / "recognize_sku_barcode.log"),
 )
+PERCEPTION_REQUEST_LOG_PATH = os.getenv(
+    "PERCEPTION_REQUEST_LOG_PATH",
+    str(Path(RECOGNIZE_SKU_BARCODE_LOG_PATH).parent / "requests.log"),
+)
+PERCEPTION_REQUEST_DIR = os.getenv(
+    "PERCEPTION_REQUEST_DIR",
+    str(Path(RECOGNIZE_SKU_BARCODE_LOG_PATH).parent / "requests"),
+)
+PERCEPTION_LOG_MAX_BYTES = int(os.getenv("PERCEPTION_LOG_MAX_BYTES", "10485760"))
+PERCEPTION_LOG_BACKUP_COUNT = int(os.getenv("PERCEPTION_LOG_BACKUP_COUNT", "5"))
+# Keep request evidence unless the operator explicitly configures expiration.
+PERCEPTION_REQUEST_RETENTION_DAYS = int(os.getenv("PERCEPTION_REQUEST_RETENTION_DAYS", "0"))
 
 
 def camera_snapshot_url(camera: str) -> str:

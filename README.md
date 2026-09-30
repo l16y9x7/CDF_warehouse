@@ -70,8 +70,9 @@ bash start_services.sh restart  # 恢复本仓库业务服务的 PID 记录后�
 /data/CDF_warehouse/logs/
 ├── perception/
 │   ├── perception.log                 # 服务标准输出和错误
-│   ├── recognize_sku_barcode.log      # 识别流水线日志
-│   └── not_found_*.jpg                # 识别失败图片（有失败时生成）
+│   ├── requests.log                   # 带 request_id 的请求开始/结束日志
+│   ├── recognize_sku_barcode.log       # 条码识别及定位流程摘要
+│   └── requests/日期/request_id/      # 请求参数、原始图、响应和 trace
 ├── estimation/
 │   ├── estimation.log                 # 服务标准输出和错误
 │   └── requests/                      # 推理请求、结果及调试文件
@@ -83,7 +84,8 @@ bash start_services.sh restart  # 恢复本仓库业务服务的 PID 记录后�
 ```
 
 可用 `CDF_LOG_DIR` 覆盖根目录（必须为绝对路径，后续所有管理命令使用同一值）。
-`RECOGNIZE_SKU_BARCODE_LOG_PATH` 和 `AXIS_SERVICE_OUTPUT` 若已显式设置，优先使用这些值。
+`RECOGNIZE_SKU_BARCODE_LOG_PATH`、`PERCEPTION_REQUEST_DIR` 和 `AXIS_SERVICE_OUTPUT`
+若已显式设置，优先使用这些值。perception 的请求归档说明见 [perception README](perception/README.md#请求日志和原始图片归档)。
 仓库根目录 `logs/` 整体已加入 `.gitignore`，包括日志、图片、请求数据、PID、锁和本地
 `logs/checks/` 测试文件；旧 `.runtime/` 也继续忽略。PID 和锁用于管理进程，不应在服务运行时清空。
 
@@ -162,7 +164,11 @@ FoundationPose 内部的 `SAM3_API_URL` 保留原脚本默认值 `http://127.0.0
 | 环境变量 | 默认值 / 用途 |
 | --- | --- |
 | `CDF_LOG_DIR` | `/data/CDF_warehouse/logs`，各服务日志及 `runtime/` PID、锁文件的共同根目录 |
-| `RECOGNIZE_SKU_BARCODE_LOG_PATH` | `$CDF_LOG_DIR/perception/recognize_sku_barcode.log`，识别失败图片也写入此文件所在目录 |
+| `RECOGNIZE_SKU_BARCODE_LOG_PATH` | `$CDF_LOG_DIR/perception/recognize_sku_barcode.log`，识别及定位流程摘要 |
+| `PERCEPTION_REQUEST_LOG_PATH` | 默认识别日志同目录的 `requests.log`，请求开始/结束及归档错误 |
+| `PERCEPTION_REQUEST_DIR` | 默认识别日志同目录的 `requests/`，按日期和 request_id 归档所有识别及定位请求 |
+| `PERCEPTION_LOG_MAX_BYTES` / `PERCEPTION_LOG_BACKUP_COUNT` | 两份 perception 业务日志各自按 10 MiB 轮转，最多保留 5 份备份（单进程部署） |
+| `PERCEPTION_REQUEST_RETENTION_DAYS` | 默认 `0` 不自动删除；正整数启用旧请求归档清理，例如 `7` |
 | `AXIS_SERVICE_OUTPUT` | `$CDF_LOG_DIR/estimation/requests`，estimation 请求与调试文件 |
 | `SERVICE_HOST` | `0.0.0.0`，两个服务的监听地址 |
 | `PERCEPTION_PORT` / `ESTIMATION_PORT` | `25546` / `25540` |

@@ -39,6 +39,10 @@ Usage: bash start_services.sh [start|stop|restart|status|install|help]
 Configuration (environment variables):
   CDF_LOG_DIR                          Log root (/data/CDF_warehouse/logs)
   RECOGNIZE_SKU_BARCODE_LOG_PATH        Recognition log (logs/perception/recognize_sku_barcode.log)
+  PERCEPTION_REQUEST_DIR              Request archives (logs/perception/requests)
+  PERCEPTION_REQUEST_RETENTION_DAYS    Archive expiration (0: keep all; e.g. 7)
+  PERCEPTION_LOG_MAX_BYTES             Business log rotation size (10485760)
+  PERCEPTION_LOG_BACKUP_COUNT          Business log backups (5)
   AXIS_SERVICE_OUTPUT                  Estimation artifacts (logs/estimation/requests)
   PERCEPTION_PYTHON / ESTIMATION_PYTHON  Existing Python executable paths
   SERVICE_HOST                         Bind address (default: 0.0.0.0)

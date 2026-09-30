@@ -8,6 +8,7 @@ import numpy as np
 
 from clients.sam3_client import SamInstance, SamLocateConfig, SamLocateResult, locate_sam3_instances
 from config import RECOGNIZE_SKU_BARCODE_CENTER_DISTANCE_MAX
+from core.recognize_trace import RecognizePipelineTrace
 from models.sku_locate import SamLocateResponse, build_locate_response
 
 SKU_LOCATE_TOP_K = 16
@@ -117,12 +118,16 @@ def locate_sku_qr_code(
     sam3_threshold: float = 0.5,
     center_distance_max: float | None = None,
     timings_ms: dict[str, float] | None = None,
+    trace: RecognizePipelineTrace | None = None,
 ) -> SamLocateResponse:
     distance_max = (
         RECOGNIZE_SKU_BARCODE_CENTER_DISTANCE_MAX
         if center_distance_max is None
         else center_distance_max
     )
+    if trace is not None:
+        trace.image_shape = (image_bgr.shape[1], image_bgr.shape[0])
+        trace.center_distance_max = distance_max
     context = locate_sku_with_center_filter(
         image_bgr,
         sam3_prompt=sam3_prompt,
@@ -130,6 +135,18 @@ def locate_sku_qr_code(
         center_distance_max=distance_max,
         timings_ms=timings_ms,
     )
+    if trace is not None:
+        trace.record_sam3_candidates(context.instances, image_bgr.shape,
+                                     center_distance_max=distance_max, center_distance_fn=bbox_center_distance)
+        trace.filtered_count = context.filtered_count
+        trace.failure_reason = context.failure_reason
+        if context.selected is not None:
+            trace.selected_bbox = list(context.selected.bbox)
+            trace.selected_score = float(context.selected.score)
+            trace.selected_center_dist = bbox_center_distance(context.selected.bbox, image_bgr.shape)
+            trace.selected_index = next(
+                index for index, item in enumerate(context.instances, start=1) if item is context.selected
+            )
     if context.selected is None:
         return build_locate_response(bbox=None, mask=None)
     return build_locate_response(

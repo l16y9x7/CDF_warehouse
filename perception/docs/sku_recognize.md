@@ -327,7 +327,11 @@ $env:SAM3_BACKEND = "segment"   # infer | segment
 |--------|--------|------|
 | `RECOGNIZE_SKU_BARCODE_LOG_PATH` | `logs/recognize_sku_barcode.log` | 流程日志文件路径 |
 
-每次请求**结束时**打印一条 `pipeline_summary` 多行日志，汇总完整内部流程（与 §4.1 流程图一致）：读图、SAM3 各候选及 pass/reject、中心过滤、扩边裁 ROI、OpenCV decode 命中路径、耗时与最终结果。日志同时输出到 **控制台（uvicorn）** 和 **日志文件**。
+每次进入识别流程的请求结束时，向轮转业务日志写入一条带 `request_id` 的 `pipeline_summary` 多行摘要：
+读图、SAM3 候选及 pass/reject、中心过滤、扩边裁 ROI、OpenCV decode 命中路径、耗时与最终结果。
+详细摘要不再重复输出到控制台。所有请求（包括校验错误）另外按日期及 request_id 保存请求参数、
+可读取的原始图片、响应和 trace；通过 `X-Request-ID` 响应头关联。目录、异常覆盖及保留配置见
+[请求归档说明](../README.md#请求日志和原始图片归档)。
 
 示例：
 
