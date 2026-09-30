@@ -49,6 +49,7 @@ EVENT_MESSAGES = {
     "workflow.node.started": "工作流节点开始执行",
     "workflow.node.succeeded": "工作流节点执行成功",
     "workflow.node.failed": "工作流节点执行失败",
+    "workflow.node.cancelled": "工作流节点已取消",
     "skill.started": "技能开始执行",
     "skill.succeeded": "技能执行成功",
     "skill.failed": "技能执行失败",

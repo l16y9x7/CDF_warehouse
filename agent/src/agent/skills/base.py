@@ -66,6 +66,8 @@ def emit_succeeded(context: ExecutionContext, skill: str, **data: Any) -> None:
 
 def emit_failed(context: ExecutionContext, skill: str, error: BaseException, **data: Any) -> None:
     normalized = normalize_error(error)
+    if getattr(normalized, "code", None) == "CANCELLED":
+        return
     started = context._timers.pop(f"skill:{skill}", None)
     if started is not None:
         data.setdefault("duration_ms", round((time.monotonic() - started) * 1000, 3))

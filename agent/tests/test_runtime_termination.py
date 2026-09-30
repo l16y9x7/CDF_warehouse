@@ -8,7 +8,38 @@ import httpx
 
 from agent.runtime import AgentRuntime, CallbackSender, RobotBusyError
 from agent.task_store import SqliteTaskStore
+from agent.tracing import TracedCapability
 from agent.workflows.base import NodeRunner
+
+
+class TwoStepCapability:
+    def __init__(self) -> None:
+        self.calls: list[str] = []
+        self.started = threading.Event()
+        self.release = threading.Event()
+
+    def first(self) -> str:
+        self.calls.append("first")
+        self.started.set()
+        self.release.wait(2)
+        return "first"
+
+    def second(self) -> str:
+        self.calls.append("second")
+        return "second"
+
+
+class TwoStepWorkflow:
+    def __init__(self, capability: TwoStepCapability) -> None:
+        self.capability = TracedCapability("demo", capability)
+
+    def run(self, context, workflow_input):
+        def action():
+            self.capability.first()
+            self.capability.second()
+
+        NodeRunner(context).run("step", action)
+        return {}
 
 
 class BlockingWorkflow:
@@ -94,6 +125,41 @@ class AgentRuntimeTerminationTest(unittest.TestCase):
         )
         self.runtime.wait("two")
         self.assertEqual(self.store.get("two")["status"], "SUCCEEDED")
+
+
+class CapabilityBoundaryTerminationTest(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.store = SqliteTaskStore(Path(self.temp.name) / "tasks.db")
+        self.capability = TwoStepCapability()
+        self.workflow = TwoStepWorkflow(self.capability)
+        sender = CallbackSender(
+            self.store,
+            backoff=0,
+            client=httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(204))),
+        )
+        self.runtime = AgentRuntime(
+            self.store, lambda _: self.workflow, callback_sender=sender, max_workers=1
+        )
+
+    def tearDown(self):
+        self.capability.release.set()
+        self.runtime.shutdown()
+        self.temp.cleanup()
+
+    def test_terminate_skips_the_next_capability_call(self):
+        self.assertTrue(
+            self.runtime.accept("one", "test", "http://callback", {"task_id": "one"}, None)
+        )
+        self.assertTrue(self.capability.started.wait(1))
+        self.assertEqual(self.runtime.terminate(), "one")
+        self.capability.release.set()
+        self.runtime.wait("one")
+
+        self.assertEqual(self.capability.calls, ["first"])
+        task = self.store.get("one")
+        self.assertEqual(task["status"], "CANCELLED")
+        self.assertEqual(task["error_code"], "CANCELLED")
 
 
 if __name__ == "__main__":

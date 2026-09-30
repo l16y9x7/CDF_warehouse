@@ -79,10 +79,11 @@ class NodeRunner:
             if on_success is not None:
                 on_success(result)
         except Exception as exc:
+            cancelled = getattr(exc, "code", None) == "CANCELLED"
             self.context.emit(
-                "workflow.node.failed",
+                "workflow.node.cancelled" if cancelled else "workflow.node.failed",
                 workflow_node=node_id,
-                status="FAILED",
+                status="CANCELLED" if cancelled else "FAILED",
                 error_code=getattr(exc, "code", type(exc).__name__),
                 error_message=str(exc),
                 duration_ms=round((time.monotonic() - started) * 1000, 3),
@@ -90,7 +91,11 @@ class NodeRunner:
             if self.store is not None and hasattr(self.store, "record_node"):
                 self.store.record_node(
                     self.context.task_id,
-                    {"node_id": node_id, "status": "FAILED", "error": str(exc)},
+                    {
+                        "node_id": node_id,
+                        "status": "CANCELLED" if cancelled else "FAILED",
+                        "error": str(exc),
+                    },
                 )
             raise
         self.context.emit(
@@ -102,8 +107,8 @@ class NodeRunner:
                 self.context.task_id, {"node_id": node_id, "status": "SUCCEEDED"}
             )
         self._save_state()
-        # A synchronous capability cannot be interrupted safely. Honour a
-        # cancellation as soon as that call returns and before another node starts.
+        # The capability call already in progress is allowed to finish. The next
+        # capability call is refused separately, and the next node does not start.
         check_context(self.context)
         return result
 
