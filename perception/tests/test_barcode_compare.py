@@ -111,7 +111,7 @@ class BarcodeComparisonTests(unittest.IsolatedAsyncioTestCase):
 
     def test_sr_cache_reuses_per_thread_but_never_shares_across_threads(self):
         with tempfile.TemporaryDirectory() as directory:
-            for name in ("sr.prototxt", "sr.caffemodel"):
+            for name in ("sr.prototxt", "sr.caffemodel", "sr.onnx"):
                 (Path(directory) / name).write_bytes(b"test")
             gate = Barrier(2)
 
@@ -129,6 +129,31 @@ class BarcodeComparisonTests(unittest.IsolatedAsyncioTestCase):
                 self.assertIsNot(results[0], results[1])
                 self.assertEqual(construct.call_count, 2)
 
+    def test_sr_selects_version_specific_constructor_and_cache(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for name in ("sr.prototxt", "sr.caffemodel", "sr.onnx"):
+                (Path(directory) / name).write_bytes(b"test")
+            with patch.object(barcode_compare, "PERCEPTION_BARCODE_SR_MODEL_DIR", Path(directory)), \
+                    patch.object(barcode_compare, "_thread_models", local()), \
+                    patch.object(cv2.barcode, "BarcodeDetector", side_effect=lambda *args: object()) as construct:
+                for version, names in (("4.13.0", ["sr.prototxt", "sr.caffemodel"]), ("5.0.0", ["sr.onnx"])):
+                    with self.subTest(version=version), patch.object(cv2, "__version__", version):
+                        detector = barcode_compare._get_sr_detector()
+                        self.assertEqual([Path(path).name for path in construct.call_args.args], names)
+                        self.assertIs(detector, barcode_compare._get_sr_detector())
+                self.assertEqual(construct.call_count, 2)
+
+    def test_opencv5_missing_onnx_reports_required_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for name in ("sr.prototxt", "sr.caffemodel"):
+                (Path(directory) / name).write_bytes(b"test")
+            with patch.object(barcode_compare, "PERCEPTION_BARCODE_SR_MODEL_DIR", Path(directory)), \
+                    patch.object(cv2, "__version__", "5.0.0"), \
+                    patch.object(cv2.barcode, "BarcodeDetector") as construct:
+                with self.assertRaisesRegex(FileNotFoundError, "requires SR model file .*sr.onnx"):
+                    barcode_compare._get_sr_detector()
+                construct.assert_not_called()
+
     def test_zxing_filters_to_linear_and_logs_all_valid_codes(self):
         module = SimpleNamespace(
             BarcodeFormat=SimpleNamespace(LinearCodes="linear-only"),
@@ -142,6 +167,20 @@ class BarcodeComparisonTests(unittest.IsolatedAsyncioTestCase):
             barcode_compare._run_zxing_cpp(self.image, result)
         self.assertEqual(read.call_args.kwargs["formats"], "linear-only")
         self.assertEqual(result.codes, [{"content": "ABC123", "format": "Code128"}])
+        self.assertEqual(len(result.attempts), 1)
+        self.assertEqual(result.attempts[0]["rotation"], 0)
+
+    def test_zxing_rotation_retries_stop_at_first_valid_result(self):
+        module = SimpleNamespace(BarcodeFormat=SimpleNamespace(LinearCodes="linear-only"), read_barcodes=None)
+        found = SimpleNamespace(text="3282779003131", format="EAN13", valid=True)
+        result = BarcodeComparisonTrace("zxing_cpp")
+        with patch.object(barcode_compare, "import_module", return_value=module), \
+                patch.object(module, "read_barcodes", side_effect=[[], [], [found]]) as read:
+            barcode_compare._run_zxing_cpp(self.image, result)
+        self.assertEqual(read.call_count, 3)
+        self.assertEqual([item["rotation"] for item in result.attempts], [0, -5, 5])
+        self.assertEqual([item["status"] for item in result.attempts], ["NOT_FOUND", "NOT_FOUND", "FOUND"])
+        self.assertEqual(result.codes[0]["content"], "3282779003131")
 
 
 class NativeBarcodeSmokeTests(unittest.TestCase):
@@ -152,8 +191,7 @@ class NativeBarcodeSmokeTests(unittest.TestCase):
             self.skipTest("zxing-cpp not installed in this interpreter")
         if not hasattr(zxingcpp, "read_barcodes"):
             self.skipTest("zxing-cpp native module is unavailable")
-        directory = Path(barcode_compare.PERCEPTION_BARCODE_SR_MODEL_DIR)
-        if not all((directory / name).is_file() for name in ("sr.prototxt", "sr.caffemodel")):
+        if not all(path.is_file() for path in barcode_compare._sr_model_paths()):
             self.skipTest("SR model files not installed")
         image = ean13_sample()
         height, width = image.shape[:2]
@@ -173,8 +211,7 @@ class NativeBarcodeSmokeTests(unittest.TestCase):
         self.assertTrue({"decode", "decode_comparisons", "decode_parallel"} <= trace.timings_ms.keys())
 
     def test_real_sr_model_and_original_decoder(self):
-        directory = Path(barcode_compare.PERCEPTION_BARCODE_SR_MODEL_DIR)
-        if not all((directory / name).is_file() for name in ("sr.prototxt", "sr.caffemodel")):
+        if not all(path.is_file() for path in barcode_compare._sr_model_paths()):
             self.skipTest("SR model files not installed")
         image = ean13_sample()
         expected = "5901234123457"
@@ -198,6 +235,23 @@ class NativeBarcodeSmokeTests(unittest.TestCase):
         result = BarcodeComparisonTrace("zxing_cpp")
         barcode_compare._run_zxing_cpp(np.full_like(image, 255), result)
         self.assertEqual(result.codes, [])
+        self.assertEqual(len(result.attempts), len(barcode_compare.ZXING_RETRY_ANGLES))
+
+    def test_zxing_tilted_archived_barcode_recovers_after_native_miss(self):
+        try:
+            import zxingcpp
+        except ImportError:
+            self.skipTest("zxing-cpp not installed in this interpreter")
+        if not hasattr(zxingcpp, "read_barcodes"):
+            self.skipTest("zxing-cpp native module is unavailable")
+        fixture = Path(__file__).parent / "fixtures/barcode_tilted_21b789.png"
+        image = cv2.imdecode(np.frombuffer(fixture.read_bytes(), dtype=np.uint8), cv2.IMREAD_COLOR)
+        result = BarcodeComparisonTrace("zxing_cpp")
+        barcode_compare._run_zxing_cpp(image, result)
+        self.assertEqual(result.codes[0]["content"], "3282779003131")
+        # Version 3.1.1 misses the native crop and succeeds on a +25 degree
+        # retry; future native improvements may also pass on the first call.
+        self.assertEqual(result.attempts[-1]["status"], "FOUND")
 
 
 if __name__ == "__main__":

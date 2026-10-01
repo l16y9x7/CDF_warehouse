@@ -58,8 +58,10 @@ curl -X POST "http://127.0.0.1:25546/perception/recognize_sku_barcode" \
 
 识别接口默认额外运行两种方法：`opencv_sr`（加载超分模型的 OpenCV BarcodeDetector）和
 `zxing_cpp`（ZXing-C++，限定一维条码）。三种方法使用同一次 SAM3 定位选出的条码区域及相同的
-bbox 扩边比例，不增加 SAM3 请求。OpenCV 超分沿用原方法的预处理和旋转顺序；ZXing 使用原始裁剪，
-由其内部完成旋转、缩小等搜索。
+bbox 扩边比例，不增加 SAM3 请求。OpenCV 超分沿用原方法的预处理和旋转顺序；ZXing 先使用原始裁剪，
+开启内部正交方向和缩小搜索。原图未识别到时，再按 ±5°、±10°……±45° 进行小角度旋转重试，
+任一成功立即停止，最多 19 次调用。每次的角度、结果和耗时分别写入 `attempts`；
+原图成功时不增加重试开销，倾斜条码或空白图会增加对照耗时。
 
 **新增方法只写日志，响应始终使用原 OpenCV 方法的结果。** 原方法返回 `NOT_FOUND` 时，即使
 对照方法识别成功，接口仍返回 `NOT_FOUND`；新增方法缺依赖、模型缺失或解码异常也不会替换原返回值。
@@ -76,15 +78,24 @@ SAM3 定位完成后，原 OpenCV、OpenCV 超分、ZXing 三种解码方法通�
 如需停用，设置 `PERCEPTION_BARCODE_COMPARISON_ENABLED=0` 后重启服务。
 
 在运行 perception 的 Python 环境安装 `requirements.txt`，其中包含 `zxing-cpp>=2.3,<4`。
-超分默认读取以下文件，无需移动现有目录，也不使用该仓库的 `detect.*` 模型：
+超分默认读取以下文件，无需移动现有目录，也不使用该仓库的 `detect.*` 模型。
+**OpenCV 4 使用两个 Caffe 文件；OpenCV 5 使用单个 ONNX 文件**，代码按实际版本选择构造参数：
 
 ```text
-perception/opencv_3rdparty-wechat_qrcode/sr.prototxt
-perception/opencv_3rdparty-wechat_qrcode/sr.caffemodel
+perception/opencv_3rdparty-wechat_qrcode/sr.prototxt     # OpenCV 4
+perception/opencv_3rdparty-wechat_qrcode/sr.caffemodel   # OpenCV 4
+perception/opencv_3rdparty-wechat_qrcode/sr.onnx        # OpenCV 5
 ```
+
+部署 OpenCV 5 时，务必同步仓库内的 `sr.onnx`；仅同步 Python 文件仍会报模型缺失。
+该 ONNX 文件由同目录的原始 Caffe 权重转换，已用不同尺寸输入核对输出一致性，无需降级服务器 OpenCV。
+开发时可在安装 OpenCV 4、`onnx`、`onnxruntime` 的环境执行
+`python perception/tools/convert_wechat_sr_to_onnx.py` 重新生成；服务运行不需要这两个转换依赖。
+版本接口变化见 [OpenCV 5 BarcodeDetector 文档](https://docs.opencv.org/5.0/main_modules/objdetect_barcode.html)。
 
 模型在线程内缓存复用，各线程独立持有检测器。`runtime.sr_configured=true` 只表示模型成功加载；
 是否实际执行超分由 OpenCV 内部按条码尺寸决定，Python 接口无法直接观察，不代表每次都经过超分。
+`runtime.model_format` 和 `runtime.model_files` 记录本次实际选择的格式及文件。
 
 ## 请求日志和原始图片归档
 

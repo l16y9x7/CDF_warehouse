@@ -19,6 +19,9 @@ from services.qr_decode import (
 )
 
 COMPARISON_METHODS = ("opencv_sr", "zxing_cpp")
+# ZXing's built-in rotation only adds orthogonal scan directions. Cover the
+# remaining angles after a native miss, at most 19 calls including native.
+ZXING_RETRY_ANGLES = (0,) + tuple(angle for step in range(5, 46, 5) for angle in (-step, step))
 _thread_models = local()
 
 
@@ -26,12 +29,24 @@ def skipped_comparisons(reason: str) -> dict[str, BarcodeComparisonTrace]:
     return {method: BarcodeComparisonTrace(method=method, reason=reason) for method in COMPARISON_METHODS}
 
 
+def _sr_model_paths() -> tuple[Path, ...]:
+    directory = Path(PERCEPTION_BARCODE_SR_MODEL_DIR)
+    if int(cv2.__version__.split(".")[0]) >= 5:
+        return (directory / "sr.onnx",)
+    return (directory / "sr.prototxt", directory / "sr.caffemodel")
+
+
 def _get_sr_detector():
     # OpenCV DNN Net is mutable during inference. Never share a detector between
     # FastAPI worker threads. Reload only if the files or configured path change.
-    directory = Path(PERCEPTION_BARCODE_SR_MODEL_DIR)
-    paths = (directory / "sr.prototxt", directory / "sr.caffemodel")
-    key = tuple((str(path), path.stat().st_mtime_ns, path.stat().st_size) for path in paths)
+    paths = _sr_model_paths()
+    for path in paths:
+        if not path.is_file():
+            raise FileNotFoundError(
+                f"OpenCV {cv2.__version__} requires SR model file {path}; "
+                "OpenCV 5 uses sr.onnx, OpenCV 4 uses sr.prototxt + sr.caffemodel"
+            )
+    key = (cv2.__version__, tuple((str(path), path.stat().st_mtime_ns, path.stat().st_size) for path in paths))
     cached = getattr(_thread_models, "sr", None)
     if cached is None or cached[0] != key:
         if not hasattr(cv2, "dnn"):
@@ -63,6 +78,8 @@ def _run_opencv_sr(crop: np.ndarray, result: BarcodeComparisonTrace) -> None:
     result.runtime.update({
         "opencv_version": cv2.__version__,
         "model_dir": str(PERCEPTION_BARCODE_SR_MODEL_DIR),
+        "model_format": "onnx" if len(_sr_model_paths()) == 1 else "caffe",
+        "model_files": [path.name for path in _sr_model_paths()],
         # BarcodeDetector does not expose whether its internal size gate ran SR.
         # Do not claim that every successful attempt actually used the network.
         "sr_configured": False,
@@ -106,28 +123,35 @@ def _run_zxing_cpp(crop: np.ndarray, result: BarcodeComparisonTrace) -> None:
         result.runtime["zxing_cpp_version"] = metadata.version("zxing-cpp")
     except metadata.PackageNotFoundError:
         result.runtime["zxing_cpp_version"] = "unknown"
-    result.runtime.update({"formats": "LinearCodes", "try_rotate": True, "try_downscale": True})
-    attempt = {
-        "tier": "native", "rotation": "automatic", "variant": "bgr",
-        "candidate_shape": [crop.shape[1], crop.shape[0]], "status": "ERROR", "codes": [],
-    }
-    result.attempts.append(attempt)
-    started = time.perf_counter()
-    try:
-        decoded = zxingcpp.read_barcodes(
-            crop, formats=zxingcpp.BarcodeFormat.LinearCodes,
-            try_rotate=True, try_downscale=True,
-        )
-        result.codes = [
-            {"content": item.text.strip(), "format": str(item.format)}
-            for item in decoded if item.valid and item.text and item.text.strip()
-        ]
-        attempt.update(status="FOUND" if result.codes else "NOT_FOUND", codes=result.codes)
-    except Exception as error:
-        attempt["error"] = f"{type(error).__name__}: {error}"
-        raise
-    finally:
-        attempt["duration_ms"] = round((time.perf_counter() - started) * 1000, 1)
+    result.runtime.update({
+        "formats": "LinearCodes", "try_rotate": True, "try_downscale": True,
+        "retry_angles": list(ZXING_RETRY_ANGLES),
+    })
+    for angle in ZXING_RETRY_ANGLES:
+        started = time.perf_counter()
+        candidate = crop if angle == 0 else _rotate_image(crop, float(angle))
+        attempt = {
+            "tier": "native" if angle == 0 else "rotation_retry", "rotation": angle, "variant": "bgr",
+            "candidate_shape": [candidate.shape[1], candidate.shape[0]], "status": "ERROR", "codes": [],
+        }
+        result.attempts.append(attempt)
+        try:
+            decoded = zxingcpp.read_barcodes(
+                candidate, formats=zxingcpp.BarcodeFormat.LinearCodes,
+                try_rotate=True, try_downscale=True,
+            )
+            result.codes = [
+                {"content": item.text.strip(), "format": str(item.format)}
+                for item in decoded if item.valid and item.text and item.text.strip()
+            ]
+            attempt.update(status="FOUND" if result.codes else "NOT_FOUND", codes=result.codes)
+        except Exception as error:
+            attempt["error"] = f"{type(error).__name__}: {error}"
+            raise
+        finally:
+            attempt["duration_ms"] = round((time.perf_counter() - started) * 1000, 1)
+        if result.codes:
+            return
 
 
 def _run_comparison(decode, crop: np.ndarray, result: BarcodeComparisonTrace) -> None:
