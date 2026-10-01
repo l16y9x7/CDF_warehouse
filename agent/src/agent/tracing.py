@@ -6,6 +6,7 @@ from typing import Any
 
 from agent.contracts import ExecutionContext, current_execution_context
 from agent.observability import log_context
+from agent.workflows.base import WorkflowCancelled
 
 
 def _call_input(function: Any, args: tuple[Any, ...], kwargs: dict[str, Any]) -> Any:
@@ -33,6 +34,8 @@ class TracedCapability:
             context = current_execution_context()
             if context is None:
                 return attribute(*args, **kwargs)
+            if context.is_cancelled:
+                raise WorkflowCancelled()
             span_id = context.trace_start(
                 "capability",
                 self._trace_name,
