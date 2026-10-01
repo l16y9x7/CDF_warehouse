@@ -87,6 +87,9 @@ def _trace_error_fields(error: BaseException) -> dict[str, Any]:
     operation = getattr(error, "operation", None)
     if operation:
         fields["error_operation"] = operation
+    response_body = getattr(error, "response_body", None)
+    if response_body:
+        fields["response_body"] = trace_value(response_body)
     return fields
 
 logger = logging.getLogger(__name__)

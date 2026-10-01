@@ -1,3 +1,4 @@
+import json
 import logging
 import time
 import uuid
@@ -12,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 IDEMPOTENCY_HEADER = "Idempotency-Key"
 _NO_BODY = object()
+# Raw remote error bodies kept for debug traces; HTML error pages can be large.
+_ERROR_BODY_MAX_CHARS = 4096
+_ERROR_MESSAGE_MAX_CHARS = 200
 
 
 def resolve_idempotency_key(idempotency_key: str | None = None) -> str:
@@ -142,22 +146,22 @@ class HttpCapabilityClient:
             )
             return response
 
+        response_body = response.text[:_ERROR_BODY_MAX_CHARS] or None
         try:
             body = response.json()
         except ValueError:
             body = {}
+        if not isinstance(body, dict):
+            body = {}
         error_code = body.get("error_code", "CAPABILITY_REQUEST_FAILED")
-        message = body.get(
-            "message",
-            body.get("error", f"capability returned HTTP {response.status_code}"),
-        )
+        message = _remote_error_message(body, response.status_code, response_body)
         log_event(
             logger, logging.ERROR, "capability.failed",
             f"{self.capability} 能力调用失败：外部模块返回错误",  # noqa: RUF001
             capability=self.capability, operation=f"{method} {path}", status="FAILED",
             http_status=response.status_code,
             duration_ms=round((time.monotonic() - started) * 1000, 3),
-            error_code=error_code, error_message=message,
+            error_code=error_code, error_message=message, response_body=response_body,
             suggestion="请检查外部模块状态和本次操作参数",
         )
         raise CapabilityError(
@@ -166,4 +170,16 @@ class HttpCapabilityClient:
             status_code=response.status_code,
             source=ErrorSource.REMOTE,
             operation=f"{method} {path}",
+            response_body=response_body,
         )
+
+
+def _remote_error_message(body: dict[str, Any], status_code: int, response_body: str | None) -> str:
+    """Pick the most specific error text a remote module returned."""
+    for key in ("message", "error", "detail"):
+        value = body.get(key)
+        if value:
+            return value if isinstance(value, str) else json.dumps(value, ensure_ascii=False)
+    if response_body and not body:
+        return f"capability returned HTTP {status_code}: {response_body[:_ERROR_MESSAGE_MAX_CHARS]}"
+    return f"capability returned HTTP {status_code}"

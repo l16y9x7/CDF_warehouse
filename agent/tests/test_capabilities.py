@@ -887,6 +887,24 @@ class PhysicalActionIdempotencyTest(unittest.TestCase):
         self.assertNotIn("class_name", body)
         self.assertNotIn("pose", body)
 
+    def test_place_basket_without_localization_result(self):
+        manipulation = self.adapter(HttpManipulationCapability)
+        manipulation.place(
+            PlaceRequest(
+                TaskType.SORTING,
+                TargetType.SKU,
+                DestinationType.BASKET,
+                Hand.RIGHT,
+                sku_typ="bottle",
+            ),
+            idempotency_key="place-no-localization-key",
+        )
+        self.assertEqual(self.requests[-1].headers[IDEMPOTENCY_HEADER], "place-no-localization-key")
+        body = json.loads(self.requests[-1].read())
+        self.assertEqual(body["target_type"], "sku")
+        self.assertEqual(body["sku_typ"], "bottle")
+        self.assertNotIn("localization_result", body)
+
     def test_push_flattens_infer_response(self):
         manipulation = self.adapter(HttpManipulationCapability)
         basket = {
@@ -995,3 +1013,42 @@ class PhysicalActionIdempotencyTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RemoteErrorDetailTest(unittest.TestCase):
+    def client(self, response):
+        raw = httpx.Client(
+            transport=httpx.MockTransport(lambda request: response), base_url="http://module"
+        )
+        self.addCleanup(raw.close)
+        return HttpCapabilityClient("http://module", client=raw)
+
+    def request_error(self, response):
+        with self.assertRaises(CapabilityError) as caught:
+            self.client(response).request_response("POST", "/do")
+        return caught.exception
+
+    def test_keeps_message_and_raw_body(self):
+        error = self.request_error(
+            httpx.Response(422, json={"error_code": "INVALID_INPUT", "message": "bad hand"})
+        )
+        self.assertEqual(error.error_code, "INVALID_INPUT")
+        self.assertEqual(error.message, "bad hand")
+        self.assertIn('"bad hand"', error.response_body)
+
+    def test_uses_fastapi_detail_when_message_missing(self):
+        detail = [{"loc": ["body", "hand"], "msg": "field required"}]
+        error = self.request_error(httpx.Response(422, json={"detail": detail}))
+        self.assertEqual(error.error_code, "CAPABILITY_REQUEST_FAILED")
+        self.assertIn("field required", error.message)
+
+    def test_non_json_body_is_preserved(self):
+        error = self.request_error(httpx.Response(502, text="<html>Bad Gateway</html>"))
+        self.assertIn("Bad Gateway", error.message)
+        self.assertEqual(error.response_body, "<html>Bad Gateway</html>")
+        self.assertEqual(error.status_code, 502)
+
+    def test_empty_body_keeps_generic_message(self):
+        error = self.request_error(httpx.Response(500))
+        self.assertEqual(error.message, "capability returned HTTP 500")
+        self.assertIsNone(error.response_body)

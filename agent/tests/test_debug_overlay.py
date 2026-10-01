@@ -14,29 +14,52 @@ K = [
 
 class PoseOverlayTest(unittest.TestCase):
     def test_overlay_projects_points_and_keeps_pixel_boxes(self):
+        """测试简化后的overlay只显示关键信息"""
         payload = {
             **RECORDED_INFER_RESPONSE,
             "input_summary": {"K": {"fx": 600.0, "fy": 600.0, "cx": 640.0, "cy": 360.0}},
             "box_selection": {
                 "container_roi_xyxy": [678.5, 148, 1240, 550],
                 "box_candidates": [{"bbox": [676, 148, 564, 402], "score": 0.9}],
-                "object_membership": [{"mask_centroid_xy": [823.2, 350.2], "upstream_instance_id": 1}],
+                "object_membership": [
+                    {"mask_centroid_xy": [100.0, 200.0], "upstream_instance_id": 1},
+                    {"mask_centroid_xy": [823.2, 350.2], "upstream_instance_id": 3},
+                ],
             },
         }
         overlay = overlay_from_pose(payload)
         self.assertIsNotNone(overlay)
         assert overlay is not None
         self.assertEqual(overlay["K"][0][2], 640.0)
+
+        # 只显示参考点，不显示轴线点
         labels = {item["label"] for item in overlay["points"]}
         self.assertIn("参考点", labels)
-        self.assertIn("轴线点", labels)
-        self.assertTrue(any(item["kind"] == "xyxy" for item in overlay["boxes"]))
-        self.assertTrue(any(item["kind"] == "xywh" for item in overlay["boxes"]))
+        self.assertEqual(len(overlay["points"]), 1)
+
+        # 参考点应该是大尺寸且根据ok状态着色（绿色=成功）
+        ref_point = overlay["points"][0]
+        self.assertEqual(ref_point["size"], "large")
+        self.assertEqual(ref_point["color"], "#22c55e")  # 绿色表示ok=True
+
+        # 不显示检测框
+        self.assertEqual(len(overlay["boxes"]), 0)
+
+        # 只显示选中的实例(id=3)
+        self.assertEqual(len(overlay["markers"]), 1)
         self.assertEqual(overlay["markers"][0]["xy"][0], 823.2)
+        self.assertEqual(overlay["markers"][0]["label"], "实例 3")
+
+        # HUD应该包含ok状态和score
         self.assertIn("ok", overlay["hud"][0])
+        self.assertIn("score", overlay["hud"][0])
+
+        # 应该有轴线
         self.assertTrue(any(item["label"] == "轴线" for item in overlay["lines"]))
+        self.assertEqual(len(overlay["lines"]), 1)
 
     def test_basket_overlay_draws_cad_axes(self):
+        """测试篮筐overlay显示CAD坐标系"""
         overlay = overlay_from_pose(
             {
                 "ok": True,
@@ -56,9 +79,19 @@ class PoseOverlayTest(unittest.TestCase):
         )
         self.assertIsNotNone(overlay)
         assert overlay is not None
+
+        # 应该显示CAD坐标系的XYZ轴
         axis_labels = {item["label"] for item in overlay["lines"]}
         self.assertEqual(axis_labels, {"CAD X", "CAD Y", "CAD Z"})
-        self.assertEqual(overlay["points"][0]["xyz_mm"][2], 520.0)
+
+        # 应该显示参考点和篮筐中心
+        point_labels = {item["label"] for item in overlay["points"]}
+        self.assertIn("参考点", point_labels)
+        self.assertIn("篮筐中心", point_labels)
+
+        # 参考点位置正确
+        ref_point = next(p for p in overlay["points"] if p["label"] == "参考点")
+        self.assertEqual(ref_point["xyz_mm"][2], 520.0)
 
     def test_media_attaches_overlay_from_estimation_span(self):
         run = {
@@ -112,6 +145,58 @@ class PoseOverlayTest(unittest.TestCase):
         media = media_from_run(run)
         self.assertIn("overlay", media[0])
         self.assertEqual(media[0]["overlay"]["K"][1][2], 360.0)
+
+    def test_reference_point_color_coding(self):
+        """测试参考点根据ok状态和score进行颜色编码"""
+        # 成功且高置信度 -> 绿色
+        overlay = overlay_from_pose({
+            "ok": True,
+            "target_type": "sku",
+            "reference_point_camera_mm": [100.0, 50.0, 600.0],
+            "sam3_score": 0.85,
+        })
+        self.assertEqual(overlay["points"][0]["color"], "#22c55e")  # 绿色
+
+        # 成功但低置信度 -> 橙色
+        overlay = overlay_from_pose({
+            "ok": True,
+            "target_type": "sku",
+            "reference_point_camera_mm": [100.0, 50.0, 600.0],
+            "sam3_score": 0.65,
+        })
+        self.assertEqual(overlay["points"][0]["color"], "#fb923c")  # 橙色
+
+        # 失败 -> 红色
+        overlay = overlay_from_pose({
+            "ok": False,
+            "target_type": "sku",
+            "reference_point_camera_mm": [100.0, 50.0, 600.0],
+            "sam3_score": 0.3,
+            "rejection_reasons": ["depth_invalid"],
+        })
+        self.assertEqual(overlay["points"][0]["color"], "#ef4444")  # 红色
+        self.assertIn("拒绝:", overlay["hud"][-1])
+
+    def test_only_selected_instance_marker(self):
+        """测试只显示选中的实例标记"""
+        payload = {
+            "ok": True,
+            "target_type": "sku",
+            "reference_point_camera_mm": [100.0, 50.0, 600.0],
+            "selected_instance_id": 2,
+            "box_selection": {
+                "object_membership": [
+                    {"mask_centroid_xy": [100.0, 200.0], "upstream_instance_id": 1},
+                    {"mask_centroid_xy": [300.0, 400.0], "upstream_instance_id": 2},
+                    {"mask_centroid_xy": [500.0, 600.0], "upstream_instance_id": 3},
+                ]
+            },
+        }
+        overlay = overlay_from_pose(payload)
+        # 只应该显示实例2
+        self.assertEqual(len(overlay["markers"]), 1)
+        self.assertEqual(overlay["markers"][0]["label"], "实例 2")
+        self.assertEqual(overlay["markers"][0]["xy"], [300.0, 400.0])
 
 
 if __name__ == "__main__":

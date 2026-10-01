@@ -96,9 +96,11 @@ class ObservabilityTest(unittest.TestCase):
                 status_code=422,
                 source=ErrorSource.REMOTE,
                 operation="POST /manipulation/rotate",
+                response_body='{"error_code":"INVALID_INPUT"}',
             ),
         )
         span = context.trace_spans[0]
+        self.assertEqual(span["response_body"], '{"error_code":"INVALID_INPUT"}')
         self.assertEqual(span["error_code"], "INVALID_INPUT")
         self.assertEqual(span["error_type"], "CapabilityError")
         self.assertEqual(span["error_source"], "remote")
@@ -119,6 +121,7 @@ class ObservabilityTest(unittest.TestCase):
         self.assertEqual(span["error_source"], "local")
         self.assertNotIn("http_status", span)
         self.assertNotIn("error_operation", span)
+        self.assertNotIn("response_body", span)
 
     def test_debug_store_roundtrips_capability_error_source(self):
         with tempfile.TemporaryDirectory() as directory:

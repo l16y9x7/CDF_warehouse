@@ -46,7 +46,7 @@ class TaskRequest(StrictModel):
 
 class BasketPositionRequest(TaskRequest):
     basket_row: str = Field(pattern=r"^L[1-4]$")
-    basket_column: str = Field(pattern=r"^[1-5]$")
+    basket_column: str = Field(pattern=r"^[1-9]$")
 
 
 class SortingItemRequest(BasketPositionRequest):
@@ -94,11 +94,24 @@ def create_app(
         service, database_path=service.store.path, log_store=logging_manager.store,
     )
     products_path = os.getenv("AGENT_PRODUCTS_PATH", "configs/products.yaml")
-    sku_catalog = getattr(service.skills.get("pick_sku_standard"), "sku_catalog", {})
+
+    # 从 products.yaml 加载商品目录和 SKU 配置
+    product_catalog, sku_specs_from_products = load_product_catalog(products_path)
+
+    # 获取现有的 sku_catalog（可能从 workflows.yaml 加载）
+    existing_sku_catalog = getattr(service.skills.get("pick_sku_standard"), "sku_catalog", {})
+
+    # 合并 SKU 配置：products.yaml 中的配置优先
+    merged_sku_catalog = {**existing_sku_catalog, **sku_specs_from_products}
+
+    # 更新 service 的 sku_catalog
+    if "pick_sku_standard" in service.skills:
+        service.skills["pick_sku_standard"].sku_catalog = merged_sku_catalog
+
     orders = OrderService(
         service,
         database_path=service.store.path,
-        products=load_product_catalog(products_path, sku_catalog),
+        products=product_catalog,
         mock_application=mock_service,
     )
     debug.watch_application(mock_service)

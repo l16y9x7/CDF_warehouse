@@ -89,11 +89,10 @@ class PlaceRequest:
                 or self.target_type is not TargetType.SKU
                 or not isinstance(self.sku_typ, str)
                 or not self.sku_typ.strip()
-                or not isinstance(self.localization_result, Mapping)
                 or self.pose is not None
                 or self.sku_id is not None
             ):
-                raise ValueError("basket place requires SORTING sku_typ and basket localization")
+                raise ValueError("basket place requires SORTING sku_typ")
         elif (
             self.task_type is not TaskType.REVIEW
             or self.pose is not None

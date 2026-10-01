@@ -116,7 +116,7 @@ def build_application(
         capabilities,
         database_path=database_path,
         policy=load_pick_policy(workflows_path),
-        sku_catalog=load_sku_catalog(workflows_path),
+        sku_catalog=load_sku_catalog(),  # 从 products.yaml 加载
         owned_resources=tuple(clients.values()),
     )
 
@@ -152,7 +152,7 @@ def build_application_from_capabilities(
             calibration_source,
             sku_catalog=sku_catalog,
         ),
-        "place_sku_in_basket": PlaceSkuInBasketSkill(c, e, m, capabilities["pose"]),
+        "place_sku_in_basket": PlaceSkuInBasketSkill(m),
         "push_basket": PushBasketSkill(c, e, m, capabilities["pose"]),
         "pick_review_basket": PickReviewBasketSkill(c, e, m, capabilities["pose"]),
         "place_review_basket": PlaceReviewBasketSkill(m),

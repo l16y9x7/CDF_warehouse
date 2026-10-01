@@ -63,28 +63,18 @@ class BarcodeSequencePerception(MockPerceptionCapability):
 
 class SkillTest(unittest.TestCase):
     def test_place_sku_in_basket_uses_head_basket_infer_then_place(self):
-        camera = MockCameraCapability()
-        estimation = MockEstimationCapability()
         manipulation = MockManipulationCapability()
         result = PlaceSkuInBasketSkill(
-            camera,
-            estimation,
             manipulation,
-            MockBodyPoseCapability(),
         ).execute(
             ExecutionContext("t"),
             PlaceSkuInBasketInput("bottle", Hand.RIGHT),
         )
 
         self.assertEqual(result.status, "SUCCEEDED")
-        self.assertEqual(camera.captures, ["head"])
-        request = estimation.requests[-1]
-        self.assertEqual(request.target_type.value, "basket")
-        self.assertIsNone(request.sku_typ)
-        self.assertIsNone(request.side)
         placed = manipulation.place_requests[-1]
         self.assertEqual(placed.sku_typ, "bottle")
-        self.assertEqual(placed.localization_result["point_semantics"], "basket_model_center")
+        self.assertIsNone(placed.localization_result)
         self.assertEqual(manipulation.calls, ["place"])
 
     def test_push_basket_uses_head_basket_infer_then_flat_push(self):

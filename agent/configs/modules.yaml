@@ -8,7 +8,7 @@ perception:
   base_url: http://192.168.3.107:25546
 estimation:
   base_url: http://192.168.3.107:25540
-  timeout: 120
+  timeout: 180
 manipulation:
   base_url: http://localhost:8086
   timeout: 1800

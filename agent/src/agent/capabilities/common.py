@@ -114,6 +114,7 @@ class CapabilityError(RuntimeError):
         status_code: int | None = None,
         source: ErrorSource = ErrorSource.LOCAL,
         operation: str | None = None,
+        response_body: str | None = None,
     ):
         super().__init__(message)
         self.error_code = error_code
@@ -121,6 +122,7 @@ class CapabilityError(RuntimeError):
         self.status_code = status_code
         self.source = ErrorSource(source)
         self.operation = operation
+        self.response_body = response_body
 
     @property
     def code(self) -> str:

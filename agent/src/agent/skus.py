@@ -40,7 +40,7 @@ def parse_sku_catalog(raw: object) -> dict[str, SkuSpec]:
 def sku_spec(catalog: Mapping[str, SkuSpec], sku_id: str) -> SkuSpec:
     spec = catalog.get(str(sku_id).strip())
     if spec is None:
-        raise ValueError(f"sku_id {sku_id} 未配置，请在 configs/workflows.yaml 的 skus 中补充")
+        raise ValueError(f"sku_id {sku_id} 未配置，请在 configs/products.yaml 中补充 sku_typ 和 hand 字段")
     return spec
 
 

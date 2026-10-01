@@ -68,7 +68,9 @@ class HttpManipulationCapability:
         }
         if request.destination_type.value == "basket":
             body["sku_typ"] = request.sku_typ
-            body["localization_result"] = dict(request.localization_result or {})
+            # localization_result is optional, only send if provided
+            if request.localization_result is not None:
+                body["localization_result"] = dict(request.localization_result)
         elif request.pose is not None:
             body.update(_pose_payload(request.pose))
         elif request.sku_id is not None:

@@ -278,6 +278,7 @@ function spanError(span) {
   if (span.error_source) error.source = span.error_source;
   if (span.http_status != null) error.http_status = span.http_status;
   if (span.error_operation) error.operation = span.error_operation;
+  if (span.response_body != null) error.response_body = span.response_body;
   return error;
 }
 

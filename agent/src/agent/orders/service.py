@@ -93,8 +93,8 @@ class OrderService:
             raise ValueError("订单至少需要一个商品")
         if basket_row not in {f"L{number}" for number in range(1, 5)}:
             raise ValueError("basket_row must be L1-L4")
-        if basket_column not in {str(number) for number in range(1, 6)}:
-            raise ValueError("basket_column must be 1-5")
+        if basket_column not in {str(number) for number in range(1, 10)}:
+            raise ValueError("basket_column must be 1-9")
         if self._target(mock).runtime.is_busy:
             raise OrderConflict("所选运行时当前有任务正在运行")
         normalized: list[tuple[OrderProduct, int, str, str]] = []
@@ -395,8 +395,10 @@ class OrderService:
             name = str((unit or {}).get("name") or "商品")
             sku_id = str((unit or {}).get("sku_id") or "")
             return {"skill": "核对商品", "progress": f"正在核对 {name} 编码为 {sku_id}"}
-        if kind in {"skill.succeeded", "skill.failed"}:
+        if kind == "skill.succeeded":
             return {"skill": "核对商品", "progress": "商品正确"}
+        if kind == "skill.failed":
+            return None
         return None
 
     def _on_agent_event(self, task_id: str, event: dict[str, Any]) -> None:
