@@ -31,6 +31,8 @@ def normalize_error(error: BaseException) -> SkillError | AgentError:
             "CONNECTION_FAILED",
         }:
             return SkillError("CAPABILITY_UNAVAILABLE", error.message)
+        if error.error_code == "MODULE_TIMEOUT":
+            return SkillError("CAPABILITY_TIMEOUT", error.message)
         if error.error_code in {"TIMEOUT", "ACTION_RESULT_UNKNOWN"}:
             return SkillError("ACTION_RESULT_UNKNOWN", "physical action result is unknown")
         return SkillError("CAPABILITY_EXECUTION_FAILED", error.message)

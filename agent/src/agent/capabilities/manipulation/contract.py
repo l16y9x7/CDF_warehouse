@@ -106,11 +106,6 @@ class PlaceRequest:
 @dataclass(frozen=True)
 class PushRequest:
     hand: Hand
-    localization_result: Mapping[str, Any]
-
-    def __post_init__(self) -> None:
-        if not isinstance(self.localization_result, Mapping):
-            raise ValueError("push requires basket localization")
 
 
 class ManipulationCapability(Protocol):

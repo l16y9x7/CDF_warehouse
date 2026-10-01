@@ -26,7 +26,12 @@ class LayoutTest(unittest.TestCase):
     def test_validates_independent_rows_and_columns(self):
         validate_agv_position("L5", "2")
         validate_basket_position("L4", "5")
-        for call in ((validate_agv_position, "L6", "1"), (validate_basket_position, "L1", "6")):
+        for call in (
+            (validate_agv_position, "L6", "1"),
+            (validate_agv_position, "L1", "3"),
+            (validate_basket_position, "L5", "1"),
+            (validate_basket_position, "L1", "10"),
+        ):
             with self.assertRaises(ValueError):
                 call[0](call[1], call[2])
 

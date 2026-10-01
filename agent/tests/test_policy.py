@@ -37,59 +37,47 @@ class PickPolicyTest(unittest.TestCase):
         self.assertIs(policy.select(TaskType.SORTING).hand, Hand.RIGHT)
         self.assertIs(policy.select(TaskType.REVIEW).hand, Hand.RIGHT)
         self.assertIs(policy.barcode_mismatch, BarcodeMismatchMode.CONTINUE)
-        catalog = load_sku_catalog(config)
+        catalog = load_sku_catalog(Path(__file__).parents[1] / "configs" / "products.yaml")
         self.assertEqual(
             catalog,
             {
-                "3282779003131": SkuSpec(
-                    "bottle", Hand.RIGHT, "Avene 雅漾 雅漾舒泉调理喷雾 300ml"
-                ),
-                "887167608641": SkuSpec(
-                    "box",
-                    Hand.LEFT,
-                    "Estee Lauder 雅诗兰黛 雅诗兰黛特润修护肌活精华眼霜双支装 15ml*2",
-                ),
-                "7173342765403": SkuSpec(
-                    "tube", Hand.LEFT, "Origins 悦木之源 ORIGINS一举两得泡沫洁面慕斯 30ml"
-                ),
+                "3282779003131": SkuSpec("bottle", Hand.RIGHT, "雅漾舒护活泉水"),
+                "887167608641": SkuSpec("box", Hand.LEFT, "修护精华礼盒"),
+                "7173342765403": SkuSpec("tube", Hand.RIGHT, "清润洁面乳"),
             },
         )
-        self.assertIs(sku_spec(catalog, "3282779003131").hand, Hand.RIGHT)
-        self.assertEqual(
-            sku_spec(catalog, "887167608641").name,
-            "Estee Lauder 雅诗兰黛 雅诗兰黛特润修护肌活精华眼霜双支装 15ml*2",
-        )
-        self.assertIs(shared_working_hand(catalog, ["887167608641", "7173342765403"]), Hand.LEFT)
+        self.assertIs(sku_spec(catalog, "887167608641").hand, Hand.LEFT)
+        self.assertEqual(sku_spec(catalog, "887167608641").name, "修护精华礼盒")
+        self.assertIs(shared_working_hand(catalog, ["3282779003131", "7173342765403"]), Hand.RIGHT)
         with self.assertRaisesRegex(ValueError, "同一只工作手"):
             shared_working_hand(catalog, ["3282779003131", "887167608641"])
 
     def test_sku_catalog_normalizes_keys_and_rejects_invalid_entries(self):
         with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "workflows.yaml"
+            path = Path(directory) / "products.yaml"
+            self.assertEqual(load_sku_catalog(path), {})
             path.write_text(
-                "skus:\n  3282779003131:\n    sku_typ: bottle\n    hand: right\n",
+                "products:\n  - sku_id: 3282779003131\n    sku_typ: Bottle\n    hand: right\n",
                 encoding="utf-8",
             )
             self.assertEqual(
                 load_sku_catalog(path),
                 {"3282779003131": SkuSpec("bottle", Hand.RIGHT)},
             )
-            path.write_text("skus:\n  sku-1: bottle\n", encoding="utf-8")
-            with self.assertRaisesRegex(ValueError, "skus"):
+            path.write_text("products:\n  sku-1: bottle\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "products"):
                 load_sku_catalog(path)
             path.write_text(
-                "skus:\n  sku-1:\n    sku_typ: cup\n    hand: LEFT\n",
-                encoding="utf-8",
-            )
-            self.assertEqual(
-                load_sku_catalog(path),
-                {"sku-1": SkuSpec("cup", Hand.LEFT)},
-            )
-            path.write_text(
-                "skus:\n  sku-1:\n    sku_typ: \"\"\n    hand: LEFT\n",
+                "products:\n  - sku_id: sku-1\n    sku_typ: \"\"\n    hand: LEFT\n",
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(ValueError, "sku_typ"):
+                load_sku_catalog(path)
+            path.write_text(
+                "products:\n  - sku_id: sku-1\n    sku_typ: cup\n    hand: BOTH\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "hand"):
                 load_sku_catalog(path)
 
     def test_rejects_invalid_hand(self):

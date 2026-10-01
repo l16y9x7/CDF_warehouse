@@ -7,7 +7,7 @@ import numpy as np
 from agent.capabilities.camera import MockCameraCapability
 from agent.capabilities.common import CapabilityError, Hand
 from agent.capabilities.estimation import MockEstimationCapability, PickPoseResult
-from agent.capabilities.manipulation import MockManipulationCapability
+from agent.capabilities.manipulation import MockManipulationCapability, PushRequest
 from agent.capabilities.perception import BarcodeResult, MockPerceptionCapability
 from agent.capabilities.pose import CameraTransform, MockBodyPoseCapability
 from agent.skills.pose import PreparePoseInput, PreparePoseSkill
@@ -77,41 +77,14 @@ class SkillTest(unittest.TestCase):
         self.assertIsNone(placed.localization_result)
         self.assertEqual(manipulation.calls, ["place"])
 
-    def test_push_basket_uses_head_basket_infer_then_flat_push(self):
-        camera = MockCameraCapability()
-        estimation = MockEstimationCapability()
+    def test_push_basket_pushes_directly_without_localization(self):
         manipulation = MockManipulationCapability()
-        result = PushBasketSkill(
-            camera,
-            estimation,
-            manipulation,
-            MockBodyPoseCapability(),
-        ).execute(ExecutionContext("t"), PushBasketInput(Hand.RIGHT))
+        result = PushBasketSkill(manipulation).execute(
+            ExecutionContext("t"), PushBasketInput(Hand.RIGHT)
+        )
 
         self.assertEqual(result.status, "SUCCEEDED")
-        self.assertEqual(camera.captures, ["head"])
-        self.assertEqual(estimation.requests[-1].target_type.value, "basket")
-        pushed = manipulation.push_requests[-1]
-        self.assertEqual(pushed.hand, Hand.RIGHT)
-        self.assertEqual(pushed.localization_result["point_semantics"], "basket_model_center")
-        self.assertEqual(manipulation.calls, ["push"])
-
-    def test_push_basket_reuses_provided_localization_without_infer(self):
-        camera = MockCameraCapability()
-        estimation = MockEstimationCapability()
-        manipulation = MockManipulationCapability()
-        localization = {"ok": True, "point_semantics": "basket_model_center"}
-        result = PushBasketSkill(
-            camera,
-            estimation,
-            manipulation,
-            MockBodyPoseCapability(),
-        ).execute(ExecutionContext("t"), PushBasketInput(Hand.RIGHT, localization))
-
-        self.assertEqual(result.status, "SUCCEEDED")
-        self.assertEqual(camera.captures, [])
-        self.assertEqual(estimation.requests, [])
-        self.assertEqual(manipulation.push_requests[-1].localization_result, localization)
+        self.assertEqual(manipulation.push_requests[-1], PushRequest(Hand.RIGHT))
         self.assertEqual(manipulation.calls, ["push"])
 
     def test_pick_review_basket_uses_head_basket_infer_then_flat_pick(self):

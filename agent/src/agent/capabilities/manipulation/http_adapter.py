@@ -98,8 +98,8 @@ class HttpManipulationCapability:
         )
 
     def push(self, request: PushRequest, *, idempotency_key: str | None = None) -> ActionResult:
-        body = {"hand": request.hand.value, **_flatten_basket_localization(request.localization_result)}
-        return self._action("/manipulation/push", body, idempotency_key=idempotency_key)
+        return self._action(
+            "/manipulation/push", {"hand": request.hand.value}, idempotency_key=idempotency_key)
 
     def pick_basket(
         self, request: BasketPickRequest, *, idempotency_key: str | None = None
