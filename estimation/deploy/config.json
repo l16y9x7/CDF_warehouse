@@ -18,7 +18,7 @@
     "timeout_s": 180.0
   },
   "basket": {
-    "default_prompt": "the central white plastic basket",
+    "default_prompt": "the central plastic basket",
     "default_threshold": 0.7,
     "mesh_relative_path": "cad/Basket/Basket.obj",
     "mesh_scale": 0.001,

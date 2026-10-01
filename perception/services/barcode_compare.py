@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from importlib import import_module, metadata
 from pathlib import Path
 from threading import local
@@ -9,6 +10,7 @@ import time
 
 import cv2
 import numpy as np
+from starlette.concurrency import run_in_threadpool
 
 from config import PERCEPTION_BARCODE_COMPARISON_ENABLED, PERCEPTION_BARCODE_SR_MODEL_DIR
 from core.recognize_trace import BarcodeComparisonTrace, RecognizePipelineTrace
@@ -128,11 +130,26 @@ def _run_zxing_cpp(crop: np.ndarray, result: BarcodeComparisonTrace) -> None:
         attempt["duration_ms"] = round((time.perf_counter() - started) * 1000, 1)
 
 
-def run_barcode_comparisons(image_bgr: np.ndarray, trace: RecognizePipelineTrace) -> None:
-    """Use the baseline's selected bbox, but leave all its fields/results intact.
+def _run_comparison(decode, crop: np.ndarray, result: BarcodeComparisonTrace) -> None:
+    """One worker owns one result and one image copy, including on failure."""
+    result.reason = None
+    started = time.perf_counter()
+    try:
+        decode(crop.copy(), result)
+        result.status = "FOUND" if result.codes else "NOT_FOUND"
+        result.barcode_content = result.codes[0]["content"] if result.codes else None
+    except Exception as error:
+        result.status = "ERROR"
+        result.error = f"{type(error).__name__}: {error}"
+    finally:
+        result.duration_ms = round((time.perf_counter() - started) * 1000, 1)
 
-    Each method is isolated and recorded even when the other fails. The methods
-    run synchronously, so total request latency includes their diagnostic work.
+
+async def run_barcode_comparisons(image_bgr: np.ndarray, trace: RecognizePipelineTrace) -> None:
+    """Run both diagnostic decoders concurrently using the selected bbox.
+
+    Workers only write their own comparison record. Matching against the
+    business result is deferred to the caller after all three methods finish.
     """
     trace.decode_comparisons = skipped_comparisons("not_run")
     if not PERCEPTION_BARCODE_COMPARISON_ENABLED:
@@ -148,24 +165,18 @@ def run_barcode_comparisons(image_bgr: np.ndarray, trace: RecognizePipelineTrace
         if x2 <= x1 or y2 <= y1:
             raise ValueError("bbox 无效")
         crop = image_bgr[y1:y2, x1:x2].copy()
+        jobs = []
         for method, decode in (("opencv_sr", _run_opencv_sr), ("zxing_cpp", _run_zxing_cpp)):
             result = trace.decode_comparisons[method]
-            result.reason = None
             result.runtime.update({"expanded_bbox": bbox, "crop_shape": [crop.shape[1], crop.shape[0]]})
-            method_started = time.perf_counter()
-            try:
-                decode(crop.copy(), result)
-                result.status = "FOUND" if result.codes else "NOT_FOUND"
-                result.barcode_content = result.codes[0]["content"] if result.codes else None
-                if trace.barcode_content:
-                    result.matches_business_result = any(
-                        code["content"] == trace.barcode_content for code in result.codes
-                    )
-            except Exception as error:
+            jobs.append(run_in_threadpool(_run_comparison, decode, crop, result))
+        outcomes = await asyncio.gather(*jobs, return_exceptions=True)
+        for method, outcome in zip(COMPARISON_METHODS, outcomes):
+            if isinstance(outcome, Exception):
+                result = trace.decode_comparisons[method]
                 result.status = "ERROR"
-                result.error = f"{type(error).__name__}: {error}"
-            finally:
-                result.duration_ms = round((time.perf_counter() - method_started) * 1000, 1)
+                result.reason = "comparison_execution_failed"
+                result.error = f"{type(outcome).__name__}: {outcome}"
     except Exception as error:
         for result in trace.decode_comparisons.values():
             if result.reason == "not_run":

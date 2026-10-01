@@ -89,7 +89,7 @@ def build_config(
 
     # Basket / FoundationPose
     basket_cfg = raw_cfg.get('basket', {})
-    basket_default_prompt = basket_cfg.get('default_prompt', 'the central white plastic basket')
+    basket_default_prompt = basket_cfg.get('default_prompt', 'the central plastic basket')
     basket_default_threshold = float(basket_cfg.get('default_threshold', 0.7))
     mesh_rel = basket_cfg.get('mesh_relative_path', 'cad/Basket/Basket.obj')
     basket_mesh_path = Path(e.get('BASKET_MESH_PATH', str(DEPLOY_DIR / mesh_rel)))

@@ -73,7 +73,7 @@
       "ok": True,
       "service": "spatial-localization-diagnostic",
       "basket": {
-          "pipeline": "SAM3 central white plastic basket -> local FoundationPose 25550",
+          "pipeline": "SAM3 central plastic basket -> local FoundationPose 25550",
           "prompt": BASKET_DEFAULT_PROMPT,
           "threshold": BASKET_DEFAULT_THRESHOLD,
           "cad_path": str(BASKET_MESH_PATH),

@@ -396,7 +396,7 @@ front_panel_usable = (
 
 仍未完成：
 
-- `target_type=basket` 已接入 25540：服务器使用 `the central white plastic basket`、threshold=0.7 生成 mask，再调用本机 25550 FoundationPose；客户端不上传 CAD。返回篮筐 CAD 模型中心点与完整 4x4 位姿，字段见下方补充。
+- `target_type=basket` 已接入 25540：服务器使用 `the central plastic basket`（不限制颜色）、threshold=0.7 生成 mask，再调用本机 25550 FoundationPose；客户端不上传 CAD。返回篮筐 CAD 模型中心点与完整 4x4 位姿，字段见下方补充。
 
 ### Basket 响应补充
 
