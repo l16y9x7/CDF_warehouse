@@ -151,6 +151,7 @@ class Handler(BaseHTTPRequestHandler):
 
             t_body = time.perf_counter()
             raw_body = self.rfile.read(length)
+            t_json = mark('body_read', t_body)
             try:
                 req = json.loads(raw_body)
             except Exception:
@@ -159,6 +160,7 @@ class Handler(BaseHTTPRequestHandler):
                 (root / 'request_body.bin').write_bytes(raw_body)
                 raise
 
+            mark('json_parse', t_json)
             mark('body_read_parse', t_body)
             bucket = 'basket' if req.get('target_type') == 'basket' else 'sku'
             root = ARTIFACT_ROOT / bucket / rid
