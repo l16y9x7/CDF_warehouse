@@ -1,20 +1,41 @@
 # Capability adapter endpoints. Replace with deployment-specific values.
+#
+# 每个模块可配置：
+#   timeout:  单次 HTTP 调用超时（秒），默认 30
+#   retries:  接口超时后的自动重试次数，默认 2（即最多调用 3 次，全部超时才判定能力出错）
+#   endpoint_timeouts: 按接口路径单独覆盖超时（秒），优先级高于代码内置值和 timeout
 navigation:
   base_url: http://localhost:8081
+  timeout: 30
+  retries: 2
 pose:
   base_url: http://127.0.0.1:8082
   timeout: 1800
+  retries: 2
+  # 代码内置：/pose/health 60s、/pose/camera_transform 15s、/pose/prepare 1800s
+  # endpoint_timeouts:
+  #   /pose/camera_transform: 15
 perception:
   base_url: http://192.168.3.107:25546
+  timeout: 30
+  retries: 2
 estimation:
   base_url: http://192.168.3.107:25540
-  timeout: 120
+  timeout: 180
+  retries: 2
 manipulation:
   base_url: http://localhost:8086
   timeout: 1800
+  retries: 2
 vla:
   base_url: http://localhost:8087
+  timeout: 30
+  retries: 2
 hand:
   base_url: http://localhost:8088
+  timeout: 30
+  retries: 2
 camera:
   base_url: http://127.0.0.1:8085
+  timeout: 30
+  retries: 2

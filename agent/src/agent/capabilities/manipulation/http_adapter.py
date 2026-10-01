@@ -68,7 +68,9 @@ class HttpManipulationCapability:
         }
         if request.destination_type.value == "basket":
             body["sku_typ"] = request.sku_typ
-            body["localization_result"] = dict(request.localization_result or {})
+            # localization_result is optional, only send if provided
+            if request.localization_result is not None:
+                body["localization_result"] = dict(request.localization_result)
         elif request.pose is not None:
             body.update(_pose_payload(request.pose))
         elif request.sku_id is not None:
@@ -96,8 +98,8 @@ class HttpManipulationCapability:
         )
 
     def push(self, request: PushRequest, *, idempotency_key: str | None = None) -> ActionResult:
-        body = {"hand": request.hand.value, **_flatten_basket_localization(request.localization_result)}
-        return self._action("/manipulation/push", body, idempotency_key=idempotency_key)
+        return self._action(
+            "/manipulation/push", {"hand": request.hand.value}, idempotency_key=idempotency_key)
 
     def pick_basket(
         self, request: BasketPickRequest, *, idempotency_key: str | None = None

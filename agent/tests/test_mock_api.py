@@ -317,19 +317,7 @@ class CapabilityMockApiTest(unittest.IsolatedAsyncioTestCase):
                     manipulation_app,
                     "POST",
                     "/manipulation/push",
-                    json={
-                        "hand": "RIGHT",
-                        "ok": True,
-                        "pose_valid": True,
-                        "point_semantics": "basket_model_center",
-                        "model_center_camera_mm": [200.0, 30.0, 520.0],
-                        "pose_4x4": [
-                            [1.0, 0.0, 0.0, 50.0],
-                            [0.0, 1.0, 0.0, 10.0],
-                            [0.0, 0.0, 1.0, 400.0],
-                            [0.0, 0.0, 0.0, 1.0],
-                        ],
-                    },
+                    json={"hand": "RIGHT"},
                     headers=headers,
                 )
             ).json(),

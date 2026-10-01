@@ -7,7 +7,11 @@ from agent.capabilities.camera import HttpCameraCapability
 from agent.capabilities.common import HealthStatus
 from agent.capabilities.estimation import HttpEstimationCapability, load_test_case
 from agent.capabilities.hand import HttpHandCapability
-from agent.capabilities.http import HttpCapabilityClient
+from agent.capabilities.http import (
+    DEFAULT_TIMEOUT_RETRIES,
+    DEFAULT_TIMEOUT_S,
+    HttpCapabilityClient,
+)
 from agent.capabilities.manipulation import HttpManipulationCapability
 from agent.capabilities.navigation import HttpNavigationCapability
 from agent.capabilities.perception import HttpPerceptionCapability
@@ -97,7 +101,14 @@ def build_application(
     }
     clients = {
         name: HttpCapabilityClient(
-            values["base_url"], capability=name, timeout=float(values.get("timeout", 30.0))
+            values["base_url"],
+            capability=name,
+            timeout=float(values.get("timeout", DEFAULT_TIMEOUT_S)),
+            retries=int(values.get("retries", DEFAULT_TIMEOUT_RETRIES)),
+            endpoint_timeouts={
+                str(path): float(seconds)
+                for path, seconds in (values.get("endpoint_timeouts") or {}).items()
+            },
         )
         for name, values in config.items()
         if name in names
@@ -116,7 +127,7 @@ def build_application(
         capabilities,
         database_path=database_path,
         policy=load_pick_policy(workflows_path),
-        sku_catalog=load_sku_catalog(workflows_path),
+        sku_catalog=load_sku_catalog(),  # 从 products.yaml 加载
         owned_resources=tuple(clients.values()),
     )
 
@@ -152,8 +163,8 @@ def build_application_from_capabilities(
             calibration_source,
             sku_catalog=sku_catalog,
         ),
-        "place_sku_in_basket": PlaceSkuInBasketSkill(c, e, m, capabilities["pose"]),
-        "push_basket": PushBasketSkill(c, e, m, capabilities["pose"]),
+        "place_sku_in_basket": PlaceSkuInBasketSkill(m),
+        "push_basket": PushBasketSkill(m),
         "pick_review_basket": PickReviewBasketSkill(c, e, m, capabilities["pose"]),
         "place_review_basket": PlaceReviewBasketSkill(m),
         "pick_review_item_standard": PickReviewItemStandardSkill(p, c, e, m),

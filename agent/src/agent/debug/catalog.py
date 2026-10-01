@@ -45,7 +45,7 @@ Layer = Literal["capability", "skill", "workflow"]
 Executor = Callable[[Any, ExecutionContext, dict[str, Any]], Any]
 InputFactory = Callable[[dict[str, Any]], Any]
 _SKU_CATALOG = load_sku_catalog()
-SKU_IDS = list(_SKU_CATALOG) or ["3282779003131", "887167608641", "7173342765403"]
+SKU_IDS = list(_SKU_CATALOG) or ["3282779003131", "887167608641", "3282770389746"]
 DEFAULT_SKU_ID = SKU_IDS[0]
 SKU_NAMES = [spec.name for spec in _SKU_CATALOG.values() if spec.name] or ["测试商品"]
 DEFAULT_SKU_NAME = (
@@ -84,7 +84,7 @@ FIELD_DESCRIPTIONS = {
     "expected_items": "期望商品清单；每项包含 sku_id 和 count。",
     "inspected_items": "实检商品清单；每项包含 sequence 和 actual_sku_id。",
     "basket_row": "篮筐所在行，支持 L1 至 L4。",
-    "basket_column": "篮筐所在列，支持 1 至 5。",
+    "basket_column": "篮筐所在列，支持 1 至 9。",
     "agv_row": "AGV 纸箱所在行，支持 L1 至 L5。",
     "agv_column": "AGV 纸箱所在列，支持 1 或 2。",
     "test_case": "本地测试用例（tmp/pick_pose_test_case/<bottle|box|tube|basket>_<帧>）；选择后只补全 RGB/D、内外参、单位和坐标系，不改目标类型/定位类别/纸箱侧。",
@@ -140,7 +140,7 @@ FIELD_OPTIONS: dict[str, list[Any]] = {
     "expected_items": [[{"sku_id": DEFAULT_SKU_ID, "count": 1}], []],
     "inspected_items": [[{"sequence": 1, "actual_sku_id": DEFAULT_SKU_ID}], []],
     "basket_row": ["L1", "L2", "L3", "L4"],
-    "basket_column": ["1", "2", "3", "4", "5"],
+    "basket_column": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
     "agv_row": ["L1", "L2", "L3", "L4", "L5"],
     "agv_column": ["1", "2"],
     "T_unit": ["m", "mm"],
@@ -684,32 +684,12 @@ CAPABILITY_OPERATIONS = (
         "manipulation.push",
         "推动篮筐",
         "Manipulation",
-        "推动篮筐",
+        "直接推动篮筐，只传工作手",
         lambda app, ctx, data: _module(app, "manipulation.push").push(
-            PushRequest(_hand(data), data["localization_result"]),
+            PushRequest(_hand(data)),
             idempotency_key=action_id(ctx, "manipulation.push"),
         ),
-        (
-            HAND,
-            field(
-                "localization_result",
-                "篮筐定位结果",
-                "json",
-                default={
-                    "ok": True,
-                    "target_type": "basket",
-                    "pose_valid": True,
-                    "point_semantics": "basket_model_center",
-                    "model_center_camera_mm": [200.0, 30.0, 520.0],
-                    "pose_4x4": [
-                        [1.0, 0.0, 0.0, 50.0],
-                        [0.0, 1.0, 0.0, 10.0],
-                        [0.0, 0.0, 1.0, 400.0],
-                        [0.0, 0.0, 0.0, 1.0],
-                    ],
-                },
-            ),
-        ),
+        (HAND,),
         physical=True,
     ),
     capability(
@@ -812,7 +792,7 @@ SKILL_OPERATIONS = (
         "place_sku_in_basket",
         "商品入筐",
         "Sorting",
-        "动态估姿放置",
+        "放置商品到篮筐",
         lambda data: PlaceSkuInBasketInput(data["sku_typ"], _hand(data)),
         (field("sku_typ", "定位类别", "select", default="bottle", options=["bottle", "box", "tube"]), HAND),
         physical=True,
@@ -821,7 +801,7 @@ SKILL_OPERATIONS = (
         "push_basket",
         "推筐",
         "Sorting",
-        "定位估姿推筐",
+        "不识别篮筐，直接推筐",
         lambda data: PushBasketInput(_hand(data)),
         (HAND,),
         physical=True,
@@ -913,7 +893,7 @@ WORKFLOW_OPERATIONS = (
         "sorting_finish",
         "Sorting 收尾",
         "Sorting",
-        "推筐收尾",
+        "导航到篮筐，进入推筐姿态后直接推筐",
         lambda data: SortingFinishInput(data["basket_row"], data["basket_column"]),
         BASKET_FIELDS,
     ),

@@ -356,19 +356,7 @@ def create_manipulation_app() -> FastAPI:
         missing = _missing_idempotency_key(idempotency_key)
         if missing:
             return missing
-        required = {
-            "hand",
-            "ok",
-            "pose_valid",
-            "point_semantics",
-            "model_center_camera_mm",
-            "pose_4x4",
-        }
-        if (
-            not required <= body.keys()
-            or body["hand"] not in {"LEFT", "RIGHT"}
-            or any(key in body for key in ("sku_id", "pose", "localization_result"))
-        ):
+        if body.keys() != {"hand"} or body["hand"] not in {"LEFT", "RIGHT"}:
             return JSONResponse({"error_code": "INVALID_INPUT"}, status_code=422)
         return {"status": "SUCCEEDED"}
 

@@ -123,11 +123,11 @@ class DebugApiTest(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(level["type"], "select")
             self.assertEqual(level["options"], ["L1", "L2", "L3", "L4", "L5"])
 
-        sku_ids = ["3282779003131", "887167608641", "7173342765403"]
+        sku_ids = ["3282779003131", "887167608641", "3282770389746"]
         sku_names = [
-            "Avene 雅漾 雅漾舒泉调理喷雾 300ml",
-            "Estee Lauder 雅诗兰黛 雅诗兰黛特润修护肌活精华眼霜双支装 15ml*2",
-            "Origins 悦木之源 ORIGINS一举两得泡沫洁面慕斯 30ml",
+            "雅漾舒护活泉水",
+            "修护精华礼盒",
+            "清润洁面乳",
         ]
         for item in catalog["items"]:
             for entry in item["fields"]:
@@ -417,7 +417,8 @@ class DebugApiTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(detail["status"], "SUCCEEDED")
         self.assertEqual(detail["result"], {})
         self.assertTrue(detail["events"])
-        self.assertTrue(detail["media"])
+        # 推筐不再拍照定位，sorting_finish 不产生图像
+        self.assertEqual(detail["media"], [])
 
         trace_response = await self.client.get(
             f"/debug/api/runs/{accepted['run_id']}/trace"

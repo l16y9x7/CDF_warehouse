@@ -23,7 +23,7 @@ BOX_SKU = "887167608641"
 SKU_CATALOG = {
     BOTTLE_SKU: SkuSpec("bottle", Hand.RIGHT),
     BOX_SKU: SkuSpec("box", Hand.LEFT),
-    "7173342765403": SkuSpec("tube", Hand.LEFT),
+    "3282770389746": SkuSpec("tube", Hand.LEFT),
 }
 
 TEST_CALIBRATION = {

@@ -717,9 +717,79 @@ class PhysicalActionTimeoutTest(unittest.TestCase):
         with self.assertRaises(CapabilityError) as raised:
             HttpNavigationCapability(client).navigate("AGV_L")
 
-        self.assertEqual(raised.exception.error_code, "MODULE_UNAVAILABLE")
+        self.assertEqual(raised.exception.error_code, "MODULE_TIMEOUT")
         self.assertEqual(raised.exception.source, ErrorSource.TRANSPORT)
         self.assertEqual(raised.exception.operation, "POST /navigation/navigate")
+
+
+class TimeoutRetryTest(unittest.TestCase):
+    def client(self, outcomes, **kwargs):
+        self.calls = []
+
+        def respond(request):
+            self.calls.append(request)
+            outcome = outcomes[min(len(self.calls), len(outcomes)) - 1]
+            if isinstance(outcome, Exception):
+                raise outcome
+            return httpx.Response(200, json=outcome)
+
+        raw = httpx.Client(transport=httpx.MockTransport(respond), base_url="http://module")
+        self.addCleanup(raw.close)
+        return HttpCapabilityClient("http://module", client=raw, capability="estimation", **kwargs)
+
+    def test_succeeds_when_a_retry_returns_in_time(self):
+        timeout = httpx.ReadTimeout("slow")
+        client = self.client([timeout, timeout, {"ok": True}])
+        with self.assertLogs("agent.capabilities.http", level="WARNING") as logs:
+            self.assertEqual(client.post("/infer", {}), {"ok": True})
+        self.assertEqual(len(self.calls), 3)
+        retry_events = [r for r in logs.records if getattr(r, "event", "") == "capability.timeout"]
+        self.assertEqual([r.attempt for r in retry_events], [1, 2])
+
+    def test_fails_with_explicit_timeout_after_two_retries(self):
+        client = self.client([httpx.ReadTimeout("slow")], timeout=180)
+        with self.assertLogs("agent.capabilities.http", level="ERROR") as logs:
+            with self.assertRaises(CapabilityError) as raised:
+                client.post("/infer", {})
+        self.assertEqual(len(self.calls), 3)
+        self.assertEqual(raised.exception.error_code, "MODULE_TIMEOUT")
+        self.assertIn("接口超时", raised.exception.message)
+        self.assertIn("180", raised.exception.message)
+        failed = [r for r in logs.records if getattr(r, "event", "") == "capability.failed"]
+        self.assertEqual(failed[-1].error_code, "MODULE_TIMEOUT")
+        self.assertEqual(failed[-1].max_attempts, 3)
+
+    def test_retries_are_configurable(self):
+        client = self.client([httpx.ReadTimeout("slow")], retries=0)
+        with self.assertRaises(CapabilityError):
+            client.get("/health")
+        self.assertEqual(len(self.calls), 1)
+
+    def test_non_timeout_errors_are_not_retried(self):
+        client = self.client([httpx.ConnectError("refused")])
+        with self.assertRaises(CapabilityError) as raised:
+            client.get("/health")
+        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(raised.exception.error_code, "MODULE_UNAVAILABLE")
+
+    def test_endpoint_timeout_overrides_adapter_timeout(self):
+        client = self.client([{"ok": True}], endpoint_timeouts={"/pose/camera_transform": 5})
+        client.get("/pose/camera_transform", timeout=15)
+        self.assertEqual(self.calls[0].extensions["timeout"]["read"], 5)
+
+    def test_physical_action_retries_with_same_idempotency_key(self):
+        client = self.client([httpx.ReadTimeout("slow")])
+        with self.assertRaises(CapabilityError) as raised:
+            HttpNavigationCapability(client).navigate("AGV_L", idempotency_key="key-1")
+        self.assertEqual(raised.exception.error_code, "ACTION_RESULT_UNKNOWN")
+        self.assertEqual({r.headers[IDEMPOTENCY_HEADER] for r in self.calls}, {"key-1"})
+        self.assertEqual(len(self.calls), 3)
+
+    def test_skill_error_for_timeout(self):
+        from agent.skills.base import normalize_error
+
+        error = normalize_error(CapabilityError("MODULE_TIMEOUT", "GET /health 接口超时"))
+        self.assertEqual(error.code, "CAPABILITY_TIMEOUT")
 
 
 class CapabilityErrorSourceTest(unittest.TestCase):
@@ -887,30 +957,29 @@ class PhysicalActionIdempotencyTest(unittest.TestCase):
         self.assertNotIn("class_name", body)
         self.assertNotIn("pose", body)
 
-    def test_push_flattens_infer_response(self):
+    def test_place_basket_without_localization_result(self):
         manipulation = self.adapter(HttpManipulationCapability)
-        basket = {
-            "ok": True,
-            "target_type": "basket",
-            "sku_typ": None,
-            "class_name": "Basket",
-            "pose_valid": True,
-            "point_semantics": "basket_model_center",
-            "model_center_camera_mm": [200.0, 30.0, 520.0],
-            "pose_4x4": [[1.0, 0.0, 0.0, 50.0], [0.0, 1.0, 0.0, 10.0], [0.0, 0.0, 1.0, 400.0], [0.0, 0.0, 0.0, 1.0]],
-        }
-        manipulation.push(
-            PushRequest(Hand.RIGHT, basket),
-            idempotency_key="push-key",
+        manipulation.place(
+            PlaceRequest(
+                TaskType.SORTING,
+                TargetType.SKU,
+                DestinationType.BASKET,
+                Hand.RIGHT,
+                sku_typ="bottle",
+            ),
+            idempotency_key="place-no-localization-key",
         )
-        self.assertEqual(self.requests[-1].headers[IDEMPOTENCY_HEADER], "push-key")
+        self.assertEqual(self.requests[-1].headers[IDEMPOTENCY_HEADER], "place-no-localization-key")
         body = json.loads(self.requests[-1].read())
-        self.assertEqual(body["hand"], "RIGHT")
-        self.assertEqual(body["point_semantics"], "basket_model_center")
-        self.assertNotIn("target_type", body)
-        self.assertNotIn("sku_typ", body)
-        self.assertNotIn("class_name", body)
+        self.assertEqual(body["target_type"], "sku")
+        self.assertEqual(body["sku_typ"], "bottle")
         self.assertNotIn("localization_result", body)
+
+    def test_push_sends_only_hand(self):
+        manipulation = self.adapter(HttpManipulationCapability)
+        manipulation.push(PushRequest(Hand.RIGHT), idempotency_key="push-key")
+        self.assertEqual(self.requests[-1].headers[IDEMPOTENCY_HEADER], "push-key")
+        self.assertEqual(json.loads(self.requests[-1].read()), {"hand": "RIGHT"})
 
     def test_pick_basket_flattens_infer_response_and_keeps_action_target(self):
         manipulation = self.adapter(HttpManipulationCapability)
@@ -995,3 +1064,42 @@ class PhysicalActionIdempotencyTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RemoteErrorDetailTest(unittest.TestCase):
+    def client(self, response):
+        raw = httpx.Client(
+            transport=httpx.MockTransport(lambda request: response), base_url="http://module"
+        )
+        self.addCleanup(raw.close)
+        return HttpCapabilityClient("http://module", client=raw)
+
+    def request_error(self, response):
+        with self.assertRaises(CapabilityError) as caught:
+            self.client(response).request_response("POST", "/do")
+        return caught.exception
+
+    def test_keeps_message_and_raw_body(self):
+        error = self.request_error(
+            httpx.Response(422, json={"error_code": "INVALID_INPUT", "message": "bad hand"})
+        )
+        self.assertEqual(error.error_code, "INVALID_INPUT")
+        self.assertEqual(error.message, "bad hand")
+        self.assertIn('"bad hand"', error.response_body)
+
+    def test_uses_fastapi_detail_when_message_missing(self):
+        detail = [{"loc": ["body", "hand"], "msg": "field required"}]
+        error = self.request_error(httpx.Response(422, json={"detail": detail}))
+        self.assertEqual(error.error_code, "CAPABILITY_REQUEST_FAILED")
+        self.assertIn("field required", error.message)
+
+    def test_non_json_body_is_preserved(self):
+        error = self.request_error(httpx.Response(502, text="<html>Bad Gateway</html>"))
+        self.assertIn("Bad Gateway", error.message)
+        self.assertEqual(error.response_body, "<html>Bad Gateway</html>")
+        self.assertEqual(error.status_code, 502)
+
+    def test_empty_body_keeps_generic_message(self):
+        error = self.request_error(httpx.Response(500))
+        self.assertEqual(error.message, "capability returned HTTP 500")
+        self.assertIsNone(error.response_body)

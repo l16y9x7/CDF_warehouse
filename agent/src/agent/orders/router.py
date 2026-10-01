@@ -26,7 +26,7 @@ class OrderItemRequest(StrictModel):
 class CreateOrderRequest(StrictModel):
     items: list[OrderItemRequest] = Field(min_length=1)
     basket_row: str = Field(pattern=r"^L[1-4]$")
-    basket_column: str = Field(pattern=r"^[1-5]$")
+    basket_column: str = Field(pattern=r"^[1-9]$")
     mock: bool = False
 
 

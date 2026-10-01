@@ -17,11 +17,12 @@ SKILL_LABELS = {
     "place_review_item": "放置复核商品",
     "confirm_review_basket_empty": "确认复核篮筐为空",
     "summarize_review_result": "汇总复核结果",
-    "push_basket": "推送篮筐",
+    "push_basket": "推篮筐",
 }
 
 ERROR_MESSAGES = {
     "CAPABILITY_UNAVAILABLE": "执行模块不可用",
+    "CAPABILITY_TIMEOUT": "执行模块接口超时，重试后仍失败",  # noqa: RUF001
     "CAPABILITY_EXECUTION_FAILED": "执行模块运行失败",
     "ACTION_RESULT_UNKNOWN": "动作结果不确定，请人工确认",  # noqa: RUF001
     "SCAN_IMAGE_UNAVAILABLE": "扫码图片不可读取，请人工确认",  # noqa: RUF001
