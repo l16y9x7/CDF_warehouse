@@ -32,7 +32,7 @@ Usage: bash start_services.sh [start|stop|restart|status|install|help]
 
   start    Start SAM3, FoundationPose, estimation, then perception (default).
   stop     Stop only recorded service processes.
-  restart  Recover this checkout's perception/estimation PIDs, then restart.
+  restart  Restart perception/estimation; reuse running SAM3/FoundationPose.
   status   Check the services and their HTTP endpoints.
   install  Install perception/estimation dependencies (model services preinstalled).
 
@@ -572,8 +572,8 @@ case "$ACTION" in
             resolve_python perception
             stop_service perception
             stop_service estimation
-            stop_service foundationpose
-            stop_service sam3
+            # Keep model servers warm, including ones previously started here.
+            # The normal start path below reuses them or starts missing models.
         fi
         for name in "${SERVICES[@]}"; do
             check_service "$name"

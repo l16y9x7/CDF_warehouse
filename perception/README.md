@@ -65,8 +65,14 @@ bbox 扩边比例，不增加 SAM3 请求。OpenCV 超分沿用原方法的预�
 对照方法识别成功，接口仍返回 `NOT_FOUND`；新增方法缺依赖、模型缺失或解码异常也不会替换原返回值。
 没有选中候选框时跳过对照，定位接口和健康检查不运行对照。
 
-对照目前同步执行，会增加请求耗时。`timings_ms.decode` 仍是原方法耗时，
-`timings_ms.decode_comparisons` 单独记录新增耗时，总耗时包含二者。
+SAM3 定位完成后，原 OpenCV、OpenCV 超分、ZXing 三种解码方法通过异步调度在线程池中并发执行，
+不阻塞 HTTP 事件循环。线程池由服务复用，各方法使用独立图像副本和结果记录。
+返回前等待三路全部结束并完成归档；正常情况下解码阶段耗时接近最慢一路，而非三路之和，
+繁忙时还会受到线程池排队和 CPU 竞争影响。
+
+`timings_ms.decode` 仍是原方法的实际解码耗时；`timings_ms.decode_comparisons` 是两路对照从调度到
+全部完成的耗时；`timings_ms.decode_parallel` 是三路从调度到全部完成的总耗时（包含排队）。
+这些时间互相重叠，不能相加。是否匹配原结果在三路结束后统一计算。
 如需停用，设置 `PERCEPTION_BARCODE_COMPARISON_ENABLED=0` 后重启服务。
 
 在运行 perception 的 Python 环境安装 `requirements.txt`，其中包含 `zxing-cpp>=2.3,<4`。

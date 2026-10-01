@@ -179,8 +179,10 @@ flowchart TD
 
 每个 variant 均调用 `cv2.barcode.BarcodeDetector().detectAndDecode()`（OpenCV 内置条码解码器）。**任一成功立即返回**，不继续后续 variant / rotation / tier。Enhanced 档 9 种 variant 经去重后实际数量可能略少。
 
-接口另在同一选中区域上运行 OpenCV 超分和 ZXing-C++ 对照，只保存结果与耗时，不参与业务返回。
-对照同步执行，增加的耗时单列在 `timings_ms.decode_comparisons`。
+接口在同一选中区域上并发运行原 OpenCV、OpenCV 超分和 ZXing-C++。两种对照方法只保存结果与
+耗时，不参与业务返回。三路均在线程池中执行，返回前等待全部完成并归档。
+三路总耗时为 `timings_ms.decode_parallel`，两路对照耗时为 `timings_ms.decode_comparisons`，
+与原方法的 `timings_ms.decode` 存在重叠，不能相加。
 模型目录、开关及两份独立日志见 [条码方法对照](../README.md#条码方法对照)。
 
 #### 4.1.5 Step 5 — 返回与日志

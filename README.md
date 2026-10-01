@@ -60,7 +60,7 @@ FoundationPose 使用仓库内的 [start_25550.sh](start_25550.sh)，默认部�
 bash start_services.sh          # SAM3 → FoundationPose → estimation → perception
 bash start_services.sh status   # 查看四个服务的进程及 HTTP 状态
 bash start_services.sh stop     # 按相反顺序停止已记录的服务
-bash start_services.sh restart  # 恢复本仓库业务服务的 PID 记录后重启，保留外部模型服务
+bash start_services.sh restart  # 只重启 perception / estimation，复用运行中的 SAM3 / FoundationPose
 ```
 
 脚本自动定位仓库目录，可从任意工作目录调用，服务退出终端后仍在后台运行。
@@ -100,7 +100,9 @@ SAM3 / FoundationPose 已有进程运行或对应端口已监听时，自动跳�
 无需设置 `START_SAM3=0` 或 `START_FOUNDATIONPOSE=0`，也不再要求本机有相应的启动环境和模型文件。
 健康检查未就绪时会打印提示并继续；`status` 会区分外部服务和本脚本管理的服务，显示实际健康状态。
 复用的外部模型服务不会被接管，也不会被 `stop`、`restart` 或启动失败回滚终止。
-本脚本自己启动并记录的进程仍由 `stop` / `restart` 管理。
+`restart` 只重启 perception / estimation。已经运行的 SAM3 / FoundationPose，无论由本脚本
+还是外部启动，均保持运行；未运行的模型服务仍按 `START_SAM3` / `START_FOUNDATIONPOSE` 配置启动。
+`stop` 会停止本脚本记录的全部服务，包括模型服务。
 若 estimation / perception 已通过手动命令或旧脚本启动，但没有有效 PID 记录，运行
 `bash start_services.sh restart` 会从监听端口查找 PID，并核对当前用户、真实 Python
 可执行文件和入口路径：estimation 必须执行本仓库的 `estimation/deploy/server.py`，
@@ -148,14 +150,15 @@ bash start_services.sh
 ```
 
 此模式跳过 SAM3 的启动和检查，不会接管外部 SAM3 进程。
-`stop` / `restart` 仍会清理本脚本此前启动且记录在 PID 文件中的本地 SAM3。
+`stop` 仍会清理本脚本此前启动且记录在 PID 文件中的本地 SAM3；`restart` 保留它。
 FoundationPose 位于远程服务器或不处理篮筐时，也可以设置 `START_FOUNDATIONPOSE=0`，
 跳过 FoundationPose 的启动和检查；远程地址可通过 `BASKET_FP_URL` 指定。
-停止和重启同样只处理本脚本已记录的进程，不会接管外部 FoundationPose。
+`stop` 只停止本脚本已记录的 FoundationPose；`restart` 保留已运行的 FoundationPose。
 
 复制来的 `start_25550.sh` 原有 `start / stop / restart / status` 用法仍可独立使用，
 独立模式日志和 PID 位于 `$FOUNDATIONPOSE_ROOT/logs/`。
-经一键脚本启动的进程统一通过 `start_services.sh stop/restart` 管理，避免混用两套 PID 文件。
+经一键脚本启动的进程统一通过 `start_services.sh` 管理，避免混用两套 PID 文件。
+需要让模型服务重新加载时使用 `stop` 后再 `start`（会同时停止并启动本脚本管理的业务服务）。
 
 FoundationPose 内部的 `SAM3_API_URL` 保留原脚本默认值 `http://127.0.0.1:25551/infer`，
 可通过同名环境变量覆盖。它与 perception / estimation 使用的 `SAM3_URL` 是不同配置，

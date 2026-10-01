@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict
 from pathlib import Path
@@ -18,7 +19,8 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from core.recognize_trace import BarcodeComparisonTrace, RecognizePipelineTrace
-from services import barcode_compare, qr_decode
+from clients.sam3_client import SamLocateResult
+from services import barcode_compare, qr_decode, sku_recognize
 
 
 def ean13_sample():
@@ -36,7 +38,7 @@ def ean13_sample():
     return cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
 
 
-class BarcodeComparisonTests(unittest.TestCase):
+class BarcodeComparisonTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         enabled = patch.object(barcode_compare, "PERCEPTION_BARCODE_COMPARISON_ENABLED", True)
         enabled.start()
@@ -47,7 +49,7 @@ class BarcodeComparisonTests(unittest.TestCase):
             barcode_content="original", decode_error="old-error", timings_ms={"decode": 12.3},
         )
 
-    def test_same_crop_as_baseline_and_no_cross_method_or_business_mutation(self):
+    async def test_same_crop_as_baseline_and_no_cross_method_or_business_mutation(self):
         before = asdict(self.trace)
         image_before = self.image.copy()
         baseline_crop = []
@@ -62,7 +64,7 @@ class BarcodeComparisonTests(unittest.TestCase):
 
         with patch.object(barcode_compare, "_run_opencv_sr", side_effect=decode), \
                 patch.object(barcode_compare, "_run_zxing_cpp", side_effect=decode):
-            barcode_compare.run_barcode_comparisons(self.image, self.trace)
+            await barcode_compare.run_barcode_comparisons(self.image, self.trace)
         for crop in crops:
             np.testing.assert_array_equal(crop, baseline_crop[0])
         np.testing.assert_array_equal(self.image, image_before)
@@ -70,15 +72,16 @@ class BarcodeComparisonTests(unittest.TestCase):
         for key in before.keys() - {"decode_comparisons", "timings_ms"}:
             self.assertEqual(before[key], after[key])
         self.assertEqual(self.trace.timings_ms["decode"], 12.3)
-        self.assertTrue(all(r.matches_business_result for r in self.trace.decode_comparisons.values()))
+        self.assertTrue(all(r.barcode_content == "original" for r in self.trace.decode_comparisons.values()))
+        self.assertTrue(all(r.matches_business_result is None for r in self.trace.decode_comparisons.values()))
 
-    def test_disabled_and_invalid_input_do_not_call_decoders(self):
+    async def test_disabled_and_invalid_input_do_not_call_decoders(self):
         with patch.object(barcode_compare, "_run_opencv_sr") as sr, patch.object(barcode_compare, "_run_zxing_cpp") as zx:
             with patch.object(barcode_compare, "PERCEPTION_BARCODE_COMPARISON_ENABLED", False):
-                barcode_compare.run_barcode_comparisons(self.image, self.trace)
+                await barcode_compare.run_barcode_comparisons(self.image, self.trace)
             self.assertTrue(all(r.reason == "disabled" for r in self.trace.decode_comparisons.values()))
             self.trace.selected_bbox = [20, 20, 10, 10]
-            barcode_compare.run_barcode_comparisons(self.image, self.trace)
+            await barcode_compare.run_barcode_comparisons(self.image, self.trace)
             self.assertTrue(all(r.status == "ERROR" for r in self.trace.decode_comparisons.values()))
             sr.assert_not_called()
             zx.assert_not_called()
@@ -96,10 +99,10 @@ class BarcodeComparisonTests(unittest.TestCase):
         self.assertTrue(result.runtime["sr_configured"])
         self.assertIn("not_observable", result.runtime["sr_execution"])
 
-    def test_missing_dependency_is_error_and_other_method_still_runs(self):
+    async def test_missing_dependency_is_error_and_other_method_still_runs(self):
         with patch.object(barcode_compare, "_run_opencv_sr") as sr, \
                 patch.object(barcode_compare, "import_module", side_effect=ModuleNotFoundError("zxingcpp")):
-            barcode_compare.run_barcode_comparisons(self.image, self.trace)
+            await barcode_compare.run_barcode_comparisons(self.image, self.trace)
         sr.assert_called_once()
         self.assertEqual(self.trace.decode_comparisons["opencv_sr"].status, "NOT_FOUND")
         self.assertEqual(self.trace.decode_comparisons["zxing_cpp"].status, "ERROR")
@@ -142,6 +145,33 @@ class BarcodeComparisonTests(unittest.TestCase):
 
 
 class NativeBarcodeSmokeTests(unittest.TestCase):
+    def test_real_three_method_pipeline(self):
+        try:
+            import zxingcpp
+        except ImportError:
+            self.skipTest("zxing-cpp not installed in this interpreter")
+        if not hasattr(zxingcpp, "read_barcodes"):
+            self.skipTest("zxing-cpp native module is unavailable")
+        directory = Path(barcode_compare.PERCEPTION_BARCODE_SR_MODEL_DIR)
+        if not all((directory / name).is_file() for name in ("sr.prototxt", "sr.caffemodel")):
+            self.skipTest("SR model files not installed")
+        image = ean13_sample()
+        height, width = image.shape[:2]
+        candidate = SamLocateResult(bbox=[0, 0, width, height], mask="", score=0.9, confidence=0.9)
+        trace = RecognizePipelineTrace()
+        with patch("services.sku_locate.locate_sam3_instances", return_value=[candidate]) as sam3, \
+                patch.object(barcode_compare, "PERCEPTION_BARCODE_COMPARISON_ENABLED", True):
+            content = asyncio.run(sku_recognize.recognize_sku_barcode(
+                image, sam3_prompt="barcode", trace=trace, timings_ms=trace.timings_ms,
+            ))
+        sam3.assert_called_once()
+        self.assertEqual(content, "5901234123457")
+        for comparison in trace.decode_comparisons.values():
+            self.assertEqual(comparison.status, "FOUND")
+            self.assertEqual(comparison.barcode_content, content)
+            self.assertTrue(comparison.matches_business_result)
+        self.assertTrue({"decode", "decode_comparisons", "decode_parallel"} <= trace.timings_ms.keys())
+
     def test_real_sr_model_and_original_decoder(self):
         directory = Path(barcode_compare.PERCEPTION_BARCODE_SR_MODEL_DIR)
         if not all((directory / name).is_file() for name in ("sr.prototxt", "sr.caffemodel")):

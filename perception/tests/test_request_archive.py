@@ -11,6 +11,7 @@ from datetime import date, timedelta
 from pathlib import Path
 import sys
 import tempfile
+from threading import Barrier, Event, get_ident
 import unittest
 from unittest.mock import patch
 from uuid import uuid4
@@ -246,6 +247,93 @@ class RequestArchiveTests(unittest.TestCase):
             ids.add(response.headers["X-Request-ID"])
         self.assertEqual(len(ids), 8)
         self.assertEqual(len(logging.getLogger("perception.requests").handlers), 1)
+
+    def test_all_three_decoders_overlap_without_blocking_health_or_archiving_early(self):
+        gate = Barrier(3)
+        baseline_done = Event()
+        release_comparisons = Event()
+        threads = set()
+
+        def original(*args, **kwargs):
+            threads.add(get_ident())
+            gate.wait(timeout=5)
+            content = self.decode(*args, **kwargs)
+            baseline_done.set()
+            return content
+
+        def comparison(crop, result):
+            threads.add(get_ident())
+            gate.wait(timeout=5)
+            if not release_comparisons.wait(timeout=5):
+                raise TimeoutError("test did not release comparison workers")
+            self.compare(crop, result)
+
+        self.decoder.side_effect = original
+        self.sr.side_effect = comparison
+        self.zxing.side_effect = comparison
+        # A single TestClient context shares one event loop across both calls.
+        with self.client, ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(self.post)
+            try:
+                self.assertTrue(baseline_done.wait(timeout=5), "all three decoders must start before any completes")
+                self.assertEqual(len(threads), 3)
+                self.assertFalse(future.done(), "response must wait for comparison evidence")
+                self.assertEqual(self.client.get("/perception/health").status_code, 200)
+                traces = list((self.root / "requests").glob("*/*/trace.json"))
+                self.assertEqual(len(traces), 1)
+                self.assertEqual(json.loads(traces[0].read_text())["state"], "received")
+            finally:
+                release_comparisons.set()
+            response = future.result(timeout=5)
+        self.assertEqual(response.json(), {"status": "FOUND", "barcode_content": "123456"})
+        self.model.assert_called_once()
+        _, records = self.archive(response)
+        pipeline = records["trace"]["pipeline"]
+        self.assertIn("decode_parallel", pipeline["timings_ms"])
+        for result in pipeline["decode_comparisons"].values():
+            self.assertEqual(result["status"], "FOUND")
+            self.assertFalse(result["matches_business_result"])
+
+    def test_comparisons_finish_before_original_and_match_after_join(self):
+        both_comparisons_done = Barrier(3)
+
+        def original(*args, **kwargs):
+            both_comparisons_done.wait(timeout=5)
+            return self.decode(*args, **kwargs)
+
+        def comparison(crop, result):
+            result.codes = [{"content": "123456", "format": "EAN13"}]
+            both_comparisons_done.wait(timeout=5)
+
+        self.decoder.side_effect = original
+        self.sr.side_effect = comparison
+        self.zxing.side_effect = comparison
+        response = self.post()
+        self.assertEqual(response.json()["barcode_content"], "123456")
+        _, records = self.archive(response)
+        for result in records["trace"]["pipeline"]["decode_comparisons"].values():
+            self.assertTrue(result["matches_business_result"])
+
+    def test_original_exception_still_joins_and_archives_comparisons(self):
+        self.decoder.side_effect = RuntimeError("original decoder failed")
+        response = self.post()
+        self.assertEqual(response.status_code, 500)
+        _, records = self.archive(response)
+        self.assertIn("original decoder failed", records["trace"]["error"]["traceback"])
+        for result in records["trace"]["pipeline"]["decode_comparisons"].values():
+            self.assertEqual(result["status"], "FOUND")
+            self.assertEqual(result["barcode_content"], "other-code")
+
+    def test_disabling_comparisons_keeps_async_original_result(self):
+        with patch.object(barcode_compare, "PERCEPTION_BARCODE_COMPARISON_ENABLED", False):
+            response = self.post()
+        self.assertEqual(response.json(), {"status": "FOUND", "barcode_content": "123456"})
+        self.decoder.assert_called_once()
+        self.sr.assert_not_called()
+        self.zxing.assert_not_called()
+        _, records = self.archive(response)
+        for result in records["trace"]["pipeline"]["decode_comparisons"].values():
+            self.assertEqual((result["status"], result["reason"]), ("SKIPPED", "disabled"))
 
     def test_archive_write_failure_does_not_change_recognition_result(self):
         with patch.object(Path, "write_bytes", side_effect=PermissionError("simulated read-only archive")):
