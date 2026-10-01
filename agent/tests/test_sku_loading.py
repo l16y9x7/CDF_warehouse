@@ -16,7 +16,7 @@ def test_load_sku_catalog():
     assert len(catalog) == 3, f"Expected 3 SKUs, got {len(catalog)}"
 
     # 验证所有预期的 SKU 都存在
-    expected_skus = ["3282779003131", "887167608641", "7173342765403"]
+    expected_skus = ["3282779003131", "887167608641", "3282770389746"]
     for sku_id in expected_skus:
         assert sku_id in catalog, f"SKU {sku_id} not found in catalog"
 

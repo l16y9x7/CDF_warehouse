@@ -350,8 +350,15 @@ class OrderStore:
             if status_priority.get(unit["status"], 0) > status_priority.get(group["status"], 0):
                 group["status"] = unit["status"]
         completed = sum(unit["status"] == "SUCCEEDED" for unit in units)
-        total_steps = len(units) or 1
-        finished_steps = completed
+        push_done = order["status"] == "SUCCEEDED"
+        if push_done:
+            push_status = "SUCCEEDED"
+        elif order.get("stage") == "FINISH":
+            push_status = order["status"]
+        else:
+            push_status = "PENDING"
+        total_steps = len(units) + 1
+        finished_steps = completed + int(push_done)
         current_sequence = next(
             (unit["sequence"] for unit in units if unit["unit_id"] == order["current_unit_id"]),
             None,
@@ -373,5 +380,6 @@ class OrderStore:
             "total_items": len(units),
             "completed_items": completed,
             "current_sequence": current_sequence,
+            "push_status": push_status,
             "progress_percent": round(finished_steps / total_steps * 100),
         }

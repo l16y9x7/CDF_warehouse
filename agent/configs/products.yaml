@@ -13,7 +13,7 @@ products:
     image_url: /orders/assets/box.svg
     sku_typ: box
     hand: LEFT
-  - sku_id: "7173342765403"
+  - sku_id: "3282770389746"
     name: 清润洁面乳
     description: 柔和清洁肌肤，保持清爽水润
     category: 洁面护理

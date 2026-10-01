@@ -123,7 +123,7 @@ class DebugApiTest(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(level["type"], "select")
             self.assertEqual(level["options"], ["L1", "L2", "L3", "L4", "L5"])
 
-        sku_ids = ["3282779003131", "887167608641", "7173342765403"]
+        sku_ids = ["3282779003131", "887167608641", "3282770389746"]
         sku_names = [
             "雅漾舒护活泉水",
             "修护精华礼盒",

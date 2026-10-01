@@ -43,12 +43,12 @@ class PickPolicyTest(unittest.TestCase):
             {
                 "3282779003131": SkuSpec("bottle", Hand.RIGHT, "雅漾舒护活泉水"),
                 "887167608641": SkuSpec("box", Hand.LEFT, "修护精华礼盒"),
-                "7173342765403": SkuSpec("tube", Hand.RIGHT, "清润洁面乳"),
+                "3282770389746": SkuSpec("tube", Hand.RIGHT, "清润洁面乳"),
             },
         )
         self.assertIs(sku_spec(catalog, "887167608641").hand, Hand.LEFT)
         self.assertEqual(sku_spec(catalog, "887167608641").name, "修护精华礼盒")
-        self.assertIs(shared_working_hand(catalog, ["3282779003131", "7173342765403"]), Hand.RIGHT)
+        self.assertIs(shared_working_hand(catalog, ["3282779003131", "3282770389746"]), Hand.RIGHT)
         with self.assertRaisesRegex(ValueError, "同一只工作手"):
             shared_working_hand(catalog, ["3282779003131", "887167608641"])
 

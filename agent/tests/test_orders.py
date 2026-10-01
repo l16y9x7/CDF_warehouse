@@ -1,4 +1,5 @@
 import asyncio
+import json
 import sqlite3
 import tempfile
 import unittest
@@ -147,27 +148,40 @@ class OrderApiTest(unittest.IsolatedAsyncioTestCase):
                     (f"{order_id}%",),
                 )
             ]
-        self.assertEqual(task_types, ["sorting_item", "sorting_item"])
+            finish = connection.execute(
+                "SELECT request_json FROM tasks WHERE task_id LIKE ? AND task_type='sorting_finish'",
+                (f"{order_id}%",),
+            ).fetchone()
+        self.assertEqual(task_types, ["sorting_item", "sorting_item", "sorting_finish"])
+        finish_request = json.loads(finish[0])
+        self.assertEqual(finish_request["basket_row"], "L2")
+        self.assertEqual(finish_request["basket_column"], "3")
         runs = sorted(
             self.app.state.debug.store.list_runs(target="real"),
             key=lambda run: (run["started_at"], run["task_id"] or ""),
         )
         self.assertEqual(
             [run["operation"] for run in runs],
-            ["sorting_item", "sorting_item"],
+            ["sorting_item", "sorting_item", "sorting_finish"],
         )
         self.assertTrue(all(run["status"] == "SUCCEEDED" for run in runs))
         self.assertTrue(all(str(run["task_id"]).startswith(order_id) for run in runs))
-        detail = (await self.client.get(f"/debug/api/runs/{runs[0]['run_id']}")).json()
+        item_run = next(run for run in runs if run["operation"] == "sorting_item")
+        detail = (await self.client.get(f"/debug/api/runs/{item_run['run_id']}")).json()
         self.assertEqual(detail["layer"], "workflow")
         self.assertEqual(detail["status"], "SUCCEEDED")
         self.assertTrue(detail["events"])
         self.assertEqual(detail["request"]["sku_id"], "3282779003131")
-        trace = (await self.client.get(f"/debug/api/runs/{runs[0]['run_id']}/trace")).json()
+        trace = (await self.client.get(f"/debug/api/runs/{item_run['run_id']}/trace")).json()
         self.assertTrue(any(span["kind"] == "workflow" for span in trace["spans"]))
         self.assertTrue(any(span["kind"] == "skill" for span in trace["spans"]))
         events = self.app.state.orders.events_after(order_id, 0)
         self.assertTrue(any(event["type"] == "agent.progress" for event in events))
+        self.assertEqual(order["push_status"], "SUCCEEDED")
+        self.assertEqual(order["stage"], "FINISH")
+        event_types = [event["type"] for event in events]
+        self.assertLess(event_types.index("finish.started"), event_types.index("finish.succeeded"))
+        self.assertLess(event_types.index("finish.succeeded"), event_types.index("order.succeeded"))
         self.assertEqual(events[-1]["type"], "order.succeeded")
         self._assert_barcode_copy(events, "雅漾舒护活泉水", "3282779003131", 2)
 
@@ -235,6 +249,65 @@ class OrderApiTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(retried.status_code, 200)
         completed = await self.wait_for_status(order_id, {"SUCCEEDED"})
         self.assertEqual(completed["units"][0]["attempts"], 3)
+        self.assertEqual(completed["push_status"], "SUCCEEDED")
+
+    async def test_push_runs_after_items_and_retries_without_repicking(self):
+        original = self.application.workflows["sorting_finish"]
+
+        class FailingFinish:
+            def run(self, context, data):
+                raise AgentError("PUSH_FAILURE", "模拟推筐失败")
+
+        self.application.workflows["sorting_finish"] = FailingFinish()
+        response = await self.client.post(
+            "/orders/api/orders",
+            json={
+                "items": [{
+                    "sku_id": "3282779003131", "quantity": 1,
+                    "agv_row": "L1", "agv_column": "1",
+                }],
+                "basket_row": "L3",
+                "basket_column": "4",
+            },
+        )
+        order_id = response.json()["order_id"]
+        paused = await self.wait_for_status(order_id, {"PAUSED"})
+        self.assertEqual(paused["stage"], "FINISH")
+        self.assertEqual(paused["push_status"], "PAUSED")
+        self.assertEqual(paused["units"][0]["status"], "SUCCEEDED")
+        self.assertEqual(paused["units"][0]["attempts"], 1)
+        self.assertEqual(paused["finish_attempts"], 2)
+        self.assertIn("PUSH_FAILURE", paused["error"])
+
+        with sqlite3.connect(self.database) as connection:
+            task_types = [
+                row[0]
+                for row in connection.execute(
+                    "SELECT task_type FROM tasks WHERE task_id LIKE ? ORDER BY rowid",
+                    (f"{order_id}%",),
+                )
+            ]
+        self.assertEqual(task_types, ["sorting_item", "sorting_finish", "sorting_finish"])
+
+        self.application.workflows["sorting_finish"] = original
+        retried = await self.client.post(f"/orders/api/orders/{order_id}/retry", json={})
+        self.assertEqual(retried.status_code, 200)
+        completed = await self.wait_for_status(order_id, {"SUCCEEDED"})
+        self.assertEqual(completed["units"][0]["attempts"], 1)
+        self.assertEqual(completed["finish_attempts"], 3)
+        self.assertEqual(completed["push_status"], "SUCCEEDED")
+        with sqlite3.connect(self.database) as connection:
+            task_types = [
+                row[0]
+                for row in connection.execute(
+                    "SELECT task_type FROM tasks WHERE task_id LIKE ? ORDER BY rowid",
+                    (f"{order_id}%",),
+                )
+            ]
+        self.assertEqual(
+            task_types,
+            ["sorting_item", "sorting_finish", "sorting_finish", "sorting_finish"],
+        )
 
     async def test_mock_order_runs_on_mock_runtime(self):
         response = await self.client.post(

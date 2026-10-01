@@ -23,7 +23,7 @@ from agent.skills.review import HandOnlyInput, PickReviewBasketSkill, SummarizeR
 SKU_CATALOG = {
     "3282779003131": SkuSpec("bottle", Hand.RIGHT),
     "887167608641": SkuSpec("box", Hand.LEFT),
-    "7173342765403": SkuSpec("tube", Hand.LEFT),
+    "3282770389746": SkuSpec("tube", Hand.LEFT),
 }
 
 TEST_CALIBRATION = {

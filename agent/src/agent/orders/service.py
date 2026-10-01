@@ -200,6 +200,11 @@ class OrderService:
             order = self.get(order_id)
             if order["status"] != "RUNNING":
                 return
+            if not self._run_finish(order_id):
+                return
+            order = self.get(order_id)
+            if order["status"] != "RUNNING":
+                return
             self._complete_order(order_id)
         except Exception as exc:
             logger.exception("用户订单编排异常", extra={"order_id": order_id})
@@ -284,12 +289,78 @@ class OrderService:
             return False
         return False
 
+    def _run_finish(self, order_id: str) -> bool:
+        order = self.get(order_id)
+        base_attempts = int(order.get("finish_attempts") or 0)
+        self.store.update_order(
+            order_id,
+            stage="FINISH",
+            current_unit_id=None,
+            current_skill=None,
+            progress_text="商品已全部放入篮筐，准备推筐",
+            error=None,
+        )
+        for cycle_attempt in range(1, 3):
+            if self.get(order_id)["status"] != "RUNNING":
+                return False
+            attempt = base_attempts + cycle_attempt
+            task_id = f"{order_id}-F-A{attempt}"
+            self.store.update_order(
+                order_id,
+                stage="FINISH",
+                current_unit_id=None,
+                current_task_id=task_id,
+                finish_attempts=attempt,
+            )
+            self.store.event(
+                order_id,
+                "finish.started" if attempt == 1 else "finish.retrying",
+                {"attempt": attempt},
+            )
+            order = self.get(order_id)
+            error = self._execute_task(
+                order_id,
+                task_id,
+                "/agent/sorting/finish",
+                {
+                    "task_id": task_id,
+                    "basket_row": order["basket_row"],
+                    "basket_column": order["basket_column"],
+                    "mock": bool(order["mock"]),
+                },
+            )
+            if error is None:
+                self.store.update_order(
+                    order_id,
+                    stage="FINISH",
+                    current_skill=None,
+                    progress_text="篮筐已推出",
+                    error=None,
+                )
+                self.store.event(order_id, "finish.succeeded", {"attempt": attempt})
+                return True
+            if self.get(order_id)["status"] in {"CANCELLING", "CANCELLED"}:
+                self._finish_cancelled(order_id)
+                return False
+            if cycle_attempt == 1:
+                self.store.update_order(
+                    order_id,
+                    stage="FINISH",
+                    progress_text="推筐失败，正在自动重试一次",
+                    error=error,
+                )
+                self.store.event(order_id, "finish.retrying", {"attempt": attempt, "error": error})
+                continue
+            self._pause(order_id, error, stage="FINISH")
+            return False
+        return False
+
     def _complete_order(self, order_id: str) -> None:
         now = time.time()
         self.store.update_order(
             order_id,
             status="SUCCEEDED",
-            stage="ITEMS",
+            stage="FINISH",
             current_unit_id=None,
             current_skill=None,
             progress_text="订单已完成",

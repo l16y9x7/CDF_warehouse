@@ -95,6 +95,9 @@ function describeStep(record) {
   if (type === "item.started") return { text: `开始抓取第 ${payload.sequence} 件：${payload.name}`, tone: "" };
   if (type === "item.retrying") return payload.name ? { text: `正在重试第 ${payload.sequence} 件：${payload.name}`, tone: "warn" } : { text: `第 ${payload.sequence} 件执行失败，正在自动重试`, tone: "warn" };
   if (type === "item.succeeded") return { text: `第 ${payload.sequence} 件已放入篮筐`, tone: "ok" };
+  if (type === "finish.started") return { text: "商品已全部放入篮筐，开始推筐", tone: "" };
+  if (type === "finish.retrying") return { text: payload.error ? "推筐失败，正在自动重试" : "正在重试推筐", tone: "warn" };
+  if (type === "finish.succeeded") return { text: "篮筐已推出", tone: "ok" };
   if (type === "agent.progress") {
     const info = payload.info && typeof payload.info === "object" ? payload.info : {};
     const progress = info.progress || info.message;
@@ -150,7 +153,8 @@ function showOrder() {
   $("#status-orb").style.setProperty("--progress", `${order.progress_percent}%`);
   const status = $("#order-status"); status.textContent = statusText[order.status] || order.status; status.className = `status-pill ${order.status.toLowerCase()}`;
   $("#basket-label").textContent = `篮筐 ${order.basket_row} · ${order.basket_column}列`;
-  $("#progress-copy").textContent = `${order.completed_items} / ${order.total_items} 件`;
+  const pushLabel = { PENDING: "待推筐", RUNNING: "推筐中", PAUSED: "推筐暂停", CANCELLING: "正在停止推筐", CANCELLED: "推筐已取消", SUCCEEDED: "已推筐" }[order.push_status] || "待推筐";
+  $("#progress-copy").textContent = `${order.completed_items} / ${order.total_items} 件 · ${pushLabel}`;
   $("#progress-bar").style.width = `${order.progress_percent}%`;
   $("#back-to-shop").classList.toggle("hidden", !done);
   $("#cancel-order").classList.toggle("hidden", done || order.status === "CANCELLING");
