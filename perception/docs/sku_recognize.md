@@ -177,7 +177,11 @@ flowchart TD
     EnhancedOk -->|否| Z3["NOT_FOUND · decode_failed"]
 ```
 
-每个 variant 均调用 `cv2.barcode.BarcodeDetector().detectAndDecode()`（底层 ZBar）。**任一成功立即返回**，不继续后续 variant / rotation / tier。Enhanced 档 9 种 variant 经去重后实际数量可能略少。
+每个 variant 均调用 `cv2.barcode.BarcodeDetector().detectAndDecode()`（OpenCV 内置条码解码器）。**任一成功立即返回**，不继续后续 variant / rotation / tier。Enhanced 档 9 种 variant 经去重后实际数量可能略少。
+
+接口另在同一选中区域上运行 OpenCV 超分和 ZXing-C++ 对照，只保存结果与耗时，不参与业务返回。
+对照同步执行，增加的耗时单列在 `timings_ms.decode_comparisons`。
+模型目录、开关及两份独立日志见 [条码方法对照](../README.md#条码方法对照)。
 
 #### 4.1.5 Step 5 — 返回与日志
 
@@ -253,7 +257,7 @@ infer（旧版）响应中 `detections[].bbox` 为 **xywh**，内部转换为 xy
 
 #### Step 4 — OpenCV 条码解码（Basic / Enhanced 两档）
 
-- 使用 `cv2.barcode.BarcodeDetector().detectAndDecode()`（底层 ZBar）。
+- 使用 `cv2.barcode.BarcodeDetector().detectAndDecode()`（OpenCV 内置条码解码器）。
 - 解码器对每个候选图逐个尝试，**任一成功即返回**，不继续后续候选。
 - 在裁切后的 ROI 上解码；每个档位内再依次尝试 **0°、90°、180°、270°**，覆盖条码竖放、倒放。
 

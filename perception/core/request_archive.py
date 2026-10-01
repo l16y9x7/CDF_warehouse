@@ -25,9 +25,10 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from config import (
     PERCEPTION_REQUEST_DIR, PERCEPTION_REQUEST_LOG_PATH,
     PERCEPTION_REQUEST_RETENTION_DAYS, RECOGNIZE_SKU_BARCODE_LOG_PATH,
+    PERCEPTION_OPENCV_SR_LOG_PATH, PERCEPTION_ZXING_CPP_LOG_PATH,
 )
 from core.image_io import decode_image_bytes, read_image_from_base64, read_image_from_path
-from core.recognize_trace import RecognizePipelineTrace
+from core.recognize_trace import BarcodeComparisonTrace, RecognizePipelineTrace
 from core.service_logging import file_logger
 
 _cleanup_lock = Lock()
@@ -185,6 +186,35 @@ class RequestArchive:
         # Decode exactly the bytes archived above, even if the caller overwrites its file.
         return decode_image_bytes(self.image_bytes)
 
+    def _save_decoder_comparisons(self, status: str, response_body) -> None:
+        if self.metadata["path"] != "/perception/recognize_sku_barcode":
+            return
+        for method, log_path in (("opencv_sr", PERCEPTION_OPENCV_SR_LOG_PATH),
+                                 ("zxing_cpp", PERCEPTION_ZXING_CPP_LOG_PATH)):
+            try:
+                comparisons = self.trace.decode_comparisons if self.trace is not None else {}
+                comparison = comparisons.get(method) or BarcodeComparisonTrace(
+                    method=method, reason="request_failed" if status == "ERROR" else "not_run",
+                )
+                if self.trace is not None:
+                    comparisons[method] = comparison
+                record = {
+                    "request_id": self.request_id, "comparison_only": True,
+                    "business_status": status,
+                    "business_barcode_content": response_body.get("barcode_content")
+                    if isinstance(response_body, dict) else None,
+                    "image": self.image_info,
+                    "saved_image_path": self.trace.saved_image_path if self.trace is not None else None,
+                    **asdict(comparison),
+                }
+                self._json(f"decode_{method}.json", record)
+                file_logger(f"perception.barcode_{method}", log_path).info(
+                    "%s", json.dumps(record, ensure_ascii=False, default=str),
+                )
+            except Exception as error:
+                # Diagnostic persistence must never replace a business response.
+                self.archive_errors.append(f"decode_{method}: {type(error).__name__}: {error}")
+
     def finish(self, response: Response) -> None:
         raw = response.body
         try:
@@ -208,6 +238,8 @@ class RequestArchive:
                 self.trace.saved_image_path = str(self.directory / self.image_info["file"])
             if status == "ERROR" and not self.trace.failure_reason:
                 self.trace.failure_reason = (self.error or {}).get("type", "request_failed")
+        self._save_decoder_comparisons(status, response_body)
+        if self.trace is not None:
             pipeline = asdict(self.trace)
             file_logger("perception.recognize_sku_barcode", RECOGNIZE_SKU_BARCODE_LOG_PATH).info(
                 "\n%s", self.trace.format_summary())

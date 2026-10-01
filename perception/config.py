@@ -67,6 +67,23 @@ PERCEPTION_LOG_BACKUP_COUNT = int(os.getenv("PERCEPTION_LOG_BACKUP_COUNT", "5"))
 # Keep request evidence unless the operator explicitly configures expiration.
 PERCEPTION_REQUEST_RETENTION_DAYS = int(os.getenv("PERCEPTION_REQUEST_RETENTION_DAYS", "0"))
 
+# Diagnostic decoders never contribute to the business response.
+PERCEPTION_BARCODE_COMPARISON_ENABLED = os.getenv(
+    "PERCEPTION_BARCODE_COMPARISON_ENABLED", "1"
+).strip().lower() not in {"0", "false", "no", "off"}
+_sr_model_dir = Path(os.getenv("PERCEPTION_BARCODE_SR_MODEL_DIR", "opencv_3rdparty-wechat_qrcode"))
+PERCEPTION_BARCODE_SR_MODEL_DIR = (
+    _sr_model_dir if _sr_model_dir.is_absolute() else _PERCEPTION_ROOT / _sr_model_dir
+).resolve()
+PERCEPTION_OPENCV_SR_LOG_PATH = os.getenv(
+    "PERCEPTION_OPENCV_SR_LOG_PATH",
+    str(Path(RECOGNIZE_SKU_BARCODE_LOG_PATH).parent / "barcode_opencv_sr.log"),
+)
+PERCEPTION_ZXING_CPP_LOG_PATH = os.getenv(
+    "PERCEPTION_ZXING_CPP_LOG_PATH",
+    str(Path(RECOGNIZE_SKU_BARCODE_LOG_PATH).parent / "barcode_zxing_cpp.log"),
+)
+
 
 def camera_snapshot_url(camera: str) -> str:
     """Return the configured color snapshot URL for a camera name."""

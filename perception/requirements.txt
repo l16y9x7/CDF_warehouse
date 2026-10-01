@@ -5,6 +5,7 @@ fastapi
 uvicorn
 numpy
 opencv-python-headless
+zxing-cpp>=2.3,<4
 Pillow
 requests
 

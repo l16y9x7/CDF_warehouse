@@ -12,6 +12,7 @@ from core.recognize_trace import RecognizePipelineTrace
 from core.sam3_prompts import RECOGNIZE_SKU_BARCODE, resolve_sam3_prompt
 from models.sku_recognize import RecognizeSkuBarcodeRequest, RecognizeSkuBarcodeResponse
 from services.sku_recognize import recognize_sku_barcode
+from services.barcode_compare import run_barcode_comparisons
 
 router = APIRouter(route_class=ArchivedRoute)
 
@@ -58,6 +59,7 @@ def recognize_sku_barcode_api(
         raise HTTPException(status_code=502, detail=str(error)) from error
 
     trace.barcode_content = barcode_content
+    run_barcode_comparisons(image_bgr, trace)
 
     if not barcode_content:
         return RecognizeSkuBarcodeResponse(status="NOT_FOUND")

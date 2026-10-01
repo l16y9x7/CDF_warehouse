@@ -25,6 +25,20 @@ class DecodeAttemptTrace:
 
 
 @dataclass
+class BarcodeComparisonTrace:
+    method: str
+    status: str = "SKIPPED"
+    barcode_content: str | None = None
+    codes: list[dict[str, str]] = field(default_factory=list)
+    duration_ms: float = 0.0
+    attempts: list[dict] = field(default_factory=list)
+    runtime: dict = field(default_factory=dict)
+    reason: str | None = None
+    error: str | None = None
+    matches_business_result: bool | None = None
+
+
+@dataclass
 class RecognizePipelineTrace:
     request_id: str = ""
     operation: str = "recognize_sku_barcode"
@@ -46,6 +60,7 @@ class RecognizePipelineTrace:
     expanded_bbox: list[int] | None = None
     crop_shape: tuple[int, int] | None = None
     decode_attempts: list[DecodeAttemptTrace] = field(default_factory=list)
+    decode_comparisons: dict[str, BarcodeComparisonTrace] = field(default_factory=dict)
     decode_error: str | None = None
     saved_image_path: str | None = None
     barcode_content: str | None = None
@@ -108,6 +123,13 @@ class RecognizePipelineTrace:
         ]
         if self.saved_image_path is not None:
             lines.append(f"saved_image={self.saved_image_path!r}")
+        for method, comparison in self.decode_comparisons.items():
+            lines.append(
+                f"comparison_only=true method={method} status={comparison.status} "
+                f"content={comparison.barcode_content!r} duration_ms={comparison.duration_ms} "
+                f"matches_business_result={comparison.matches_business_result} "
+                f"reason={comparison.reason!r} error={comparison.error!r}"
+            )
         if self.status == "ERROR":
             lines.append(f"ERROR: {self.failure_reason or 'request_failed'} "
                          f"(total_ms={self.total_ms}, timings_ms={self.timings_ms})")
