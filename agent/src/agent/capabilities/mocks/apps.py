@@ -185,7 +185,7 @@ INFER_FRAME_REQUIRED = frozenset(
         "base_frame",
     }
 )
-INFER_REQUIRED = INFER_FRAME_REQUIRED | {"sku_typ", "side"}
+INFER_REQUIRED = INFER_FRAME_REQUIRED | {"sku_typ", "sku_id", "side"}
 INFER_ALLOWED = INFER_REQUIRED | {"front_rule"}
 INFER_BASKET_REQUIRED = INFER_FRAME_REQUIRED
 INFER_BASKET_ALLOWED = INFER_BASKET_REQUIRED
@@ -221,6 +221,8 @@ def _invalid_infer(body: dict[str, Any]) -> JSONResponse | None:
         return None
     if not str(body.get("sku_typ") or "").strip():
         return reject("sku_typ is required")
+    if not str(body.get("sku_id") or "").strip():
+        return reject("sku_id is required")
     if body["side"] not in SIDES:
         return reject("side must be LEFT or RIGHT")
     if "front_rule" in body:

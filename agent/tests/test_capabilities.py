@@ -58,6 +58,8 @@ def PickPoseRequest(*args, **kwargs):
     """Test builder with explicit standard frame metadata; production has no defaults."""
     kwargs.setdefault("camera_frame", "head_camera_color_optical_frame")
     kwargs.setdefault("base_frame", "chassis_link")
+    if args and args[0] is TargetType.SKU:
+        kwargs.setdefault("sku_id", "20108138")
     return PickPoseRequestContract(*args, **kwargs)
 
 class CapabilityContractTest(unittest.TestCase):
@@ -159,6 +161,7 @@ class CapabilityContractTest(unittest.TestCase):
             {
                 "target_type": "sku",
                 "sku_typ": "bottle",
+                "sku_id": "20108138",
                 "rgb_base64": "cmdi",
                 "depth_npy_base64": "bm9weQ==",
                 "depth_unit": "mm",
@@ -338,6 +341,7 @@ class CapabilityContractTest(unittest.TestCase):
         body = json.loads(self.requests[-1].read())
         self.assertEqual(body["target_type"], "basket")
         self.assertNotIn("sku_typ", body)
+        self.assertNotIn("sku_id", body)
         self.assertNotIn("side", body)
         self.assertNotIn("front_rule", body)
         self.assertTrue(result.ok)
@@ -378,6 +382,18 @@ class CapabilityContractTest(unittest.TestCase):
             front_rule=FRONT_RULE,
         )
         self.assertEqual(request.sku_typ, "sku-1")
+        with self.assertRaisesRegex(ValueError, "sku_id"):
+            PickPoseRequestContract(
+                TargetType.SKU,
+                "bottle",
+                "cmdi",
+                "bm9weQ==",
+                K,
+                T_CHASSIS_CAMERA,
+                "head_camera_color_optical_frame",
+                "chassis_link",
+                "RIGHT",
+            )
         with self.assertRaises(ValueError):  # sku_typ 不能为空
             PickPoseRequest(
                 TargetType.SKU,

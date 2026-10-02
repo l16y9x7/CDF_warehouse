@@ -123,6 +123,7 @@ class PickSkuStandardSkill:
                     camera_frame=transform.camera_frame,
                     base_frame=transform.base_frame,
                     side=data.side,
+                    sku_id=data.sku_id,
                 )
             )
             assert isinstance(result, PickPoseResult)  # /infer 形态必返回文档结构

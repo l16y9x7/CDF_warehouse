@@ -556,11 +556,13 @@ class PickPoseDebugRequestTest(unittest.TestCase):
                 "test_case": "bottle_120045958",
                 "target_type": "sku",
                 "sku_typ": "box",
+                "sku_id": "20108138",
                 "side": "LEFT",
             }
         )
         self.assertIs(request.target_type, TargetType.SKU)
         self.assertEqual(request.sku_typ, "box")
+        self.assertEqual(request.sku_id, "20108138")
         self.assertEqual(request.side, "LEFT")
         self.assertTrue(request.rgb_base64)
         self.assertTrue(request.depth_npy_base64)
@@ -582,6 +584,7 @@ class PickPoseDebugRequestTest(unittest.TestCase):
                     "test_case": "bottle_120045958",
                     "target_type": "sku",
                     "sku_typ": "tube",
+                    "sku_id": "20108138",
                     "side": "RIGHT",
                     "rgb": str(rgb),
                     "depth": str(depth),

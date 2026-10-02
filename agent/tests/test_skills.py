@@ -232,7 +232,7 @@ class SkillTest(unittest.TestCase):
         depth = np.load(io.BytesIO(base64.b64decode(sent.depth_npy_base64)), allow_pickle=False)
         self.assertEqual(depth.dtype, np.dtype("float32"))
         self.assertEqual(depth.shape, (720, 1280))
-        self.assertEqual((sent.sku_typ, sent.side), ("bottle", "LEFT"))
+        self.assertEqual((sent.sku_typ, sent.side, sent.sku_id), ("bottle", "LEFT", "3282779003131"))
         self.assertIsNone(sent.front_rule)
         self.assertEqual(sent.T_unit, "m")
         self.assertEqual(sent.T_chassis_camera[0][3], 0.113767949307)
@@ -350,7 +350,7 @@ class SkillTest(unittest.TestCase):
         )
         self.assertEqual(result.status, "SUCCEEDED")
         sent = estimation.requests[-1]
-        self.assertEqual((sent.sku_typ, sent.side), ("box", "RIGHT"))
+        self.assertEqual((sent.sku_typ, sent.side, sent.sku_id), ("box", "RIGHT", "887167608641"))
         pick = manipulation.pick_requests[-1]
         self.assertEqual((pick.sku_typ, pick.hand, pick.level), ("box", Hand.LEFT, "L2"))
 

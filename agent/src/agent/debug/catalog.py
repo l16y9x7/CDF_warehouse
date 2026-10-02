@@ -364,8 +364,8 @@ PICK_POSE_FRAME_REQUIRED = (
     "K",
     "T_chassis_camera",
 )
-PICK_POSE_SKU_REQUIRED = ("sku_typ", "side")
-PICK_POSE_BASKET_DROP = ("sku_typ", "side", "front_rule")
+PICK_POSE_SKU_REQUIRED = ("sku_typ", "sku_id", "side")
+PICK_POSE_BASKET_DROP = ("sku_typ", "sku_id", "side", "front_rule")
 # 线上必填但取值固定；表单/用例未提供时由 executor 兜底。
 PICK_POSE_FIXED = {
     "depth_unit": "mm",
@@ -410,6 +410,7 @@ def _pick_pose_request(payload: dict[str, Any]) -> PickPoseRequest:
     kwargs: dict[str, Any] = {
         "target_type": target,
         "sku_typ": data.get("sku_typ") if target is TargetType.SKU else None,
+        "sku_id": data.get("sku_id") if target is TargetType.SKU else None,
         "rgb_base64": data["rgb_base64"],
         "depth_npy_base64": data["depth_npy_base64"],
         "K": data["K"],
@@ -567,6 +568,7 @@ CAPABILITY_OPERATIONS = (
                 options=["bottle", "box", "tube"],
                 required=False,
             ),
+            field("sku_id", "SKU", required=False, default=DEFAULT_SKU_ID),
             field("side", "纸箱侧", "select", default="RIGHT", required=False),
             field("rgb", "RGB 路径", required=False),
             field("depth", "深度路径", required=False),
