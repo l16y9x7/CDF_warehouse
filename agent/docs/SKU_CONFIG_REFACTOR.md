@@ -71,7 +71,6 @@ products:
     sku_typ: bottle|box|tube  # 必填
     hand: LEFT|RIGHT          # 必填
     description: 描述
-    category: 分类
     image_url: 图片路径
 ```
 

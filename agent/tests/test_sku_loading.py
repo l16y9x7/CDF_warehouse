@@ -13,10 +13,10 @@ def test_load_sku_catalog():
     """测试从 products.yaml 加载 SKU 配置"""
     catalog = load_sku_catalog()
 
-    assert len(catalog) == 3, f"Expected 3 SKUs, got {len(catalog)}"
+    assert len(catalog) == 12, f"Expected 12 SKUs, got {len(catalog)}"
 
     # 验证所有预期的 SKU 都存在
-    expected_skus = ["3282779003131", "887167608641", "3282770389746"]
+    expected_skus = ["20108001", "20108138", "20164007", "20156874"]
     for sku_id in expected_skus:
         assert sku_id in catalog, f"SKU {sku_id} not found in catalog"
 
@@ -27,10 +27,11 @@ def test_sku_spec_lookup():
     catalog = load_sku_catalog()
 
     # 测试成功查询
-    spec = sku_spec(catalog, "3282779003131")
+    spec = sku_spec(catalog, "20108138")
     assert spec.sku_typ == "bottle"
     assert spec.hand.name == "RIGHT"
-    assert spec.name == "雅漾舒护活泉水"
+    assert spec.sku_code == "3282779003131"
+    assert spec.name == "雅漾舒泉调理喷雾"
 
     print(f"✓ SKU 查询成功: {spec.name}")
 

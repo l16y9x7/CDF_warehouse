@@ -285,10 +285,15 @@ def create_manipulation_app() -> FastAPI:
             "hand",
             "level",
             "localization_result",
+            "length_mm",
+            "width_mm",
+            "height_mm",
+            "weight_g",
         }
         invalid = _invalid_fields(body, required)
         if invalid:
             return invalid
+        measures = [body[name] for name in ("length_mm", "width_mm", "height_mm", "weight_g")]
         if (
             body["task_type"] != "SORTING"
             or body["target_type"] != "sku"
@@ -296,6 +301,12 @@ def create_manipulation_app() -> FastAPI:
             or body["hand"] not in {"LEFT", "RIGHT"}
             or body["level"] not in {"L1", "L2", "L3", "L4", "L5"}
             or not isinstance(body["localization_result"], dict)
+            or any(
+                isinstance(value, bool)
+                or not isinstance(value, (int, float))
+                or value <= 0
+                for value in measures
+            )
         ):
             return JSONResponse({"error_code": "INVALID_INPUT"}, status_code=422)
         return {

@@ -63,7 +63,6 @@ class OrderStore:
                     name TEXT NOT NULL,
                     description TEXT NOT NULL,
                     image_url TEXT NOT NULL,
-                    category TEXT NOT NULL,
                     agv_row TEXT NOT NULL,
                     agv_column TEXT NOT NULL,
                     status TEXT NOT NULL DEFAULT 'PENDING',
@@ -96,6 +95,11 @@ class OrderStore:
                 connection.execute(
                     "ALTER TABLE user_orders ADD COLUMN mock INTEGER NOT NULL DEFAULT 0"
                 )
+            unit_columns = {
+                row[1] for row in connection.execute("PRAGMA table_info(user_order_units)")
+            }
+            if "category" in unit_columns:
+                connection.execute("ALTER TABLE user_order_units DROP COLUMN category")
 
     def recover_interrupted(self) -> None:
         now = time.time()
@@ -153,12 +157,12 @@ class OrderStore:
                     sequence += 1
                     connection.execute(
                         """INSERT INTO user_order_units
-                           (order_id,sequence,sku_id,name,description,image_url,category,
+                           (order_id,sequence,sku_id,name,description,image_url,
                             agv_row,agv_column)
-                           VALUES (?,?,?,?,?,?,?,?,?)""",
+                           VALUES (?,?,?,?,?,?,?,?)""",
                         (
                             order_id, sequence, product.sku_id, product.name,
-                            product.description, product.image_url, product.category,
+                            product.description, product.image_url,
                             agv_row, agv_column,
                         ),
                     )
@@ -337,7 +341,6 @@ class OrderStore:
                     "name": unit["name"],
                     "description": unit["description"],
                     "image_url": unit["image_url"],
-                    "category": unit["category"],
                     "agv_row": unit["agv_row"],
                     "agv_column": unit["agv_column"],
                     "quantity": 0,

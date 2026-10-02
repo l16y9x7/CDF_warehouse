@@ -45,7 +45,8 @@ Layer = Literal["capability", "skill", "workflow"]
 Executor = Callable[[Any, ExecutionContext, dict[str, Any]], Any]
 InputFactory = Callable[[dict[str, Any]], Any]
 _SKU_CATALOG = load_sku_catalog()
-SKU_IDS = list(_SKU_CATALOG) or ["3282779003131", "887167608641", "3282770389746"]
+SKU_IDS = list(_SKU_CATALOG) or ["20108138", "20164007", "20156874"]
+SKU_CODES = [spec.sku_code for spec in _SKU_CATALOG.values() if spec.sku_code]
 DEFAULT_SKU_ID = SKU_IDS[0]
 SKU_NAMES = [spec.name for spec in _SKU_CATALOG.values() if spec.name] or ["测试商品"]
 DEFAULT_SKU_NAME = (
@@ -78,7 +79,7 @@ FIELD_DESCRIPTIONS = {
     "sku_id": "商品的唯一 SKU 标识；用于识别校验或动作追踪。",
     "sku_typ": "定位与抓取模块使用的商品几何类别。",
     "localization_result": "位姿估计 /infer 返回的完整原始 JSON 对象。",
-    "expected_sku_id": "可选的期望 SKU；填写后会校验识别结果。",
+    "expected_sku_code": "可选的期望条码；填写后会与识别到的条码核对。",
     "name": "商品名称，可作为视觉识别的辅助信息，不参与条码或任务校验。",
     "side": "商品所在纸箱侧或机械臂作业侧。",
     "expected_items": "期望商品清单；每项包含 sku_id 和 count。",
@@ -96,6 +97,10 @@ FIELD_DESCRIPTIONS = {
     "base_frame": "基坐标系名称，应与本次外参元数据一致。",
     "front_rule": "chassis 系前排过滤规则：轴、原点与半带宽（mm）；可选，缺省不发送。",
     "sku_typ": "定位几何类别：bottle / box / tube。",
+    "length_mm": "商品长度，单位毫米，来自商品配置。",
+    "width_mm": "商品宽度，单位毫米，来自商品配置。",
+    "height_mm": "商品高度，单位毫米，来自商品配置。",
+    "weight_g": "商品重量，单位克，来自商品配置。",
     "rgb": "可选 RGB 文件路径；填写后按文件字节 base64 发送，覆盖测试用例帧。",
     "depth": "可选对齐深度 .npy 路径；填写后按文件字节 base64 发送，覆盖测试用例帧。",
 }
@@ -134,7 +139,7 @@ FIELD_OPTIONS: dict[str, list[Any]] = {
     "mask": ["mask", "/shared/frames/capture-1/mask.png"],
     "sku_id": SKU_IDS,
     "sku_typ": ["bottle", "box", "tube"],
-    "expected_sku_id": SKU_IDS,
+    "expected_sku_code": SKU_CODES,
     "name": SKU_NAMES,
     "side": ["LEFT", "RIGHT"],
     "expected_items": [[{"sku_id": DEFAULT_SKU_ID, "count": 1}], []],
@@ -179,6 +184,14 @@ FIELD_OPTIONS: dict[str, list[Any]] = {
         }
     ],
 }
+
+for _measure_name in ("length_mm", "width_mm", "height_mm", "weight_g"):
+    _seen: list[float] = []
+    for _spec in _SKU_CATALOG.values():
+        _value = getattr(_spec, _measure_name)
+        if isinstance(_value, (int, float)) and _value not in _seen:
+            _seen.append(float(_value))
+    FIELD_OPTIONS[_measure_name] = _seen or [1.0]
 
 
 def field(
@@ -603,6 +616,10 @@ CAPABILITY_OPERATIONS = (
                 _hand(data),
                 data["level"],
                 data["localization_result"],
+                data["length_mm"],
+                data["width_mm"],
+                data["height_mm"],
+                data["weight_g"],
             ),
             idempotency_key=action_id(ctx, "manipulation.pick"),
         ),
@@ -612,6 +629,10 @@ CAPABILITY_OPERATIONS = (
             field("sku_typ", "定位类别", default="bottle", options=["bottle", "box", "tube"]),
             HAND,
             field("level", "抓取层级", "select"),
+            field("length_mm", "长度 mm", "number"),
+            field("width_mm", "宽度 mm", "number"),
+            field("height_mm", "高度 mm", "number"),
+            field("weight_g", "重量 g", "number"),
             field("localization_result", "完整定位结果", "json"),
         ),
         physical=True,
@@ -743,13 +764,13 @@ SKILL_OPERATIONS = (
         "通用视觉",
         "识别并可选校验",
         lambda data: RecognizeBarcodeInput(
-            data.get("expected_sku_id") or None,
+            data.get("expected_sku_code") or None,
             data.get("name") or None,
             _hand(data),
             data["sku_typ"],
         ),
         (
-            field("expected_sku_id", "期望 SKU", required=False),
+            field("expected_sku_code", "期望条码", required=False),
             field("name", "商品名", required=False),
             HAND,
             field(

@@ -4,7 +4,7 @@ from typing import Any
 
 import yaml
 
-from agent.skus import SkuSpec, parse_sku_catalog
+from agent.skus import SkuSpec, parse_measures, parse_sku_catalog
 
 
 @dataclass(frozen=True)
@@ -13,7 +13,7 @@ class OrderProduct:
     name: str
     description: str
     image_url: str
-    category: str
+    sku_code: str = ""
 
     def public_dict(self) -> dict[str, str]:
         return asdict(self)
@@ -66,7 +66,7 @@ def _parse_product(value: dict[str, Any], index: int) -> OrderProduct:
         name=required("name"),
         description=str(value.get("description", "")).strip(),
         image_url=str(value.get("image_url", "")).strip(),
-        category=str(value.get("category", "商品")).strip() or "商品",
+        sku_code=str(value.get("sku_code", "")).strip(),
     )
 
 
@@ -97,5 +97,15 @@ def _parse_sku_spec(value: dict[str, Any], sku_id: str, index: int) -> SkuSpec |
             f"products[{index}] (sku_id={sku_id}): hand must be LEFT or RIGHT, got {value.get('hand')!r}"
         ) from exc
 
-    return SkuSpec(sku_typ=sku_typ, hand=hand, name=str(value.get("name", "")).strip())
+    length_mm, width_mm, height_mm, weight_g = parse_measures(value, sku_id)
+    return SkuSpec(
+        sku_typ=sku_typ,
+        hand=hand,
+        name=str(value.get("name", "")).strip(),
+        sku_code=str(value.get("sku_code", "")).strip(),
+        length_mm=length_mm,
+        width_mm=width_mm,
+        height_mm=height_mm,
+        weight_g=weight_g,
+    )
 

@@ -465,7 +465,9 @@ class OrderService:
             )
             name = str((unit or {}).get("name") or "商品")
             sku_id = str((unit or {}).get("sku_id") or "")
-            return {"skill": "核对商品", "progress": f"正在核对 {name} 编码为 {sku_id}"}
+            product = self.products.get(sku_id)
+            sku_code = product.sku_code if product is not None else ""
+            return {"skill": "核对商品", "progress": f"正在核对 {name} 编码为 {sku_code}"}
         if kind == "skill.succeeded":
             return {"skill": "核对商品", "progress": "商品正确"}
         if kind == "skill.failed":

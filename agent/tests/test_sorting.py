@@ -21,9 +21,15 @@ from agent.workflows.sorting import SortingItemInput
 BOTTLE_SKU = "3282779003131"
 BOX_SKU = "887167608641"
 SKU_CATALOG = {
-    BOTTLE_SKU: SkuSpec("bottle", Hand.RIGHT),
-    BOX_SKU: SkuSpec("box", Hand.LEFT),
-    "3282770389746": SkuSpec("tube", Hand.LEFT),
+    BOTTLE_SKU: SkuSpec(
+        "bottle", Hand.RIGHT, sku_code=BOTTLE_SKU, length_mm=56, width_mm=56, height_mm=250, weight_g=367.9
+    ),
+    BOX_SKU: SkuSpec(
+        "box", Hand.LEFT, sku_code=BOX_SKU, length_mm=70, width_mm=40, height_mm=105, weight_g=260.8
+    ),
+    "3282770389746": SkuSpec(
+        "tube", Hand.LEFT, sku_code="3282770389746", length_mm=35, width_mm=35, height_mm=103, weight_g=60
+    ),
 }
 
 TEST_CALIBRATION = {

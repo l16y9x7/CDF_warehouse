@@ -123,16 +123,54 @@ class DebugApiTest(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(level["type"], "select")
             self.assertEqual(level["options"], ["L1", "L2", "L3", "L4", "L5"])
 
-        sku_ids = ["3282779003131", "887167608641", "3282770389746"]
+        sku_ids = [
+            "20108001",
+            "20108138",
+            "20112542",
+            "20110870",
+            "20164007",
+            "20163873",
+            "20156874",
+            "20113783",
+            "20186886",
+            "20112620",
+            "20163898",
+            "20117010",
+        ]
+        sku_codes = [
+            "717334070219",
+            "3282779003131",
+            "111",
+            "222",
+            "3253581680520",
+            "333",
+            "3282770389746",
+            "444",
+            "887167495241",
+            "887167561861",
+            "555",
+            "666",
+        ]
         sku_names = [
-            "雅漾舒护活泉水",
-            "修护精华礼盒",
-            "清润洁面乳",
+            "ORIGINS一举两得泡沫洁面慕斯",
+            "雅漾舒泉调理喷雾",
+            "雅诗兰黛特润修护肌活精华眼霜双支装",
+            "海蓝之谜修护精萃乳",
+            "欧舒丹乳木果牛奶味洁肤皂",
+            "馥绿德雅强韧洗发露",
+            "馥绿德雅活力强韧洗发露",
+            "纪梵希明星修颜蜜 天空蓝",
+            "雅诗兰黛轻透持妆粉底液1C1",
+            "雅诗兰黛保湿莹润柔肤水",
+            "欧舒丹瑰香之心香氛身体乳",
+            "海蓝之谜修护焕新精萃水",
         ]
         for item in catalog["items"]:
             for entry in item["fields"]:
-                if entry["name"] in {"sku_id", "expected_sku_id"}:
+                if entry["name"] == "sku_id":
                     self.assertEqual(entry["options"], sku_ids)
+                if entry["name"] == "expected_sku_code":
+                    self.assertEqual(entry["options"], sku_codes)
                 if entry["name"] == "name":
                     self.assertEqual(entry["options"], sku_names)
 

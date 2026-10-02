@@ -259,6 +259,10 @@ class CapabilityMockApiTest(unittest.IsolatedAsyncioTestCase):
                         "hand": "RIGHT",
                         "level": "L5",
                         "localization_result": {"ok": True},
+                        "length_mm": 56,
+                        "width_mm": 56,
+                        "height_mm": 250,
+                        "weight_g": 367.9,
                     },
                     headers=headers,
                 )
@@ -280,6 +284,10 @@ class CapabilityMockApiTest(unittest.IsolatedAsyncioTestCase):
                 "hand": "RIGHT",
                 "level": "L6",
                 "localization_result": {"ok": True},
+                "length_mm": 56,
+                "width_mm": 56,
+                "height_mm": 250,
+                "weight_g": 367.9,
             },
             headers=headers,
         )

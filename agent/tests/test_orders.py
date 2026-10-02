@@ -102,7 +102,7 @@ class OrderApiTest(unittest.IsolatedAsyncioTestCase):
     async def test_catalog_assets_and_complete_multi_item_order(self):
         products = await self.client.get("/orders/api/products")
         self.assertEqual(products.status_code, 200)
-        self.assertEqual(len(products.json()["products"]), 3)
+        self.assertEqual(len(products.json()["products"]), 12)
         self.assertNotIn("agv_row", products.json()["products"][0])
 
         for path, content_type in (
@@ -122,7 +122,7 @@ class OrderApiTest(unittest.IsolatedAsyncioTestCase):
             "/orders/api/orders",
             json={
                 "items": [{
-                    "sku_id": "3282779003131", "quantity": 2,
+                    "sku_id": "20108138", "quantity": 2,
                     "agv_row": "L4", "agv_column": "2",
                 }],
                 "basket_row": "L2",
@@ -171,7 +171,7 @@ class OrderApiTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(detail["layer"], "workflow")
         self.assertEqual(detail["status"], "SUCCEEDED")
         self.assertTrue(detail["events"])
-        self.assertEqual(detail["request"]["sku_id"], "3282779003131")
+        self.assertEqual(detail["request"]["sku_id"], "20108138")
         trace = (await self.client.get(f"/debug/api/runs/{item_run['run_id']}/trace")).json()
         self.assertTrue(any(span["kind"] == "workflow" for span in trace["spans"]))
         self.assertTrue(any(span["kind"] == "skill" for span in trace["spans"]))
@@ -183,7 +183,7 @@ class OrderApiTest(unittest.IsolatedAsyncioTestCase):
         self.assertLess(event_types.index("finish.started"), event_types.index("finish.succeeded"))
         self.assertLess(event_types.index("finish.succeeded"), event_types.index("order.succeeded"))
         self.assertEqual(events[-1]["type"], "order.succeeded")
-        self._assert_barcode_copy(events, "雅漾舒护活泉水", "3282779003131", 2)
+        self._assert_barcode_copy(events, "雅漾舒泉调理喷雾", "3282779003131", 2)
 
     async def test_barcode_mismatch_is_reported_as_success_on_the_order_page(self):
         self.application.capabilities["perception"].barcode_content = "wrong-barcode"
@@ -191,7 +191,7 @@ class OrderApiTest(unittest.IsolatedAsyncioTestCase):
             "/orders/api/orders",
             json={
                 "items": [{
-                    "sku_id": "3282779003131", "quantity": 1,
+                    "sku_id": "20108138", "quantity": 1,
                     "agv_row": "L1", "agv_column": "1",
                 }],
                 "basket_row": "L1",
@@ -203,7 +203,7 @@ class OrderApiTest(unittest.IsolatedAsyncioTestCase):
         order = await self.wait_for_status(order_id, {"SUCCEEDED"})
         self.assertEqual(order["status"], "SUCCEEDED")
         events = self.app.state.orders.events_after(order_id, 0)
-        self._assert_barcode_copy(events, "雅漾舒护活泉水", "3282779003131", 1)
+        self._assert_barcode_copy(events, "雅漾舒泉调理喷雾", "3282779003131", 1)
 
     async def test_failure_retries_once_then_pauses_and_manual_retry_continues(self):
         original = self.application.workflows["sorting_item"]
@@ -217,7 +217,7 @@ class OrderApiTest(unittest.IsolatedAsyncioTestCase):
             "/orders/api/orders",
             json={
                 "items": [{
-                    "sku_id": "3282779003131", "quantity": 1,
+                    "sku_id": "20108138", "quantity": 1,
                     "agv_row": "L1", "agv_column": "1",
                 }],
                 "basket_row": "L1",
@@ -234,7 +234,7 @@ class OrderApiTest(unittest.IsolatedAsyncioTestCase):
             "/orders/api/orders",
             json={
                 "items": [{
-                    "sku_id": "3282779003131", "quantity": 1,
+                    "sku_id": "20108138", "quantity": 1,
                     "agv_row": "L2", "agv_column": "2",
                 }],
                 "basket_row": "L1",
@@ -263,7 +263,7 @@ class OrderApiTest(unittest.IsolatedAsyncioTestCase):
             "/orders/api/orders",
             json={
                 "items": [{
-                    "sku_id": "3282779003131", "quantity": 1,
+                    "sku_id": "20108138", "quantity": 1,
                     "agv_row": "L1", "agv_column": "1",
                 }],
                 "basket_row": "L3",
@@ -314,7 +314,7 @@ class OrderApiTest(unittest.IsolatedAsyncioTestCase):
             "/orders/api/orders",
             json={
                 "items": [{
-                    "sku_id": "3282779003131", "quantity": 1,
+                    "sku_id": "20108138", "quantity": 1,
                     "agv_row": "L1", "agv_column": "1",
                 }],
                 "basket_row": "L1",

@@ -2,7 +2,7 @@ from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 from typing import Any, ClassVar
 
-from agent.skus import SkuSpec, shared_working_hand, sku_spec
+from agent.skus import SkuSpec, shared_working_hand, sku_id_for_code, sku_spec
 from agent.contracts import ExecutionContext
 from agent.layouts.basket import basket_nav_id, validate_basket_position
 from agent.models import InspectedItem, ReviewItemCount
@@ -179,7 +179,9 @@ class ReviewWorkflow:
 
                 def record_barcode(result: Any) -> None:
                     assert state.current_item is not None
-                    state.current_item["actual_sku_id"] = result.sku_id
+                    state.current_item["actual_sku_id"] = (
+                        sku_id_for_code(self.sku_catalog, result.sku_code) or result.sku_code
+                    )
 
                 runner.run(
                     "R-N12",

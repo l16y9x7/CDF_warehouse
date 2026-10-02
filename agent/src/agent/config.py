@@ -54,6 +54,11 @@ def load_sku_catalog(path: str | Path = DEFAULT_PRODUCTS_PATH) -> dict[str, SkuS
             "sku_typ": product.get("sku_typ"),
             "hand": product.get("hand"),
             "name": product.get("name", ""),
+            "sku_code": product.get("sku_code", ""),
+            "length_mm": product.get("length_mm"),
+            "width_mm": product.get("width_mm"),
+            "height_mm": product.get("height_mm"),
+            "weight_g": product.get("weight_g"),
         }
 
     return parse_sku_catalog(skus_dict)

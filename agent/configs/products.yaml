@@ -1,23 +1,134 @@
+# sku_code 待补。尺寸单位 mm，重量单位 g。
 products:
-  - sku_id: "3282779003131"
-    name: 雅漾舒护活泉水
-    description: 温和舒缓喷雾，适合日常补水护理
-    category: 护肤喷雾
-    image_url: /orders/assets/bottle.svg
-    sku_typ: bottle
-    hand: RIGHT
-  - sku_id: "887167608641"
-    name: 修护精华礼盒
-    description: 精致盒装护理组合，适合作为礼赠
-    category: 护肤礼盒
-    image_url: /orders/assets/box.svg
-    sku_typ: box
-    hand: LEFT
-  - sku_id: "3282770389746"
-    name: 清润洁面乳
-    description: 柔和清洁肌肤，保持清爽水润
-    category: 洁面护理
+  - sku_code: "717334070219"
+    sku_id: "20108001"
+    name: ORIGINS一举两得泡沫洁面慕斯
+    description: Origins 悦木之源 ORIGINS一举两得泡沫洁面慕斯 150ml
     image_url: /orders/assets/tube.svg
     sku_typ: tube
     hand: RIGHT
-
+    length_mm: 62
+    width_mm: 39
+    height_mm: 86
+    weight_g: 168.3
+  - sku_code: "3282779003131"
+    sku_id: "20108138"
+    name: 雅漾舒泉调理喷雾
+    description: Avene 雅漾 雅漾舒泉调理喷雾 300ml
+    image_url: /orders/assets/bottle.svg
+    sku_typ: bottle
+    hand: RIGHT
+    length_mm: 56
+    width_mm: 56
+    height_mm: 250
+    weight_g: 367.9
+  - sku_code: "111"
+    sku_id: "20112542"
+    name: 雅诗兰黛特润修护肌活精华眼霜双支装
+    description: Estee Lauder 雅诗兰黛 雅诗兰黛特润修护肌活精华眼霜双支装 15ml*2
+    image_url: /orders/assets/box.svg
+    sku_typ: box
+    hand: LEFT
+    length_mm: 56
+    width_mm: 56
+    height_mm: 101
+    weight_g: 291.2
+  - sku_code: "222"
+    sku_id: "20110870"
+    name: 海蓝之谜修护精萃乳
+    description: La Mer 海蓝之谜 海蓝之谜修护精萃乳 125ml
+    image_url: /orders/assets/bottle.svg
+    sku_typ: bottle
+    hand: RIGHT
+    length_mm: 51
+    width_mm: 50
+    height_mm: 170
+    weight_g: 221.6
+  - sku_code: "3253581680520"
+    sku_id: "20164007"
+    name: 欧舒丹乳木果牛奶味洁肤皂
+    description: L’occitane 欧舒丹 欧舒丹洁肤皂 乳木果香 250G
+    image_url: /orders/assets/box.svg
+    sku_typ: box
+    hand: LEFT
+    length_mm: 70
+    width_mm: 40
+    height_mm: 105
+    weight_g: 260.8
+  - sku_code: "333"
+    sku_id: "20163873"
+    name: 馥绿德雅强韧洗发露
+    description: Rene Furterer 馥绿德雅 馥绿德雅强韧洗发露500ml
+    image_url: /orders/assets/bottle.svg
+    sku_typ: bottle
+    hand: RIGHT
+    length_mm: 67
+    width_mm: 67
+    height_mm: 213
+    weight_g: 572.3
+  - sku_code: "3282770389746"
+    sku_id: "20156874"
+    name: 馥绿德雅活力强韧洗发露
+    description: Rene Furterer 馥绿德雅 馥绿德雅活力强韧洗发露50ml-（赠品） 50ml
+    image_url: /orders/assets/bottle.svg
+    sku_typ: bottle
+    hand: RIGHT
+    length_mm: 35
+    width_mm: 35
+    height_mm: 103
+    weight_g: 60
+  - sku_code: "444"
+    sku_id: "20113783"
+    name: 纪梵希明星修颜蜜 天空蓝
+    description: GIVENCHY 纪梵希 纪梵希明星修颜蜜 天空蓝 11ml
+    image_url: /orders/assets/tube.svg
+    sku_typ: tube
+    hand: RIGHT
+    length_mm: 27
+    width_mm: 25
+    height_mm: 120
+    weight_g: 57
+  - sku_code: "887167495241"
+    sku_id: "20186886"
+    name: 雅诗兰黛轻透持妆粉底液1C1
+    description: Estee Lauder 雅诗兰黛 雅诗兰黛轻透持妆粉底液1C1 30.00 ml
+    image_url: /orders/assets/bottle.svg
+    sku_typ: bottle
+    hand: RIGHT
+    length_mm: 45
+    width_mm: 32
+    height_mm: 100
+    weight_g: 128.2
+  - sku_code: "887167561861"
+    sku_id: "20112620"
+    name: 雅诗兰黛保湿莹润柔肤水
+    description: Estee Lauder 雅诗兰黛 雅诗兰黛保湿莹润柔肤水 400ml
+    image_url: /orders/assets/bottle.svg
+    sku_typ: bottle
+    hand: RIGHT
+    length_mm: 70
+    width_mm: 70
+    height_mm: 195
+    weight_g: 526.8
+  - sku_code: "555"
+    sku_id: "20163898"
+    name: 欧舒丹瑰香之心香氛身体乳
+    description: L’occitane 欧舒丹 欧舒丹瑰香之心香氛身体乳 250ml
+    image_url: /orders/assets/bottle.svg
+    sku_typ: bottle
+    hand: RIGHT
+    length_mm: 64
+    width_mm: 35
+    height_mm: 155
+    weight_g: 281.9
+  - sku_code: "666"
+    sku_id: "20117010"
+    name: 海蓝之谜修护焕新精萃水
+    description: La Mer 海蓝之谜 海蓝之谜修护焕新精萃水200ML
+    image_url: /orders/assets/bottle.svg
+    sku_typ: bottle
+    hand: RIGHT
+    length_mm: 63
+    width_mm: 61
+    height_mm: 203
+    weight_g: 523.7

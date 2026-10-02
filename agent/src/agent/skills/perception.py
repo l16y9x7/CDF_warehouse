@@ -11,7 +11,7 @@ from agent.skills.base import SkillError, action_id, emit_failed, emit_started, 
 
 @dataclass(frozen=True)
 class RecognizeBarcodeInput:
-    expected_sku_id: str | None
+    expected_sku_code: str | None
     name: str | None
     hand: Hand
     sku_typ: str
@@ -19,7 +19,7 @@ class RecognizeBarcodeInput:
 
 @dataclass(frozen=True)
 class RecognizeBarcodeResult:
-    sku_id: str
+    sku_code: str
 
 
 class RecognizeAndVerifyBarcodeSkill:
@@ -62,7 +62,7 @@ class RecognizeAndVerifyBarcodeSkill:
         emit_succeeded(
             context,
             self.name,
-            sku_id=content,
+            sku_code=content,
             action_id=key,
             camera=scan.camera,
             image_count=len(scan.image_paths),
@@ -81,18 +81,18 @@ class RecognizeAndVerifyBarcodeSkill:
                 if exc.error_code == "SKU_BARCODE_NOT_FOUND":
                     continue
                 raise
-            if data.expected_sku_id is None or content == data.expected_sku_id:
+            if data.expected_sku_code is None or content == data.expected_sku_code:
                 return content, index
             found_other_barcode = True
         if found_other_barcode:
-            raise SkillError("SKU_BARCODE_MISMATCH", "barcode does not match expected SKU")
+            raise SkillError("SKU_BARCODE_MISMATCH", "barcode does not match expected sku_code")
         raise SkillError("SKU_BARCODE_NOT_FOUND", "SKU barcode was not found")
 
     def _recognize_image(self, path: str, data: RecognizeBarcodeInput) -> str:
         image_base64 = base64.b64encode(self.camera.read_image_bytes(path)).decode("ascii")
         result = self.perception.recognize_sku_barcode(
             RecognizeBarcodeRequest(
-                image_base64, data.expected_sku_id or "", data.name or ""
+                image_base64, data.expected_sku_code or "", data.name or ""
             )
         )
         return result.barcode_content

@@ -1,3 +1,4 @@
+import math
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any, Protocol
@@ -16,6 +17,15 @@ from agent.capabilities.common import (
 PICK_LEVELS = frozenset(f"L{i}" for i in range(1, 6))
 
 
+def _positive_number(value: object, name: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"standard pick {name} must be a positive number")
+    number = float(value)
+    if not math.isfinite(number) or number <= 0:
+        raise ValueError(f"standard pick {name} must be a positive number")
+    return number
+
+
 @dataclass(frozen=True)
 class PickRequest:
     task_type: TaskType
@@ -24,6 +34,10 @@ class PickRequest:
     hand: Hand
     level: str
     localization_result: Mapping[str, Any]
+    length_mm: float
+    width_mm: float
+    height_mm: float
+    weight_g: float
 
     def __post_init__(self) -> None:
         if self.task_type is not TaskType.SORTING or self.target_type is not TargetType.SKU:
@@ -34,6 +48,8 @@ class PickRequest:
             raise ValueError("standard pick level must be L1-L5")
         if not isinstance(self.localization_result, Mapping):
             raise ValueError("standard pick requires localization_result object")
+        for name in ("length_mm", "width_mm", "height_mm", "weight_g"):
+            object.__setattr__(self, name, _positive_number(getattr(self, name), name))
 
 
 @dataclass(frozen=True)

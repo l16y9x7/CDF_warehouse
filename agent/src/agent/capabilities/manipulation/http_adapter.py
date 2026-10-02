@@ -29,6 +29,10 @@ class HttpManipulationCapability:
             "hand": request.hand.value,
             "level": request.level,
             "localization_result": dict(request.localization_result),
+            "length_mm": request.length_mm,
+            "width_mm": request.width_mm,
+            "height_mm": request.height_mm,
+            "weight_g": request.weight_g,
         }
         payload = self.client.post_action(
             "/manipulation/pick", body, idempotency_key=idempotency_key

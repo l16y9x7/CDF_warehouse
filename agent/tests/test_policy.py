@@ -39,18 +39,19 @@ class PickPolicyTest(unittest.TestCase):
         self.assertIs(policy.barcode_mismatch, BarcodeMismatchMode.CONTINUE)
         catalog = load_sku_catalog(Path(__file__).parents[1] / "configs" / "products.yaml")
         self.assertEqual(
-            catalog,
-            {
-                "3282779003131": SkuSpec("bottle", Hand.RIGHT, "雅漾舒护活泉水"),
-                "887167608641": SkuSpec("box", Hand.LEFT, "修护精华礼盒"),
-                "3282770389746": SkuSpec("tube", Hand.RIGHT, "清润洁面乳"),
-            },
+            sku_spec(catalog, "20108138"),
+            SkuSpec(
+                "bottle", Hand.RIGHT, "雅漾舒泉调理喷雾", "3282779003131", 56, 56, 250, 367.9
+            ),
         )
-        self.assertIs(sku_spec(catalog, "887167608641").hand, Hand.LEFT)
-        self.assertEqual(sku_spec(catalog, "887167608641").name, "修护精华礼盒")
-        self.assertIs(shared_working_hand(catalog, ["3282779003131", "3282770389746"]), Hand.RIGHT)
+        self.assertEqual(
+            sku_spec(catalog, "20164007"),
+            SkuSpec("box", Hand.LEFT, "欧舒丹乳木果牛奶味洁肤皂", "3253581680520", 70, 40, 105, 260.8),
+        )
+        self.assertEqual(sku_spec(catalog, "20112542").sku_code, "111")
+        self.assertIs(shared_working_hand(catalog, ["20108138", "20156874"]), Hand.RIGHT)
         with self.assertRaisesRegex(ValueError, "同一只工作手"):
-            shared_working_hand(catalog, ["3282779003131", "887167608641"])
+            shared_working_hand(catalog, ["20108138", "20164007"])
 
     def test_sku_catalog_normalizes_keys_and_rejects_invalid_entries(self):
         with tempfile.TemporaryDirectory() as directory:

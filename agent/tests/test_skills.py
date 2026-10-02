@@ -21,9 +21,9 @@ from agent.skills.basket_finish import PushBasketInput, PushBasketSkill
 from agent.skills.review import HandOnlyInput, PickReviewBasketSkill, SummarizeReviewInput, SummarizeReviewResultSkill
 
 SKU_CATALOG = {
-    "3282779003131": SkuSpec("bottle", Hand.RIGHT),
-    "887167608641": SkuSpec("box", Hand.LEFT),
-    "3282770389746": SkuSpec("tube", Hand.LEFT),
+    "3282779003131": SkuSpec("bottle", Hand.RIGHT, length_mm=56, width_mm=56, height_mm=250, weight_g=367.9),
+    "887167608641": SkuSpec("box", Hand.LEFT, length_mm=70, width_mm=40, height_mm=105, weight_g=260.8),
+    "3282770389746": SkuSpec("tube", Hand.LEFT, length_mm=35, width_mm=35, height_mm=103, weight_g=60),
 }
 
 TEST_CALIBRATION = {
@@ -114,7 +114,7 @@ class SkillTest(unittest.TestCase):
         result = RecognizeAndVerifyBarcodeSkill(p, camera, m).execute(
             context, RecognizeBarcodeInput("sku-1", "name", Hand.RIGHT, "bottle")
         )
-        self.assertEqual(result.sku_id, "sku-1")
+        self.assertEqual(result.sku_code, "sku-1")
         self.assertEqual(m.calls, ["rotate"])
         self.assertEqual(m.sku_typs, ["bottle"])
         self.assertEqual(m.hands, [Hand.RIGHT])
@@ -131,7 +131,7 @@ class SkillTest(unittest.TestCase):
         result = RecognizeAndVerifyBarcodeSkill(
             perception, MockCameraCapability(), MockManipulationCapability()
         ).execute(ExecutionContext("t"), RecognizeBarcodeInput("sku-1", "name", Hand.RIGHT, "bottle"))
-        self.assertEqual(result.sku_id, "sku-1")
+        self.assertEqual(result.sku_code, "sku-1")
         self.assertEqual(perception.calls, 2)
 
     def test_barcode_mismatch_has_stable_error(self):
@@ -241,6 +241,7 @@ class SkillTest(unittest.TestCase):
         self.assertEqual(manipulation.calls, ["pick"])
         pick = manipulation.pick_requests[-1]
         self.assertEqual((pick.sku_typ, pick.hand, pick.level), ("bottle", Hand.RIGHT, "L3"))
+        self.assertEqual((pick.length_mm, pick.width_mm, pick.height_mm, pick.weight_g), (56, 56, 250, 367.9))
         self.assertEqual(pick.localization_result["sku_typ"], "bottle")
         self.assertEqual(
             manipulation.idempotency_keys,
@@ -315,6 +316,21 @@ class SkillTest(unittest.TestCase):
                 PickSkuStandardInput("sku-1", "name", "LEFT", Hand.RIGHT, "L2"),
             )
         self.assertEqual(raised.exception.code, "SKU_TYPE_UNKNOWN")
+
+    def test_standard_pick_rejects_sku_without_measures(self):
+        with self.assertRaises(Exception) as raised:
+            PickSkuStandardSkill(
+                MockCameraCapability(),
+                MockEstimationCapability(),
+                MockManipulationCapability(),
+                MockBodyPoseCapability(),
+                calibration_source=lambda: TEST_CALIBRATION,
+                sku_catalog={"sku-1": SkuSpec("bottle", Hand.RIGHT)},
+            ).execute(
+                ExecutionContext("t"),
+                PickSkuStandardInput("sku-1", "name", "LEFT", Hand.RIGHT, "L2"),
+            )
+        self.assertEqual(raised.exception.code, "SKU_SIZE_UNKNOWN")
 
     def test_standard_pick_accepts_box_with_left_hand(self):
         camera, estimation, manipulation = (

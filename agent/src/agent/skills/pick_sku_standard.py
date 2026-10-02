@@ -80,7 +80,15 @@ class PickSkuStandardSkill:
         key = action_id(context, self.name, data.sku_id, data.level)
         emit_started(context, self.name, sku_id=data.sku_id, action_id=key)
         try:
-            sku_typ = _sku_typ(data.sku_id, self.sku_catalog)
+            spec = _sku(data.sku_id, self.sku_catalog)
+            sku_typ = spec.sku_typ
+            try:
+                length_mm, width_mm, height_mm, weight_g = spec.measures()
+            except ValueError as exc:
+                raise SkillError(
+                    "SKU_SIZE_UNKNOWN",
+                    f"sku_id {data.sku_id} {exc}，请在 configs/products.yaml 中补充",
+                ) from exc
             # 机器人已在观察姿态。顺序：实时外参 → RGB-D → 定位。
             # Skill 读取本次 RGB-D 文件，规范化深度 NPY 后，将逐帧 K/T
             # 以及 8082 声明的坐标系元数据一起原样发送到 /infer。
@@ -126,6 +134,10 @@ class PickSkuStandardSkill:
                     data.hand,
                     data.level,
                     result.localization_result,
+                    length_mm,
+                    width_mm,
+                    height_mm,
+                    weight_g,
                 ),
                 idempotency_key=key,
             )
@@ -143,9 +155,9 @@ class PickSkuStandardSkill:
         return PickSkuResult(data.sku_id, "STANDARD")
 
 
-def _sku_typ(sku_id: str, catalog: Mapping[str, SkuSpec]) -> str:
+def _sku(sku_id: str, catalog: Mapping[str, SkuSpec]) -> SkuSpec:
     try:
-        return sku_spec(catalog, sku_id).sku_typ
+        return sku_spec(catalog, sku_id)
     except ValueError as exc:
         raise SkillError("SKU_TYPE_UNKNOWN", str(exc)) from exc
 

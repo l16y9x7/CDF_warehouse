@@ -908,6 +908,10 @@ class PhysicalActionIdempotencyTest(unittest.TestCase):
                 Hand.RIGHT,
                 "L4",
                 localization,
+                56,
+                56,
+                250,
+                367.9,
             ),
             idempotency_key="pick-key",
         )
@@ -922,6 +926,10 @@ class PhysicalActionIdempotencyTest(unittest.TestCase):
                 "hand": "RIGHT",
                 "level": "L4",
                 "localization_result": localization,
+                "length_mm": 56.0,
+                "width_mm": 56.0,
+                "height_mm": 250.0,
+                "weight_g": 367.9,
             },
         )
 
@@ -1035,6 +1043,10 @@ class PhysicalActionIdempotencyTest(unittest.TestCase):
             Hand.LEFT,
             "L2",
             {"ok": True},
+            70,
+            40,
+            105,
+            260.8,
         )
         self.assertEqual((request.sku_typ, request.hand), ("box", Hand.LEFT))
 
@@ -1048,6 +1060,10 @@ class PhysicalActionIdempotencyTest(unittest.TestCase):
                     Hand.RIGHT,
                     level,
                     {"ok": True},
+                    56,
+                    56,
+                    250,
+                    367.9,
                 )
 
     def test_standard_pick_accepts_unknown_sku_typ(self):
@@ -1058,6 +1074,10 @@ class PhysicalActionIdempotencyTest(unittest.TestCase):
             Hand.LEFT,
             "L1",
             {"ok": True},
+            56,
+            56,
+            250,
+            367.9,
         )
         self.assertEqual(request.sku_typ, "can")
 

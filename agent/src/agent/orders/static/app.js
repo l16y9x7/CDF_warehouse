@@ -19,6 +19,11 @@ function toast(message, error = false) {
   clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.add("hidden"), 2800);
 }
 
+function barcodeText(product) {
+  const code = String(product?.sku_code || "").trim();
+  return code ? `条码 ${code}` : "条码未配置";
+}
+
 function renderProducts() {
   $("#product-count").textContent = `${state.products.length} 件可选商品`;
   $("#product-grid").innerHTML = state.products.map(product => `
@@ -30,10 +35,15 @@ function renderProducts() {
         <label>列<select data-location-column="${escapeHtml(product.sku_id)}"><option value="">选择</option><option value="1">1</option><option value="2">2</option></select></label>
       </div>
       <div class="product-meta">
-        <span class="product-category">${escapeHtml(product.category)}</span>
         <h3 title="${escapeHtml(product.name)}">${escapeHtml(product.name)}</h3>
         <p>${escapeHtml(product.description)}</p>
-        <div class="product-action"><span class="sku">SKU ${escapeHtml(product.sku_id)}</span><button class="add-button" data-sku="${escapeHtml(product.sku_id)}" aria-label="添加 ${escapeHtml(product.name)}">＋</button></div>
+        <div class="product-action">
+          <span class="sku-lines">
+            <span class="sku">SKU ${escapeHtml(product.sku_id)}</span>
+            <span class="sku${String(product.sku_code || "").trim() ? "" : " missing"}">${escapeHtml(barcodeText(product))}</span>
+          </span>
+          <button class="add-button" data-sku="${escapeHtml(product.sku_id)}" aria-label="添加 ${escapeHtml(product.name)}">＋</button>
+        </div>
       </div>
     </article>`).join("") || '<div class="empty-cart"><strong>暂无可下单商品</strong><p>请检查商品目录与 SKU 配置</p></div>';
   document.querySelectorAll(".add-button").forEach(button => button.onclick = () => changeQuantity(button.dataset.sku, 1));
@@ -66,7 +76,7 @@ function renderCart() {
   $("#empty-cart").classList.toggle("hidden", entries.length > 0);
   $("#cart-items").innerHTML = entries.map(([sku, item]) => {
     const product = state.products.find(item => item.sku_id === sku);
-    return `<div class="cart-row"><img src="${escapeHtml(product.image_url)}" alt=""><div><strong>${escapeHtml(product.name)}</strong><small>AGV ${escapeHtml(item.agv_row)} · ${escapeHtml(item.agv_column)}列</small></div><div class="quantity"><button data-delta="-1" data-sku="${escapeHtml(sku)}">−</button><b>${item.quantity}</b><button data-delta="1" data-sku="${escapeHtml(sku)}">＋</button></div></div>`;
+    return `<div class="cart-row"><img src="${escapeHtml(product.image_url)}" alt=""><div><strong>${escapeHtml(product.name)}</strong><small>${escapeHtml(barcodeText(product))} · AGV ${escapeHtml(item.agv_row)} · ${escapeHtml(item.agv_column)}列</small></div><div class="quantity"><button data-delta="-1" data-sku="${escapeHtml(sku)}">−</button><b>${item.quantity}</b><button data-delta="1" data-sku="${escapeHtml(sku)}">＋</button></div></div>`;
   }).join("");
   document.querySelectorAll(".quantity button").forEach(button => button.onclick = () => changeQuantity(button.dataset.sku, Number(button.dataset.delta)));
 }
@@ -163,7 +173,10 @@ function showOrder() {
   $("#live-dot").style.background = paused ? "#df7045" : done ? "#63a174" : "#43a474";
   $("#robot-state-text").textContent = done ? "系统准备就绪" : paused ? "订单等待处理" : "机器人正在执行订单";
   const warning = $("#risk-warning"); warning.classList.toggle("hidden", !paused); warning.querySelector("p").textContent = order.error || "请确认机器人和商品状态后再选择重试或取消。";
-  $("#progress-items").innerHTML = order.items.map(item => `<div class="progress-item"><img src="${escapeHtml(item.image_url)}" alt=""><div><strong>${escapeHtml(item.name)} × ${item.quantity}</strong><p>AGV ${escapeHtml(item.agv_row)} · ${escapeHtml(item.agv_column)}列　已完成 ${item.completed_quantity} / ${item.quantity}</p></div><span class="unit-status ${item.status.toLowerCase()}">${unitStatus(item.status)}</span></div>`).join("");
+  $("#progress-items").innerHTML = order.items.map(item => {
+    const product = state.products.find(entry => entry.sku_id === item.sku_id);
+    return `<div class="progress-item"><img src="${escapeHtml(item.image_url)}" alt=""><div><strong>${escapeHtml(item.name)} × ${item.quantity}</strong><p>${escapeHtml(barcodeText(product))} · AGV ${escapeHtml(item.agv_row)} · ${escapeHtml(item.agv_column)}列　已完成 ${item.completed_quantity} / ${item.quantity}</p></div><span class="unit-status ${item.status.toLowerCase()}">${unitStatus(item.status)}</span></div>`;
+  }).join("");
 }
 
 function connectEvents(orderId) {

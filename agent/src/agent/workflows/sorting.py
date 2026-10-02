@@ -109,7 +109,8 @@ class SortingItemWorkflow(_SortingWorkflow):
 
     def run(self, context: ExecutionContext, data: SortingItemInput) -> dict[str, str]:
         _validate_item(data)
-        hand = sku_spec(self.sku_catalog, data.sku_id).hand
+        spec = sku_spec(self.sku_catalog, data.sku_id)
+        hand = spec.hand
         state = SortingItemTaskState(
             context.task_id,
             data.agv_row,
@@ -163,13 +164,13 @@ class SortingItemWorkflow(_SortingWorkflow):
                     lambda: self.skills["recognize_and_verify_barcode"].execute(
                         context,
                         RecognizeBarcodeInput(
-                            data.sku_id,
+                            spec.sku_code,
                             data.name,
                             hand,
-                            sku_spec(self.sku_catalog, data.sku_id).sku_typ,
+                            spec.sku_typ,
                         ),
                     ),
-                    on_success=lambda result: setattr(state, "sku_barcode", result.sku_id),
+                    on_success=lambda result: setattr(state, "sku_barcode", result.sku_code),
                 )
             except Exception as exc:
                 if (
@@ -200,7 +201,7 @@ class SortingItemWorkflow(_SortingWorkflow):
                 lambda: self.skills["place_sku_in_basket"].execute(
                     context,
                     PlaceSkuInBasketInput(
-                        sku_spec(self.sku_catalog, data.sku_id).sku_typ,
+                        spec.sku_typ,
                         hand,
                     ),
                 ),
