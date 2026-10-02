@@ -6,7 +6,8 @@
     "artifact_subdir": "requests",
     "save_request_inputs": true,
     "enable_3d_render": true,
-    "async_3d_render": true
+    "async_3d_render": true,
+    "sku_profiles_file": "sku_profiles.json"
   },
   "sam3": {
     "backend": "legacy_18003",
@@ -27,22 +28,25 @@
   },
   "prompts": {
     "container_box": "each individual open cardboard box",
-    "bottle": "The main cylindrical body of each white bottle",
-    "box": "All visible top surfaces of the blue green boxes",
-    "tube": "All individual gray green package ends"
+    "bottle": "the main cylindrical body of each individual cosmetic bottle",
+    "box": "the top surfaces of the small boxes",
+    "tube": "the sealed ends of tubes"
   },
   "classes": {
     "bottle": {
       "box_threshold": 0.5,
-      "target_threshold": 0.5
+      "target_threshold": 0.5,
+      "max_mask_area_ratio": 0.5
     },
     "box": {
       "box_threshold": 0.5,
-      "target_threshold": 0.5
+      "target_threshold": 0.5,
+      "max_mask_area_ratio": 0.5
     },
     "tube": {
       "box_threshold": 0.5,
-      "target_threshold": 0.2
+      "target_threshold": 0.2,
+      "max_mask_area_ratio": 0.5
     }
   },
   "front_rule_default": {

@@ -92,16 +92,21 @@ def filter_instances(detections, roi, shape, decode, min_inside=.9):
     return original, rejected
 
 def filter_instances_detailed(detections, roi, shape, decode, min_inside=.9,
-                              reject_crop_boundary=True):
+                              reject_crop_boundary=True, max_mask_area_ratio=1.0):
     """Keep complete masks assigned to ``roi`` and return per-instance audit.
 
     ``upstream_instance_id`` always refers to the 1-based order returned by the
-    second SAM3 call.  Kept masks are not intersected with the ROI.
+    second SAM3 call. Kept masks are not intersected with the ROI. The area
+    limit compares the whole target mask with the clipped, rasterized box ROI.
     """
     h,w=shape[:2]
     x1,y1,x2,y2=roi
     region=np.zeros((h,w),dtype=bool)
-    region[int(np.ceil(y1)):int(np.floor(y2)),int(np.ceil(x1)):int(np.floor(x2))]=True
+    region[max(0,int(np.ceil(y1))):min(h,int(np.floor(y2))),
+           max(0,int(np.ceil(x1))):min(w,int(np.floor(x2)))]=True
+    roi_area = int(np.count_nonzero(region))
+    if not roi_area:
+        raise ValueError('selected box ROI has zero pixel area')
     kept,rejected=[],[]; audit=[]
     for i,d in enumerate(detections):
         upstream_id=int(d.get('upstream_instance_id',i+1)); row={
@@ -113,13 +118,17 @@ def filter_instances_detailed(detections, roi, shape, decode, min_inside=.9,
             if mask is None or mask.shape != (h,w) or not mask.any():
                 raise ValueError('invalid_mask')
             yy,xx=np.nonzero(mask)
-            ratio=float(np.count_nonzero(mask & region)/np.count_nonzero(mask))
+            mask_area = int(np.count_nonzero(mask))
+            area_ratio = mask_area / roi_area
+            ratio=float(np.count_nonzero(mask & region)/mask_area)
             inside=x1<=float(xx.mean())<x2 and y1<=float(yy.mean())<y2
             boundary=bool(d.get('crop_boundary_touched',False))
             row.update(mask_centroid_xy=[float(xx.mean()),float(yy.mean())],
                        centroid_inside_roi=bool(inside),inside_ratio=ratio,
-                       crop_boundary_touched=boundary)
-            if inside and ratio >= min_inside and not (reject_crop_boundary and boundary):
+                       crop_boundary_touched=boundary,mask_area_pixels=mask_area,
+                       box_roi_area_pixels=roi_area,mask_area_ratio=area_ratio,
+                       max_mask_area_ratio=max_mask_area_ratio)
+            if inside and ratio >= min_inside and area_ratio <= max_mask_area_ratio and not (reject_crop_boundary and boundary):
                 item=dict(d);item['upstream_instance_id']=upstream_id
                 item['filtered_instance_id']=len(kept)+1;kept.append(item)
                 row.update(kept=True,reason='kept')
@@ -127,10 +136,12 @@ def filter_instances_detailed(detections, roi, shape, decode, min_inside=.9,
                 reasons=[]
                 if not inside:reasons.append('centroid_outside_selected_box')
                 if ratio < min_inside:reasons.append('inside_ratio_below_threshold')
+                if area_ratio > max_mask_area_ratio:reasons.append('mask_area_ratio_above_threshold')
                 if reject_crop_boundary and boundary:reasons.append('touches_inference_crop_boundary')
                 row.update(kept=False,reason=';'.join(reasons))
                 rejected.append(dict(index=upstream_id,upstream_instance_id=upstream_id,
-                                     reason=row['reason'],inside_ratio=ratio))
+                                     reason=row['reason'],inside_ratio=ratio,mask_area_ratio=area_ratio,
+                                     max_mask_area_ratio=max_mask_area_ratio))
         except (ValueError,KeyError,TypeError,IndexError) as error:
             row.update(kept=False,reason='invalid_mask',detail=str(error))
             rejected.append(dict(index=upstream_id,upstream_instance_id=upstream_id,
@@ -211,7 +222,7 @@ def parse_box_selection(req, class_cfg=None, default_box_prompt=BOX_PROMPT):
     class_cfg = class_cfg or {}
     raw = req.get('box_selection') or {}
     if not isinstance(raw, dict): raise ValueError('box_selection must be an object')
-    allowed = {'enabled', 'target_box', 'box_prompt', 'box_threshold', 'target_threshold', 'min_inside_ratio'}
+    allowed = {'enabled', 'target_box', 'box_prompt', 'box_threshold', 'target_threshold', 'min_inside_ratio', 'max_mask_area_ratio'}
     unknown = sorted(set(raw) - allowed)
     if unknown: raise ValueError('unknown box_selection fields: ' + ','.join(unknown))
     if 'enabled' in raw and not isinstance(raw['enabled'], bool): raise ValueError('box_selection.enabled must be boolean')
@@ -228,9 +239,11 @@ def parse_box_selection(req, class_cfg=None, default_box_prompt=BOX_PROMPT):
     box_threshold = _val('box_threshold', class_cfg.get('box_threshold', 0.5), 0.0, 1.0)
     target_threshold = _val('target_threshold', req.get('sam3_threshold', class_cfg.get('target_threshold', 0.5)), 0.0, 1.0)
     min_inside = _val('min_inside_ratio', 0.9, 0.0, 1.0, open_low=True)
+    max_area = _val('max_mask_area_ratio', class_cfg.get('max_mask_area_ratio', 0.5), 0.0, 1.0, open_low=True)
 
     return {'enabled': True, 'target_box': int(target_box), 'box_prompt': box_prompt.strip(), 'box_threshold': box_threshold,
             'target_threshold': target_threshold, 'min_inside_ratio': min_inside,
+            'max_mask_area_ratio': max_area,
             'stage_status': 'sku_box_selection_required'}
 
 def box_overlay(rgb, detections, rois, indices, target_box, path, decoder=None):

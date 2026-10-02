@@ -9,6 +9,7 @@ import io
 from typing import Any, Dict, Optional, Tuple
 import cv2
 import numpy as np
+from sku_profiles import apply_sku_profile
 
 try:
     from config_loader import CLASS_CONFIG
@@ -89,7 +90,7 @@ def common_input(req: Dict[str, Any]) -> Tuple[np.ndarray, np.ndarray, Dict[str,
 
 
 def normalize_request_target(req: Dict[str, Any]) -> str:
-    """Normalizes the strict robot-facing target_type/sku_typ/side contract."""
+    """Resolve an optional SKU profile, then normalize target_type/sku_typ/side."""
     target_type = req.get('target_type', 'sku')
     if target_type not in ('sku', 'basket'):
         raise ValueError('target_type must be sku or basket')
@@ -111,8 +112,10 @@ def normalize_request_target(req: Dict[str, Any]) -> str:
         }
         return 'Basket'
 
-    if 'sku_id' in req or 'class_name' in req:
-        raise ValueError('sku_id/class_name were removed; send sku_typ=bottle, box or tube')
+    if 'class_name' in req:
+        raise ValueError('class_name was removed; send sku_typ=bottle, box or tube, or a configured sku_id')
+
+    apply_sku_profile(req)
 
     sku_typ = req.get('sku_typ')
     if not isinstance(sku_typ, str) or not sku_typ.strip():
@@ -137,6 +140,7 @@ def normalize_request_target(req: Dict[str, Any]) -> str:
     req['_target_context'] = {
         'target_type': 'sku',
         'sku_typ': class_name,
+        'sku_id': req.get('sku_id'),
         'side_received': side,
         'side_applied': side is not None,
         'side_note': None,

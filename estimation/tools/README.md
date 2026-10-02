@@ -19,8 +19,12 @@ python3 mock_estimation_request.py \
 传入 `--metadata /path/to/current_frame_metadata.json` 可使用当前帧真实参数；格式见
 `../docs/ROBOT_API_PICK_POSE_INTERFACE.md` 的 `/infer` 请求示例，省略两个 Base64 字段即可。
 也可使用已有 `request.json` / `request_metadata.json`：图像字段会替换，服务端添加的
-`class_name` / `sku_id` / 下划线开头的内部字段会移除，其余参数保留。
+`class_name` / 下划线开头的内部字段会移除，其余参数保留。
 `--target-type basket` 切换篮筐，`--sku-typ box --side LEFT` 切换商品类别及箱侧。
+
+`--sku-id demo_cream_box --side LEFT` 可测试服务器 SKU 库；不提供 metadata 时会让服务器
+从 ID 推导类别，不强制使用 bottle 样例类别。省略 `--sku-id` 保持旧调用方式。
+存在 metadata 时保留其 `sku_typ`，若与 ID 冲突服务端会报错；篮筐模式移除 SKU 字段。
 
 深度必须是与 RGB 对齐的二维 NPY，原始数值单位为 mm；不会从米自动换算。
 默认转成 float32 再保存为 NPY 后 Base64 编码，匹配先前请求的深度类型。

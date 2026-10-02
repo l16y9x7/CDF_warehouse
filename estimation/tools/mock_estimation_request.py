@@ -65,8 +65,12 @@ def load_metadata(args):
         log('TIMING FIXTURE: using old K/T, bottle RIGHT; pose is not validated for this frame.')
     # Persisted metadata may include server-added fields rejected by /infer.
     for key in list(req):
-        if key in ('rgb_base64', 'depth_npy_base64', 'class_name', 'sku_id') or key.startswith('_'):
+        if key in ('rgb_base64', 'depth_npy_base64', 'class_name') or key.startswith('_'):
             del req[key]
+    if args.sku_id:
+        req['sku_id'] = args.sku_id
+        if not args.metadata and not args.sku_typ:
+            req.pop('sku_typ', None)  # Let the server resolve the ID instead of forcing the bottle fixture.
     if args.target_type:
         req['target_type'] = args.target_type
     if args.sku_typ:
@@ -77,9 +81,10 @@ def load_metadata(args):
             req['box_selection']['target_box'] = 1 if args.side == 'LEFT' else 2
     if req.get('target_type') == 'basket':
         req.pop('sku_typ', None)
+        req.pop('sku_id', None)
     elif req.get('target_type') == 'sku':
-        if req.get('sku_typ') not in ('bottle', 'box', 'tube'):
-            raise ValueError('SKU metadata requires sku_typ=bottle/box/tube')
+        if req.get('sku_typ') not in ('bottle', 'box', 'tube') and not req.get('sku_id'):
+            raise ValueError('SKU metadata requires sku_typ=bottle/box/tube or a configured sku_id')
         if req.get('side') not in ('LEFT', 'RIGHT') and req.get('box_selection', {}).get('target_box') not in (1, 2):
             raise ValueError('SKU metadata requires side=LEFT/RIGHT or box_selection.target_box')
     else:
@@ -123,7 +128,7 @@ def prepare_body(args, report, output):
     if len(body) > 33554432:
         raise ValueError('Request exceeds the service default limit of 32 MiB')
     report['request_bytes'] = len(body)
-    report['target'] = {k: req.get(k) for k in ('target_type', 'sku_typ', 'side')}
+    report['target'] = {k: req.get(k) for k in ('target_type', 'sku_typ', 'sku_id', 'side')}
     write_json(output / 'request_metadata.json', {k: v for k, v in req.items() if not k.endswith('_base64')})
     if args.save_request or args.prepare_only:
         (output / 'request.json').write_bytes(body)
@@ -228,6 +233,7 @@ def main():
     parser.add_argument('--metadata', type=Path, help='Current-frame K/T and request options; overrides timing fixture')
     parser.add_argument('--target-type', choices=('sku', 'basket'))
     parser.add_argument('--sku-typ', choices=('bottle', 'box', 'tube'))
+    parser.add_argument('--sku-id', help='Optional business SKU ID resolved by the server')
     parser.add_argument('--side', choices=('LEFT', 'RIGHT'))
     parser.add_argument('--depth-dtype', choices=('float32', 'preserve'), default='float32')
     parser.add_argument('--proxy', help='Explicit HTTP proxy, e.g. http://192.168.3.107:17891; default DIRECT')

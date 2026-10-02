@@ -48,6 +48,9 @@ def build_config(
     max_body_bytes = int(e.get('MAX_BODY_BYTES', raw_cfg.get('service', {}).get('max_body_bytes', 32 * 1024 * 1024)))
     artifact_subdir = raw_cfg.get('service', {}).get('artifact_subdir', 'requests')
     artifact_root = Path(e.get('AXIS_SERVICE_OUTPUT', str(ROOT / artifact_subdir)))
+    sku_profiles_path = Path(e.get('SKU_PROFILES_PATH', raw_cfg.get('service', {}).get('sku_profiles_file', 'sku_profiles.json')))
+    if not sku_profiles_path.is_absolute():
+        sku_profiles_path = DEPLOY_DIR / sku_profiles_path
     save_request_inputs = e.get(
         'SAVE_REQUEST_INPUTS',
         '1' if raw_cfg.get('service', {}).get('save_request_inputs', True) else '0'
@@ -83,9 +86,9 @@ def build_config(
     # Prompts
     prompts = raw_cfg.get('prompts', {})
     container_box_prompt = e.get('DEFAULT_BOX_PROMPT', prompts.get('container_box', 'each individual open cardboard box'))
-    bottle_default_prompt = prompts.get('bottle', 'The main cylindrical body of each white bottle')
-    box_default_prompt = prompts.get('box', 'All visible top surfaces of the blue green boxes')
-    tube_default_prompt = prompts.get('tube', 'All individual gray green package ends')
+    bottle_default_prompt = prompts.get('bottle', 'the main cylindrical body of each individual cosmetic bottle')
+    box_default_prompt = prompts.get('box', 'the top surfaces of the small boxes')
+    tube_default_prompt = prompts.get('tube', 'the sealed ends of tubes')
 
     # Basket / FoundationPose
     basket_cfg = raw_cfg.get('basket', {})
@@ -115,18 +118,21 @@ def build_config(
             'box_prompt': container_box_prompt,
             'box_threshold': classes.get('bottle', {}).get('box_threshold', 0.5),
             'target_threshold': classes.get('bottle', {}).get('target_threshold', 0.5),
+            'max_mask_area_ratio': classes.get('bottle', {}).get('max_mask_area_ratio', 0.5),
         },
         'box': {
             'sam3_prompt': box_default_prompt,
             'box_prompt': container_box_prompt,
             'box_threshold': classes.get('box', {}).get('box_threshold', 0.5),
             'target_threshold': classes.get('box', {}).get('target_threshold', 0.5),
+            'max_mask_area_ratio': classes.get('box', {}).get('max_mask_area_ratio', 0.5),
         },
         'tube': {
             'sam3_prompt': tube_default_prompt,
             'box_prompt': container_box_prompt,
             'box_threshold': classes.get('tube', {}).get('box_threshold', 0.5),
             'target_threshold': classes.get('tube', {}).get('target_threshold', 0.2),
+            'max_mask_area_ratio': classes.get('tube', {}).get('max_mask_area_ratio', 0.5),
         },
     }
 
@@ -146,6 +152,7 @@ def build_config(
         'DEFAULT_PORT': default_port,
         'MAX_BODY_BYTES': max_body_bytes,
         'ARTIFACT_ROOT': artifact_root,
+        'SKU_PROFILES_PATH': sku_profiles_path,
         'SAVE_REQUEST_INPUTS': save_request_inputs,
         'ENABLE_3D_RENDER': enable_3d_render,
         'ASYNC_3D_RENDER': async_3d_render,
@@ -185,6 +192,7 @@ DEFAULT_HOST: str = _CONFIG_MAP['DEFAULT_HOST']
 DEFAULT_PORT: int = _CONFIG_MAP['DEFAULT_PORT']
 MAX_BODY_BYTES: int = _CONFIG_MAP['MAX_BODY_BYTES']
 ARTIFACT_ROOT: Path = _CONFIG_MAP['ARTIFACT_ROOT']
+SKU_PROFILES_PATH: Path = _CONFIG_MAP['SKU_PROFILES_PATH']
 SAVE_REQUEST_INPUTS: bool = _CONFIG_MAP['SAVE_REQUEST_INPUTS']
 ENABLE_3D_RENDER: bool = _CONFIG_MAP['ENABLE_3D_RENDER']
 ASYNC_3D_RENDER: bool = _CONFIG_MAP['ASYNC_3D_RENDER']

@@ -116,6 +116,8 @@ class Handler(BaseHTTPRequestHandler):
                 },
                 'sku': {
                     'supported_types': sorted(CLASS_CONFIG),
+                    'sku_id_optional': True,
+                    'sku_profile_reload': 'per_request',
                     'pipeline': 'box_selection_then_product_localization',
                     'sam3_backend': SAM3_BACKEND,
                     'sam3_url': SAM3_URL,

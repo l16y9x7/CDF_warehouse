@@ -1,6 +1,6 @@
 # `/estimation/pick_pose` 与 Cosmetics_Sort 定位服务适配说明
 
-> **2026-09-21 协议切换（严格替换）**：25540 正式类别字段为 `sku_typ`，值 `bottle`/`box`/`tube`（对应旧 `Avene`/`estee`/`origins`：Avene→bottle、estee→box、origins→tube）。请求中出现 `sku_id` 或 `class_name` 将被 HTTP 400 拒绝；响应统一输出 `sku_typ`，不再输出 `sku_id`。文中历史实测小节保留旧名称。
+> **2026-10-01 SKU 库扩展**：类别字段仍为 `sku_typ=bottle/box/tube`。新增可选业务 `sku_id`，由服务器 `deploy/sku_profiles.json` 解析提示词和参数；不传 ID 的旧 agent 继续工作。已配置 ID 可省略 `sku_typ`，同时传入时必须一致。未知 ID 返回 HTTP 400；请求 `class_name` 仍被拒绝。响应包含 `sku_id` 和解析后的 `sku_typ`。旧 `Avene/estee/origins` 不是业务 SKU ID，历史实测章节保留旧名称。
 
 ## 1. 当前接口关系
 
@@ -27,7 +27,8 @@ Content-Type: application/json
 |---|---|---:|---|
 | `task_type` | string | 是 | `SORTING` 或 `REVIEW`，用于上层任务审计；25540 不据此切换几何算法 |
 | `target_type` | string | 是 | `sku` 或 `basket`；`basket` 使用服务器内置 Basket CAD 和 FoundationPose，返回篮筐模型中心点与位姿 |
-| `sku_typ` | string | 是 | `bottle`、`box` 或 `tube`（旧 `Avene`/`estee`/`origins` 的严格替换）；SORTING/REVIEW 均必须明确类别 |
+| `sku_typ` | string | 条件必填 | `bottle`、`box` 或 `tube`；传入已配置 `sku_id` 时可省略，同时传入必须与库一致 |
+| `sku_id` | string | 否 | 业务 SKU ID，服务器查询视觉配置；缺省或 null 时使用 `sku_typ` 的通用配置 |
 | `side` | string | 是 | 所有 SKU 均填写 `LEFT` 或 `RIGHT`，选择当前图像所选箱对的左箱或右箱 |
 | `rgb` | string | 是 | 当前帧 RGB 文件路径；由适配层读取文件字节，不把机器人本地路径直接交给 A800 |
 | `depth` | string | 是 | 同帧、对齐 RGB 的二维浮点 NPY 路径，数值单位 mm |
@@ -40,6 +41,9 @@ Content-Type: application/json
 | `mask` | string | 否 | 当前 25540 不需要；服务会按 `sku_typ` 调用 SAM3。上层保留该字段时，也不能把它解释为已经替代服务内 SAM3 |
 
 SAM3 prompt、阈值、bottle 半径、拟合算法、选箱开关以及 `front_rule` 均由服务器提供默认配置。调用方可以使用 `/infer` 已支持的可选覆盖字段，但普通机器人请求不需要重复发送全部内部参数。当前服务端 `front_rule` 默认值为 `front_axis_chassis=[1,0,0]`、`front_origin_chassis=[0,0,0]`、`front_band_mm=100000`，与回归客户端一致；这是联调宽带，不是现场标定值。
+
+传入 `sku_id` 后，服务器库里配置的 prompt、阈值、面积上限和半径优先于请求中的同名参数；
+调用端只需增加业务 ID，无需维护算法配置。库管理与面积过滤见 [estimation README](../README.md)。
 
 ## 3. 类别与处理流程
 

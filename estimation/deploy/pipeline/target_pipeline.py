@@ -808,7 +808,8 @@ def process_sku(req, request_id, root, rgb=None, depth=None, K=None, T_m=None, c
 
     t0 = time.perf_counter()
     kept, rejected, membership = BOXSEL.filter_instances_detailed(
-        threshold_kept, roi, rgb.shape, decode_detection_mask, min_inside=box_cfg['min_inside_ratio'], reject_crop_boundary=True
+        threshold_kept, roi, rgb.shape, decode_detection_mask, min_inside=box_cfg['min_inside_ratio'],
+        reject_crop_boundary=True, max_mask_area_ratio=box_cfg['max_mask_area_ratio']
     )
     mark('box_roi_filter', t0)
 
@@ -907,4 +908,7 @@ def execute_pipeline(req: Dict[str, Any], request_id: str, root: Path, mark=None
 
     if req.get('target_type') == 'basket':
         return process_basket(req, request_id, root, rgb, depth, K, T_m, mark=mark)
-    return process_sku(req, request_id, root, rgb, depth, K, T_m, class_name=class_name, mark=mark)
+    result = process_sku(req, request_id, root, rgb, depth, K, T_m, class_name=class_name, mark=mark)
+    result['sku_id'] = req.get('sku_id')
+    result.setdefault('diagnostics', {})['sku_profile'] = req.get('_sku_profile')
+    return result

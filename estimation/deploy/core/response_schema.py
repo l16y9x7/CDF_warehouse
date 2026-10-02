@@ -485,6 +485,7 @@ def _build_sku_response(result: Dict[str, Any], req: Dict[str, Any], return_viz:
         'request_id': result.get('request_id'),
         'target_type': 'sku',
         'sku_typ': sku_typ,
+        'sku_id': result.get('sku_id', req.get('sku_id')),
         'class_name': class_name,
         'sam3_call_count': _clean_int(result.get('sam3_call_count', 2 if result.get('ok') else 1)),
         'localization_method': result.get(

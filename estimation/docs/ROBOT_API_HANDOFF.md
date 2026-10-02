@@ -1,12 +1,12 @@
 # 位姿估计定位 HTTP 接口交接说明
 
-> **2026-09-21 协议切换（严格替换）**：正式类别字段由 `sku_id` 改为 `sku_typ`，类别值 `Avene`/`estee`/`origins` 改为 `bottle`/`box`/`tube`（Avene→bottle、estee→box、origins→tube）。请求中出现 `sku_id` 或 `class_name` 一律 HTTP 400 拒绝；响应统一输出 `sku_typ`（`class_name` 仅作为同值冗余保留），不再输出 `sku_id`；`/health` 返回 `supported_sku_types`。历史章节（第 10、11 节）保留旧名称作为当时事实记录。
+> **2026-10-01 SKU 库扩展**：正式类别字段仍为 `sku_typ=bottle/box/tube`。新增可选业务 `sku_id`，查服务器 `deploy/sku_profiles.json` 获取类别、提示词和参数；不传 ID 的旧 agent 兼容。已配置 ID 可省略 `sku_typ`；同时传入必须与库一致。未知 ID 或请求 `class_name` 返回 HTTP 400。响应包含 `sku_id`（无 ID 时为 null）及 `sku_typ`。历史章节保留旧名称。
 
 ## 1. 接口用途与边界
 
-控制端把**同一时刻、同一相机模型**的 RGB、对齐深度、相机内参和逐帧外参发送给服务。所有 `target_type=sku` 请求统一执行“箱体 SAM3 → 按 `side` 选左/右箱 → 商品 SAM3 → 箱内过滤 → 类别几何定位”；`sku_typ=bottle/box/tube` 只决定商品提示词、阈值及圆柱轴线/顶面/可见上边缘几何策略。请求中出现旧 `sku_id`（Avene/estee/origins）或 `class_name` 一律 HTTP 400 拒绝。
+控制端把**同一时刻、同一相机模型**的 RGB、对齐深度、相机内参和逐帧外参发送给服务。所有 `target_type=sku` 请求统一执行“箱体 SAM3 → 按 `side` 选左/右箱 → 商品 SAM3 → 箱内和面积过滤 → 类别几何定位”。`sku_typ` 决定类别，可选 `sku_id` 选择服务器维护的商品专用配置；旧 `Avene/estee/origins` 不是业务 SKU ID。
 
-控制端可以只发送公共输入和类别名；SAM3 提示词、阈值、拟合算法、瓶身半径、参考高度和选箱参数均有服务端类别默认值。若请求显式发送这些可选配置，服务会验证并使用请求值；缺省字段使用服务端默认值。配置覆盖只影响当前请求，不修改服务端全局配置。
+控制端可以只发送公共输入和类别名；SAM3 提示词、阈值、拟合算法、瓶身半径和选箱参数均有服务端类别默认值。不传 SKU ID 时，可用请求参数覆盖类别默认值；传入 ID 时，库中配置的 prompt、阈值、面积上限和半径优先。配置只作用于本次请求，不修改全局配置。库每次请求重新读取，管理方法见 [estimation README](../README.md)。
 
 请求产物按目标类型分目录保存：`/home/quinn/cosmetics_pose/requests/basket/<request_id>/` 或 `/home/quinn/cosmetics_pose/requests/sku/<request_id>/`。Basket 目录还会保存 FoundationPose 的姿态框/坐标轴叠加图（`foundationpose_pose_overlay.png`）以及实例分割和检测姿态图。
 
@@ -44,7 +44,8 @@
 | `camera_frame` | string | 是 | — | 固定为 `head_camera_color_optical_frame` |
 | `base_frame` | string | 是 | — | 固定为 `chassis_link` |
 | `target_type` | string | 是 | `sku` 或 `basket` | `sku` 走商品定位；`basket` 由服务器自动生成篮筐 mask 并调用 FoundationPose，返回篮筐模型中心点与位姿 |
-| `sku_typ` | string | 是 | — | `bottle`、`box` 或 `tube`；由服务端选择对应识别及几何策略 |
+| `sku_typ` | string | 条件必填 | — | `bottle`、`box` 或 `tube`；有已配置 `sku_id` 时可省略，同时传入必须一致 |
+| `sku_id` | string | 否 | — | 业务 SKU ID；缺省或 null 时沿用类别配置，未知 ID 返回 HTTP 400 |
 | `side` | string | 是 | — | `LEFT`/`RIGHT`，选择当前图像所选箱对的左箱/右箱；所有 SKU 均实际使用 |
 | `sam3_prompt` | string | 否 | — | 商品提示词覆盖；缺省使用类别默认 |
 | `sam3_threshold` | number | 否 | 0–1 | 直接识别或商品阶段阈值覆盖；缺省使用类别默认 |
@@ -71,13 +72,12 @@
   "box_prompt": "large open cardboard box",
   "box_threshold": 0.5,
   "target_threshold": 0.5,
-  "inference_mode": "full_image_filter",
   "min_inside_ratio": 0.9,
-  "crop_padding_px": 0
+  "max_mask_area_ratio": 0.5
 }
 ```
 
-`box_selection` 整体可以省略，控制端优先发送 `side`。所有 SKU 都默认使用 `full_image_filter`。旧 `enabled` 字段仅记录到 `legacy_enabled_requested`；即使发送 `false` 也不能跳过箱体阶段。
+`box_selection` 整体可以省略，控制端优先发送 `side`。商品始终对全图推理后按选定 ROI 过滤；即使 `enabled=false` 也不能跳过箱体阶段。`max_mask_area_ratio` 是完整商品 mask 相对所选箱体 ROI 的面积上限，默认 0.5，范围 `(0,1]`；大于阈值的候选记录 `mask_area_ratio_above_threshold`。面积与比例见 `object_membership`。
 
 可选覆盖示例：
 
