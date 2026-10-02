@@ -84,6 +84,7 @@ class PickPoseRequest:
     camera_frame: str
     base_frame: str
     side: str | None
+    sku_id: str | None = None
     front_rule: Mapping[str, Any] | None = None
     T_unit: str = "m"
     depth_unit: str = "mm"
@@ -112,11 +113,16 @@ class PickPoseRequest:
                 raise ValueError("sku_typ is required")
             if self.side not in SIDES:
                 raise ValueError("side must be LEFT or RIGHT")
+            if not isinstance(self.sku_id, str) or not self.sku_id.strip():
+                raise ValueError("sku_id is required")
+            object.__setattr__(self, "sku_id", self.sku_id.strip())
             if self.front_rule is not None:
                 _validate_front_rule(self.front_rule)
             return
         if self.sku_typ is not None:
             raise ValueError("basket infer does not accept sku_typ")
+        if self.sku_id is not None:
+            raise ValueError("basket infer does not accept sku_id")
         if self.side is not None:
             raise ValueError("basket infer does not accept side")
         if self.front_rule is not None:
@@ -342,7 +348,7 @@ CASE_REQUEST_NAME = "request.json"
 RGB_FILE_NAMES = ("rgb.jpg", "rgb.jpeg", "rgb.png")
 DEPTH_FILE_NAME = "depth_mm.npy"
 CAMERA_FILE_NAME = "camera.json"
-TEST_CASE_JOB_FIELDS = frozenset({"target_type", "sku_typ", "side"})
+TEST_CASE_JOB_FIELDS = frozenset({"target_type", "sku_typ", "sku_id", "side"})
 
 
 def scan_test_cases(root: str | Path | None = None) -> list[str]:

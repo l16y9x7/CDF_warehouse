@@ -132,6 +132,7 @@ class CapabilityMockApiTest(unittest.IsolatedAsyncioTestCase):
         infer = {
             "target_type": "sku",
             "sku_typ": "bottle",
+            "sku_id": "20108138",
             "side": "LEFT",
             "rgb_base64": "cmdi",
             "depth_npy_base64": "bm9weQ==",
@@ -215,7 +216,11 @@ class CapabilityMockApiTest(unittest.IsolatedAsyncioTestCase):
             ).status_code,
             422,
         )
-        basket = {key: value for key, value in infer.items() if key not in {"sku_typ", "side", "front_rule"}}
+        basket = {
+            key: value
+            for key, value in infer.items()
+            if key not in {"sku_typ", "sku_id", "side", "front_rule"}
+        }
         basket["target_type"] = "basket"
         accepted_basket = await request(estimation_app, "POST", "/infer", json=basket)
         self.assertEqual(accepted_basket.status_code, 200)

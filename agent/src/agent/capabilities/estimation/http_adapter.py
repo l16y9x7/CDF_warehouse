@@ -43,6 +43,7 @@ def _infer_body(request: PickPoseRequest) -> dict[str, Any]:
     }
     if request.target_type is TargetType.SKU:
         body["sku_typ"] = request.sku_typ
+        body["sku_id"] = request.sku_id
         body["side"] = request.side
         if request.front_rule:
             body["front_rule"] = dict(request.front_rule)
