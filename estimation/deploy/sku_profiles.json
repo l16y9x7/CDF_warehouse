@@ -2,8 +2,8 @@
   "schema_version": 1,
   "revision": "2026-10-02.1",
   "profiles": {
-    "3282779003131": {
-      "name": "雅漾舒护活泉水",
+    "20108138": {
+      "name": "雅漾舒泉调理喷雾",
       "sku_typ": "bottle",
       "sam3_prompt": "the main cylindrical body of each individual cosmetic spray bottle",
       "target_threshold": 0.5,
@@ -19,31 +19,23 @@
       "max_mask_area_ratio": 0.5,
       "notes": "SKU 来自 agent/configs/products.yaml；提示词待实图回归。"
     },
-    "3282770389746": {
-      "name": "清润洁面乳",
-      "sku_typ": "tube",
-      "sam3_prompt": "the sealed ends of tubes",
-      "target_threshold": 0.2,
-      "max_mask_area_ratio": 0.5,
-      "notes": "SKU 来自 agent/configs/products.yaml；提示词待实图回归。"
-    },
-    "demo_dark_blue_box": {
-      "name": "深蓝色盒装商品（占位 SKU）",
+    "20186886": {
+      "name": "雅诗兰黛轻透持妆粉底液1C1",
       "sku_typ": "box",
       "sam3_prompt": "the visible top face of each individual small dark blue retail product carton",
       "target_threshold": 0.5,
       "max_mask_area_ratio": 0.5,
       "notes": "2026-10-02 已用真实 SAM3 回放场景 20261001_094914_4a08bcae，通过当前几何质量检查；未做机器人抓取验证，后续替换为真实 SKU ID。"
     },
-    "demo_cream_box": {
-      "name": "米白金色盒装商品（占位 SKU）",
+    "20164007": {
+      "name": "欧舒丹乳木果牛奶味洁肤皂",
       "sku_typ": "box",
       "sam3_prompt": "the top surfaces of the small boxes",
       "target_threshold": 0.5,
       "max_mask_area_ratio": 0.5,
       "notes": "2026-10-02 已用真实 SAM3 回放场景 20261001_095017_cfe4ab92，通过当前几何质量检查；未做机器人抓取验证，后续替换为真实 SKU ID。"
     },
-    "demo_white_tube": {
+    "20108001": {
       "name": "白色软管商品（占位 SKU）",
       "sku_typ": "tube",
       "sam3_prompt": "the sealed upper edge of each individual white cosmetic squeeze tube",
