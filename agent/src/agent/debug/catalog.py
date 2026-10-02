@@ -965,4 +965,9 @@ def catalog_payload() -> dict[str, Any]:
             layer: sum(item.layer == layer for item in OPERATIONS)
             for layer in ("capability", "skill", "workflow")
         },
+        "products": [
+            {"sku_id": sku_id, "name": spec.name}
+            for sku_id, spec in _SKU_CATALOG.items()
+            if spec.name
+        ],
     }

@@ -32,10 +32,9 @@ class PoseOverlayTest(unittest.TestCase):
         assert overlay is not None
         self.assertEqual(overlay["K"][0][2], 640.0)
 
-        # 只显示参考点，不显示轴线点
+        # 参考点和前挡板上沿都要画；轴线点仍不单独打点
         labels = {item["label"] for item in overlay["points"]}
-        self.assertIn("参考点", labels)
-        self.assertEqual(len(overlay["points"]), 1)
+        self.assertEqual(labels, {"参考点", "前挡板上沿"})
 
         # 参考点应该是大尺寸且根据ok状态着色（绿色=成功）
         ref_point = overlay["points"][0]
@@ -197,6 +196,53 @@ class PoseOverlayTest(unittest.TestCase):
         self.assertEqual(len(overlay["markers"]), 1)
         self.assertEqual(overlay["markers"][0]["label"], "实例 2")
         self.assertEqual(overlay["markers"][0]["xy"], [300.0, 400.0])
+
+    def test_box_and_front_panel_points_are_drawn(self):
+        """商品顶面点无效时，仍然把已有的前挡板点投到图上。"""
+        failed = overlay_from_pose(
+            {
+                "ok": False,
+                "target_type": "sku",
+                "sku_typ": "box",
+                "top_point_valid": False,
+                "top_point_camera_mm": None,
+                "front_panel_valid": True,
+                "front_panel_top_edge_midpoint_camera_mm": [-92.6, 176.2, 467.6],
+                "rejection_reasons": ["no box SAM3 candidate"],
+                "K": K,
+            }
+        )
+        labels = {item["label"]: item for item in failed["points"]}
+        self.assertEqual(set(labels), {"前挡板上沿"})
+        self.assertEqual(labels["前挡板上沿"]["xyz_mm"][2], 467.6)
+        self.assertTrue(any(line.startswith("前挡板上沿") for line in failed["hud"]))
+
+        box = overlay_from_pose(
+            {
+                "ok": True,
+                "target_type": "sku",
+                "sku_typ": "box",
+                "top_point_camera_mm": [120.0, 35.0, 510.0],
+                "sam3_score": 0.89,
+                "K": K,
+            }
+        )
+        top = next(item for item in box["points"] if item["label"] == "顶面点")
+        self.assertEqual(top["size"], "large")
+        self.assertEqual(top["color"], "#22c55e")
+
+    def test_tube_edge_is_drawn(self):
+        overlay = overlay_from_pose(
+            {
+                "ok": True,
+                "sku_typ": "tube",
+                "top_edge_center_camera_mm": [95.0, 40.0, 505.0],
+                "top_edge_endpoints_camera_mm": [[70.0, 42.0, 505.0], [120.0, 38.0, 505.0]],
+                "K": K,
+            }
+        )
+        self.assertTrue(any(item["label"] == "上沿中点" for item in overlay["points"]))
+        self.assertTrue(any(item["label"] == "上沿" for item in overlay["lines"]))
 
 
 if __name__ == "__main__":
