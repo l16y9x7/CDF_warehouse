@@ -53,7 +53,7 @@ estimation 和 perception；部署路径、依赖准备及停止/重启命令见
   "prompts": {
     "container_box": "each individual open cardboard box",          // 纸盒提示词
     "bottle": "the main cylindrical body of each individual cosmetic bottle", // 瓶身
-    "box": "the top surfaces of the small boxes", // 商品盒顶面
+    "box": "each individual small retail product carton", // 商品盒整体
     "tube": "the sealed ends of tubes" // 软管封尾
   }
 }
@@ -79,8 +79,9 @@ estimation 和 perception；部署路径、依赖准备及停止/重启命令见
 库里预置了 agent 商品表已有的 3 个 ID，以及本次三种外观的占位 ID：
 `demo_dark_blue_box`、`demo_cream_box`、`demo_white_tube`。占位 ID 后续改为真实条码/业务 ID；
 2026-10-02 已用三张失败日志的原始 RGB-D 调用真实 SAM3 回放：不传 ID 和传对应占位 ID 的
-六条请求均保留 5 个箱内商品候选，并通过当前几何质量检查。通用 box 提示词调整为
-`the top surfaces of the small boxes`，tube 调整为 `the sealed ends of tubes`。
+六条请求均保留 5 个箱内商品候选，并通过当时的几何质量检查。
+当前通用 box 提示词调整为 `each individual small retail product carton`，分割商品盒整体后由深度几何提取顶面；
+本次整体提示词调整尚未做实图回归。tube 提示词为 `the sealed ends of tubes`。
 该结果仅覆盖这些固定场景，不代表已验证定位精度或机器人抓取；agent 商品表中真实 ID 的对应实物仍待回归。
 
 请求新增字段示例（其余 RGB-D、K、外参字段仍必填）：

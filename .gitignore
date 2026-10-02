@@ -11,6 +11,12 @@ venv/
 /logs/
 .runtime/
 
+# Local SAM3 debug page and supporting tools
+/estimation/tools/sam3_debug/
+/estimation/tools/sam3_debug_server.py
+/estimation/tools/start_sam3_debug.ps1
+/estimation/tests/test_sam3_debug_server.py
+
 # perception runtime
 perception/logs/
 perception/*.log

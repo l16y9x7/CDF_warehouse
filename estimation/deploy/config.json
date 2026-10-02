@@ -29,7 +29,7 @@
   "prompts": {
     "container_box": "each individual open cardboard box",
     "bottle": "the main cylindrical body of each individual cosmetic bottle",
-    "box": "the top surfaces of the small boxes",
+    "box": "each individual small retail product carton",
     "tube": "the sealed ends of tubes"
   },
   "classes": {

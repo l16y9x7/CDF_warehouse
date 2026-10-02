@@ -87,7 +87,7 @@ def build_config(
     prompts = raw_cfg.get('prompts', {})
     container_box_prompt = e.get('DEFAULT_BOX_PROMPT', prompts.get('container_box', 'each individual open cardboard box'))
     bottle_default_prompt = prompts.get('bottle', 'the main cylindrical body of each individual cosmetic bottle')
-    box_default_prompt = prompts.get('box', 'the top surfaces of the small boxes')
+    box_default_prompt = prompts.get('box', 'each individual small retail product carton')
     tube_default_prompt = prompts.get('tube', 'the sealed ends of tubes')
 
     # Basket / FoundationPose

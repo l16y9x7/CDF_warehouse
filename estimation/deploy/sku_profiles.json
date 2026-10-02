@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "2026-10-02.2",
+  "revision": "2026-10-02.3",
   "profiles": {
     "20108138": {
       "name": "雅漾舒泉调理喷雾",
@@ -14,18 +14,18 @@
     "887167608641": {
       "name": "修护精华礼盒",
       "sku_typ": "box",
-      "sam3_prompt": "the top surfaces of the small boxes",
+      "sam3_prompt": "each individual small retail product carton",
       "target_threshold": 0.5,
       "max_mask_area_ratio": 0.5,
-      "notes": "SKU 来自 agent/configs/products.yaml；提示词待实图回归。"
+      "notes": "SKU 来自 agent/configs/products.yaml；分割商品盒整体后由深度几何提取顶面，提示词待实图回归。"
     },
     "20186886": {
       "name": "雅诗兰黛轻透持妆粉底液1C1",
       "sku_typ": "box",
-      "sam3_prompt": "the visible top face of each individual small dark blue retail product carton",
+      "sam3_prompt": "each individual dark blue retail product carton",
       "target_threshold": 0.5,
       "max_mask_area_ratio": 0.5,
-      "notes": "2026-10-02 已用真实 SAM3 回放场景 20261001_094914_4a08bcae，通过当前几何质量检查；未做机器人抓取验证，后续替换为真实 SKU ID。"
+      "notes": "2026-10-02 改为分割单个深蓝色商品盒整体，再由深度几何提取顶面；此前顶面提示词已回放场景 20261001_094914_4a08bcae，本次整体提示词待实图回归，未做机器人抓取验证。"
     },
     "20164007": {
       "name": "欧舒丹乳木果牛奶味洁肤皂",
