@@ -1,3 +1,33 @@
+# 本地 SAM3 调试页面
+
+Windows PowerShell 启动（后台运行，仅监听本机）：
+
+```powershell
+./estimation/tools/start_sam3_debug.ps1
+```
+
+打开 <http://127.0.0.1:8765>。默认直连
+`http://192.168.3.107:25541/api/v1/segment`，忽略代理环境变量；浏览器通过本地 Python 服务转发请求。
+需要 Python 环境包含 `requests`、`numpy`、`opencv-python`。启动器优先使用当前 Conda 环境，
+其次尝试本机 `miniconda3/envs/py11/python.exe`，也可以显式指定 `-PythonPath`。
+参数 `-Port` 和 `-Sam3Url` 可以更换本地端口和上游地址。启动器输出 PID 及停止命令；
+运行信息、标准输出及错误日志位于 `logs/sam3_debug/runtime/`。
+
+也可以前台运行，按 Ctrl+C 停止：
+
+```bash
+python estimation/tools/sam3_debug_server.py --port 8765
+```
+
+页面支持上传 JPG/PNG/WebP、载入最近 40 条 estimation 日志图片、从当前 SKU 库填入参数、
+编辑 prompt/检测阈值/mask 阈值、显示 mask 和检测框、单实例高亮、缩放、导出图片/单个 mask/JSON，
+以及恢复本次页面会话最近 6 次结果。点击刷新按钮可重新读取 SKU 库和日志列表。
+SKU 下拉框只填入参数，实际请求以输入框为准；不会保存或覆盖 SKU 库。
+
+这里显示的是 SAM3 **原始实例**，不应用 estimation 的纸箱 ROI、面积过滤或位姿估计。
+日志图片若带有已配置 `sku_id`，默认使用该 SKU **当前库配置**，而不是历史请求中的旧 prompt。
+计时中的 SAM3 往返包含上传、排队、推理及响应传输，并非纯 GPU 推理耗时。
+
 # 在 155 上复现 estimation 上传
 
 把 `mock_estimation_request.py` 复制到 155，使用有 NumPy 的 Python 环境运行。
