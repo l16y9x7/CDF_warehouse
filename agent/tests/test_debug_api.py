@@ -143,9 +143,9 @@ class DebugApiTest(unittest.IsolatedAsyncioTestCase):
             "111",
             "222",
             "3253581680520",
-            "333",
+            "3282770395006",
             "3282770389746",
-            "444",
+            "3274872446342",
             "887167495241",
             "887167561861",
             "555",
@@ -173,6 +173,10 @@ class DebugApiTest(unittest.IsolatedAsyncioTestCase):
                     self.assertEqual(entry["options"], sku_codes)
                 if entry["name"] == "name":
                     self.assertEqual(entry["options"], sku_names)
+        self.assertEqual(
+            catalog["products"],
+            [{"sku_id": sku_id, "name": name} for sku_id, name in zip(sku_ids, sku_names, strict=True)],
+        )
 
         redirect = await self.client.get("/debug", follow_redirects=False)
         self.assertEqual(redirect.status_code, 307)
@@ -187,13 +191,16 @@ class DebugApiTest(unittest.IsolatedAsyncioTestCase):
             self.assertIn(content_type, asset.headers["content-type"])
 
         script = (await self.client.get("/debug/assets/app.js")).text
-        self.assertIn('const REAL_TARGET_PASSWORD = "zhongmian123"', script)
-        self.assertIn('window.prompt("请输入实机操作密码")', script)
+        self.assertNotIn("REAL_TARGET_PASSWORD", script)
+        self.assertNotIn("请输入实机操作密码", script)
         self.assertIn('class="select-menu hidden"', script)
         self.assertIn("请选择或输入自定义值", script)
         self.assertIn('field.type === "select"', script)
         self.assertIn('field.required ? "请选择"', script)
         self.assertIn('skip.has(field.name)', script)
+        self.assertIn("function bindSkuNameLink()", script)
+        self.assertIn('[name="sku_id"]', script)
+        self.assertIn('[name="name"]', script)
         self.assertIn("selectedMediaKey", script)
         self.assertIn("drawPoseOverlay", script)
         self.assertIn("projectCameraPoint", script)

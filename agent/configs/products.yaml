@@ -55,7 +55,7 @@ products:
     width_mm: 40
     height_mm: 105
     weight_g: 260.8
-  - sku_code: "333"
+  - sku_code: "3282770395006" 
     sku_id: "20163873"
     name: 馥绿德雅强韧洗发露
     description: Rene Furterer 馥绿德雅 馥绿德雅强韧洗发露500ml
@@ -70,20 +70,20 @@ products:
     sku_id: "20156874"
     name: 馥绿德雅活力强韧洗发露
     description: Rene Furterer 馥绿德雅 馥绿德雅活力强韧洗发露50ml-（赠品） 50ml
-    image_url: /orders/assets/bottle.svg
-    sku_typ: bottle
+    image_url: /orders/assets/tube.svg
+    sku_typ: tube
     hand: RIGHT
     length_mm: 35
     width_mm: 35
     height_mm: 103
     weight_g: 60
-  - sku_code: "444"
+  - sku_code: "3274872446342"
     sku_id: "20113783"
     name: 纪梵希明星修颜蜜 天空蓝
     description: GIVENCHY 纪梵希 纪梵希明星修颜蜜 天空蓝 11ml
-    image_url: /orders/assets/tube.svg
-    sku_typ: tube
-    hand: RIGHT
+    image_url: /orders/assets/box.svg
+    sku_typ: box
+    hand: LEFT
     length_mm: 27
     width_mm: 25
     height_mm: 120
@@ -92,9 +92,9 @@ products:
     sku_id: "20186886"
     name: 雅诗兰黛轻透持妆粉底液1C1
     description: Estee Lauder 雅诗兰黛 雅诗兰黛轻透持妆粉底液1C1 30.00 ml
-    image_url: /orders/assets/bottle.svg
-    sku_typ: bottle
-    hand: RIGHT
+    image_url: /orders/assets/box.svg
+    sku_typ: box
+    hand: LEFT
     length_mm: 45
     width_mm: 32
     height_mm: 100

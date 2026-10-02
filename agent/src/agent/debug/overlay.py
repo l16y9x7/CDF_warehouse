@@ -3,9 +3,20 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+# 各类正式输出。box/tube 的抓取点不叫 reference_point，前挡板点在商品点无效时仍要画出来。
 _POINT_SPECS = (
-    ("reference_point_camera_mm", "参考点", "#22d3ee"),  # 抓取目标点
-    ("model_center_camera_mm", "篮筐中心", "#22d3ee"),  # 篮筐定位用
+    ("reference_point_camera_mm", "参考点", "#22d3ee"),
+    ("top_point_camera_mm", "顶面点", "#22d3ee"),
+    ("top_edge_center_camera_mm", "上沿中点", "#22d3ee"),
+    ("front_panel_top_edge_midpoint_camera_mm", "前挡板上沿", "#a78bfa"),
+    ("model_center_camera_mm", "篮筐中心", "#22d3ee"),
+)
+_PRIMARY_POINT_KEYS = frozenset(
+    {
+        "reference_point_camera_mm",
+        "top_point_camera_mm",
+        "top_edge_center_camera_mm",
+    }
 )
 _ESTIMATION_OPERATIONS = frozenset({"estimate_pick_pose", "estimate_basket_pose"})
 
@@ -207,17 +218,15 @@ def _points(sources: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
             continue
         seen.add(key)
 
-        # 参考点根据ok状态和score进行颜色编码
-        if key == "reference_point_camera_mm":
+        if key in _PRIMARY_POINT_KEYS:
             if ok is False:
-                color = "#ef4444"  # 红色：失败
+                color = "#ef4444"
             elif ok is True and isinstance(score, (int, float)) and score <= 0.7:
-                color = "#fb923c"  # 橙色：低置信度
+                color = "#fb923c"
             elif ok is True:
-                color = "#22c55e"  # 绿色：成功
+                color = "#22c55e"
             else:
                 color = base_color
-            # 参考点使用更大的尺寸
             points.append({"name": key, "label": label, "xyz_mm": xyz, "color": color, "size": "large"})
         else:
             points.append({"name": key, "label": label, "xyz_mm": xyz, "color": base_color})
@@ -246,6 +255,12 @@ def _lines(sources: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
                 ],
             }
         )
+
+    endpoints = _first(sources, "top_edge_endpoints_camera_mm")
+    if isinstance(endpoints, Sequence) and not isinstance(endpoints, (str, bytes)) and len(endpoints) >= 2:
+        start, end = _vec3(endpoints[0]), _vec3(endpoints[1])
+        if start is not None and end is not None:
+            lines.append({"label": "上沿", "color": "#fbbf24", "width": 3, "xyz_mm": [start, end]})
 
     # 篮筐位姿：CAD坐标系XYZ轴
     pose = _first(sources, "pose_4x4")
@@ -331,10 +346,13 @@ def _hud(sources: Sequence[Mapping[str, Any]]) -> list[str]:
     if parts:
         lines.append(" · ".join(parts))
 
-    # 第二行：参考点坐标
-    reference = _vec3(_first(sources, "reference_point_camera_mm"))
-    if reference is not None:
-        lines.append("参考点 " + ", ".join(f"{value:.1f}" for value in reference) + " mm")
+    for key, label, _color in _POINT_SPECS:
+        if key not in _PRIMARY_POINT_KEYS and key != "front_panel_top_edge_midpoint_camera_mm":
+            continue
+        point = _vec3(_first(sources, key))
+        if point is None:
+            continue
+        lines.append(label + " " + ", ".join(f"{value:.1f}" for value in point) + " mm")
 
     # 第三行：拒绝原因（如果有）
     reasons = _first(sources, "rejection_reasons")

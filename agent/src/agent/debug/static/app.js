@@ -1,5 +1,4 @@
-const REAL_TARGET_PASSWORD = "zhongmian123";
-const state = { target: "mock", layer: "capability", catalog: [], selected: null, run: null, trace: null, traceRunId: null, detail: "result", logs: [], logCursor: null, selectedLog: null, selectedMediaKey: null, newestCaptureId: null, viewGeneration: 0, executing: false };
+const state = { target: "mock", layer: "capability", catalog: [], products: [], selected: null, run: null, trace: null, traceRunId: null, detail: "result", logs: [], logCursor: null, selectedLog: null, selectedMediaKey: null, newestCaptureId: null, viewGeneration: 0, executing: false };
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const json = (value) => JSON.stringify(value ?? null, null, 2);
@@ -85,6 +84,32 @@ function renderForm() {
     testCaseInput.addEventListener("input", handler);
   }
   bindEditableSelects();
+  bindSkuNameLink();
+}
+
+function bindSkuNameLink() {
+  const skuInput = $('[name="sku_id"]');
+  const nameInput = $('[name="name"]');
+  const products = state.products || [];
+  if (!skuInput || !nameInput || !products.length) return;
+  const nameBySku = new Map();
+  const skuByName = new Map();
+  for (const product of products) {
+    const skuId = String(product.sku_id || "").trim();
+    const name = String(product.name || "").trim();
+    if (!skuId || !name) continue;
+    nameBySku.set(skuId, name);
+    if (!skuByName.has(name)) skuByName.set(name, skuId);
+  }
+  const apply = (source, target, lookup) => {
+    const next = lookup.get(source.value.trim());
+    if (!next || target.value === next) return;
+    target.value = next;
+  };
+  skuInput.addEventListener("input", () => apply(skuInput, nameInput, nameBySku));
+  skuInput.addEventListener("change", () => apply(skuInput, nameInput, nameBySku));
+  nameInput.addEventListener("input", () => apply(nameInput, skuInput, skuByName));
+  nameInput.addEventListener("change", () => apply(nameInput, skuInput, skuByName));
 }
 
 function closeSelectMenus(except = null) {
@@ -357,14 +382,24 @@ function overlayToCanvas(rect, uv) {
   return [rect.x + uv[0] * rect.scale, rect.y + uv[1] * rect.scale];
 }
 
-function drawOverlayDot(context, point, color) {
+function drawOverlayDot(context, point, color, size) {
+  const radius = size === "large" ? 8 : 5;
   context.fillStyle = color;
   context.strokeStyle = "#041016";
   context.lineWidth = 2;
   context.beginPath();
-  context.arc(point[0], point[1], 5, 0, Math.PI * 2);
+  context.arc(point[0], point[1], radius, 0, Math.PI * 2);
   context.fill();
   context.stroke();
+}
+
+function drawOverlayText(context, text, x, y, color) {
+  context.font = "13px sans-serif";
+  context.lineWidth = 3;
+  context.strokeStyle = "#041016";
+  context.strokeText(text, x, y);
+  context.fillStyle = color;
+  context.fillText(text, x, y);
 }
 
 function drawOverlayBox(context, rect, box, kind, color) {
@@ -410,12 +445,17 @@ function drawPoseOverlay(image, overlay) {
   }
   for (const point of overlay.points || []) {
     const mapped = overlayToCanvas(rect, projectCameraPoint(K, point.xyz_mm));
-    if (mapped) drawOverlayDot(context, mapped, point.color || "#22d3ee");
+    if (!mapped) continue;
+    drawOverlayDot(context, mapped, point.color || "#22d3ee", point.size);
+    if (point.label) drawOverlayText(context, point.label, mapped[0] + 10, mapped[1] - 10, point.color || "#22d3ee");
   }
   for (const marker of overlay.markers || []) {
     const mapped = overlayToCanvas(rect, marker.xy);
-    if (mapped) drawOverlayDot(context, mapped, marker.color || "#facc15");
+    if (!mapped) continue;
+    drawOverlayDot(context, mapped, marker.color || "#facc15");
+    if (marker.label) drawOverlayText(context, marker.label, mapped[0] + 10, mapped[1] - 10, marker.color || "#facc15");
   }
+  (overlay.hud || []).forEach((line, index) => drawOverlayText(context, line, 12, 20 + index * 18, "#f8fafc"));
 }
 
 function bindPoseOverlayResize() {
@@ -569,11 +609,6 @@ async function refreshTargets() {
 
 function bind() {
   $$(".target-switch button").forEach(button => button.addEventListener("click", async () => {
-    if (button.dataset.target === "real" && state.target !== "real") {
-      const password = window.prompt("请输入实机操作密码");
-      if (password === null) return;
-      if (password !== REAL_TARGET_PASSWORD) { toast("实机操作密码错误"); return; }
-    }
     state.target = button.dataset.target; $$(".target-switch button").forEach(item => item.classList.toggle("active", item === button));
     $("#real-warning").classList.toggle("hidden", state.target !== "real"); await Promise.all([refreshTargets(), loadHistory()]);
   }));
@@ -621,6 +656,7 @@ async function init() {
   bind();
   const catalog = await api("/debug/api/catalog");
   state.catalog = catalog.items;
+  state.products = catalog.products || [];
   renderCatalog();
   loadHistory().catch(error => toast(error.message));
   loadLogs().catch(error => toast(error.message));
