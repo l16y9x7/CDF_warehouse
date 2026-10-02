@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "2026-10-02.1",
+  "revision": "2026-10-02.2",
   "profiles": {
     "20108138": {
       "name": "雅漾舒泉调理喷雾",
@@ -30,10 +30,10 @@
     "20164007": {
       "name": "欧舒丹乳木果牛奶味洁肤皂",
       "sku_typ": "box",
-      "sam3_prompt": "the top surfaces of the small boxes",
+      "sam3_prompt": "individual soap packages",
       "target_threshold": 0.5,
       "max_mask_area_ratio": 0.5,
-      "notes": "2026-10-02 已用真实 SAM3 回放场景 20261001_095017_cfe4ab92，通过当前几何质量检查；未做机器人抓取验证，后续替换为真实 SKU ID。"
+      "notes": "使用香皂包装整体 mask 后拟合顶面；2026-10-02 回归场景 20261001_095017_cfe4ab92 和 20261002_050841_399ce07a，未做机器人抓取验证。"
     },
     "20108001": {
       "name": "白色软管商品（占位 SKU）",
